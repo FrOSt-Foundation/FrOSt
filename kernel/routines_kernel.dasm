@@ -139,7 +139,6 @@ set PC,pop
 ;---------------------------------------------
 ;MMU look at the program at [A] until B words are verified
 ;add the offset C to all the adresses in set
-;DOESN'T VERIFY ANY OTHER COMMAND THAN SET !!
 ;---------------------------------------------
 :MMU
 set push,A
