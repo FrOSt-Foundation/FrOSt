@@ -25,12 +25,13 @@ set push , i
 set push , j
 set i , [VRAM1]
 set j , 6
-add i , 6
+add i , 358
 :boucle_efface
 ife J , 32
   set pc , fin_boucle_efface
 set [I],0x0
 add I , 1
+add j , 1
 set pc , boucle_efface
 :fin_boucle_efface
 set j , pop

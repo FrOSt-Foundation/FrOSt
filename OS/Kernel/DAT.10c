@@ -19,3 +19,9 @@
 :div_clock dat 60
 :VRAM1 dat 0x0
 :adr_curseur dat 0x0
+:adr_interpreteur dat 0x0
+:parse_commande1 dat 0x0
+:parse_commande2 dat 0x0
+:parse_commande3 dat 0x0
+:parse_commande4 dat 0x0
+:parse_commande5 dat 0x0

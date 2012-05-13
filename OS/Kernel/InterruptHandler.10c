@@ -38,4 +38,6 @@ ifg C , 0x60
 	JSR affiche_carac
 ife c , 0x20
 	JSR affiche_carac
+ife c , 0x11
+	JSR interprete_commande	
 rfi 0
