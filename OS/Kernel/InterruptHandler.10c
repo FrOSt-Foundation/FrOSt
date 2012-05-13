@@ -1,0 +1,41 @@
+; --------------------------------------------
+; Title:   InterruptHandler
+; Author:  Alexis
+; Date:    09/05/2012
+; Version: 
+; --------------------------------------------
+
+
+
+
+:init_interrupthandler
+JSR push_regs
+IAS interrupthandler
+JSR pop_regs
+set PC , POP
+
+
+
+:interrupthandler
+ife a , 1
+	set pc , ih_clock
+ife a , 2
+	set pc , ih_keyboard
+set pc , pop
+
+
+
+:ih_clock
+rfi 0
+
+
+:ih_keyboard
+set A , 1
+hwi [id_keyboard1]
+ife C , 0x10
+	JSR efface_carac
+ifg C , 0x60	
+	JSR affiche_carac
+ife c , 0x20
+	JSR affiche_carac
+rfi 0

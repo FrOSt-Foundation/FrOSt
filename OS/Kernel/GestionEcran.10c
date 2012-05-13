@@ -1,0 +1,96 @@
+
+
+:init_ecran1
+
+set push , A
+set push , B
+set push , Z
+set A , 384
+JSR malloc
+ife Z , 0x0
+	set pc , end
+set A , 0
+set B , Z
+add B , 3
+hwi [id_ecran1]
+set [VRAM1] , B
+set Z , pop
+set B , pop
+set A , pop
+set pc , pop
+
+
+:efface_invite
+set push , i
+set push , j
+set i , [VRAM1]
+set j , 6
+add i , 6
+:boucle_efface
+ife J , 32
+  set pc , fin_boucle_efface
+set [I],0x0
+add I , 1
+set pc , boucle_efface
+:fin_boucle_efface
+set j , pop
+set i , pop
+set pc , pop
+
+
+:affiche_invite
+set push  , A
+set A , [VRAM1]
+add A , 352
+set [A] , 0xF046
+add A , 1
+set [A] , 0xF072
+add A , 1
+set [A] , 0xF04F
+add A , 1
+set [A] , 0xF053
+add A , 1
+set [A] , 0xF074
+add A , 1
+set [A] , 0xF03E
+add A , 1
+set [A] , 0xF09F
+set [adr_curseur] , A
+set A , POP
+set PC , POP
+
+
+:affiche_carac
+set push , A
+set push , B
+set A , [adr_curseur]
+set B , [VRAM1]
+add B , 383
+ife A , B
+  set pc , fin_affiche
+BOR C , 0xF000
+set [A] , C
+add [adr_curseur] , 1
+add A , 1
+set [A] , 0xF09F
+:fin_affiche
+set B , POP
+set A , POP
+set PC , POP
+
+:efface_carac
+set push , c
+set push , B
+set c , [adr_curseur]
+set B , [VRAM1]
+add B , 358
+ife c , B
+  set pc , fin_efface
+set [c] , 0x0020
+sub [adr_curseur] , 1
+sub c , 1
+set [c] , 0xF09F
+:fin_efface
+set B , POP
+set c , POP
+set PC , POP

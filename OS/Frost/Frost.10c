@@ -1,0 +1,15 @@
+; --------------------------------------------
+; Title:   Frost
+; Author:  Alexis
+; Date:    09/05/2012
+; Version: 
+; --------------------------------------------
+
+set PC ,  BootSequence ;lancement de la sequence de boot
+
+:BoucleDeVie
+set PC , end
+
+
+:end
+set PC , end

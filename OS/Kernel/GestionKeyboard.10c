@@ -1,0 +1,17 @@
+; --------------------------------------------
+; Title:   GestionKeyboard
+; Author:  Alexis
+; Date:    09/05/2012
+; Version: 
+; --------------------------------------------
+
+
+:init_keyboard1
+JSR push_regs
+set A , 3
+set B , 2
+set C , [id_keyboard1]
+hwi [id_keyboard1]
+JSR pop_regs
+set PC , POP
+

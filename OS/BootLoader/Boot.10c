@@ -1,0 +1,18 @@
+; --------------------------------------------
+; Title:   Boot
+; Author:  Alexis
+; Date:    09/05/2012
+; Version: 
+; --------------------------------------------
+
+
+
+:BootSequence
+JSR push_regs
+JSR init_memoire
+JSR detection_periph
+JSR init_periph
+JSR init_interrupthandler
+JSR affiche_invite
+JSR pop_regs
+set pc , BoucleDeVie

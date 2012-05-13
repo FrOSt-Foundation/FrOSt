@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <name>Kernel</name>
+  <files>
+    <file path="Memoire.10c" />
+    <file path="Regs.10c" />
+    <file path="GestionEcran.10c" />
+    <file path="GestionPeriph.10c" />
+    <file path="GestionKeyboard.10c" />
+    <file path="GestionClock.10c" />
+    <file path="GestionHMD.10c" />
+    <file path="InterruptHandler.10c" />
+    <file path="DAT.10c" />
+  </files>
+</project>
