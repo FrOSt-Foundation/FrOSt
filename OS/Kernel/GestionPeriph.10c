@@ -29,11 +29,11 @@ set J , 0
 		set PC , sauvegarde_clock
 	add J , 1
 	set PC , boucle_periph
-	
+
 	:fin_boucle_periph
 	JSR pop_regs
 	set PC , POP
-	
+
 ;----------------PRIVATE-------------------	
 :sauvegarde_screen
 ifg [nb_ecran] , 2
@@ -92,12 +92,3 @@ ifg [nb_clock] , 0
 	JSR init_clock1
 set PC , POP
 
-
-
-
-
-
-
-
-
-		

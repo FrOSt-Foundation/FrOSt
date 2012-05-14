@@ -203,3 +203,27 @@ set PC,pop
 jsr pop_regs
 set Z,0xAAAA ;erreur
 set PC,pop
+
+
+
+;-------------------------------------------------------
+;MEMCPY
+;memcpy, copy from [A] to [B] C words
+;doesn't modify any of the regs
+;-------------------------------------------------------
+:memcpy
+set push,I
+set push,J
+set J,A
+set I,B
+set push,Z
+set Z,A
+add Z,C
+:aq
+sti [I],[J]
+ifn J,Z
+    set PC,aq
+set Z,pop
+set J,pop
+set I,pop
+set PC,pop

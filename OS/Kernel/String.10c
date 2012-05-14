@@ -1,0 +1,40 @@
+; --------------------------------------------
+; Title:   String
+; Author:  D994293
+; Date:    14/05/2012
+; Version: 
+; --------------------------------------------
+
+:strcmp
+set push , i
+set push , a
+set push , b
+set i , 0
+:boucle_strcmp
+ife i , c
+	set pc , strcmp_OK
+set j , [a]
+XOR j , 0xF000
+ifn j , [b]
+	set pc , strcmp_KO
+add a , 1
+add b , 1
+add i , 1
+set pc , boucle_strcmp
+:strcmp_KO
+set Z , 0
+set b , pop
+set a , pop
+set i , pop
+set pc , pop
+:strcmp_OK
+ifn [a] , 0
+	set pc , strcmp_KO
+set Z , 1
+set b , pop
+set a , pop
+set i , pop
+set pc , pop
+
+	
+
