@@ -6,7 +6,7 @@ Dossiers :
 
 	apps/ : Applications diverses
 	kernel/ : Kernel système
-	OS/ : Projet compilé
+	OS/ : Projet complet sous 0x10c DevKit
 
 =====
 
