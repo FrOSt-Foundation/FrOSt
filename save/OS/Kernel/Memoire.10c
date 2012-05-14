@@ -1,0 +1,229 @@
+; --------------------------------------------
+; Title:   Memoire
+; Author:  Alexis
+; Date:    09/05/2012
+; Version: 
+; --------------------------------------------
+
+
+
+
+
+;---------------------------------------------
+;INIT MEMORY HANDLER
+;the memory begin at [start_mem] and end at [end_mem]
+;---------------------------------------------
+:init_memoire
+set push,I
+set push,A
+set I,[start_mem]   ;adresse de début de la mémoire utilisable
+set [I],0xFFFF    ;statut 0xFFFF : disponible
+add I,1
+add [start_mem],3    ;debut de la memoire reellement utilisable
+set A,[end_mem]      
+sub A,[start_mem]   ;taillle de la memoire utilisable
+sub [start_mem],3    ;on remet start_mem à sa valeur d’origine
+set [I],A  ;taille de la mémoire réellement utilisable en mots
+add I,1  
+set [I],[end_mem]    ;bloc suivant -> si fin de mémoire pas de bloc suivant
+    
+set A,pop
+set I,pop
+set PC,pop
+
+;---------------------------------------------
+;MALLOC
+;allocate A blocs of memory, return in Z a pointer if the allocation is ok, 0 otherwise
+;---------------------------------------------
+:malloc
+jsr push_regs
+ife A,0              ;allocation de 0 mots → erreur
+   set PC,erreur_alloc
+set C,[start_mem]   ;C est le bloc courant, initialisé à la première adresse
+set PC,test_bloc      
+
+;----------------------------------------------
+;MACRO NOT USABLE BY ITSELF
+;Test du bloc courant
+;Vérifie si le bloc courant n'est pas 0x0
+;Sinon vérification du statut
+;Si libre --> test de la taille
+;Sinon avance sur prochain bloc
+;----------------------------------------------
+:test_bloc
+ife C,[end_mem]       ;si le bloc courant est la fin de la memoire → erreur
+   set PC,erreur_alloc
+ife [C],0xFFFF           ;si le bloc est libre, on controle la taille
+   set PC,controle_taille
+add C,2                     ;sinon on récupere l’adresse du bloc suivant et on relance
+set C,[C]
+set PC,test_bloc
+
+;---------------------------------------------
+;MACRO NOT USABLE BY ITSELF
+;Controle de la taille disponible dans le bloc courant contenu dans C
+;Si taille OK --> division
+;Sinon, on avance su prochain bloc et relance du test
+;---------------------------------------------
+:controle_taille
+set B,C
+add B,1
+set B,[B]    ; B est la taille dispo
+ifg B,A       ; si la taille dispo est suffisante on passe a la division
+   set PC,division             
+add C,2    ; sinon on relance le test sur le bloc suivant
+set C,[C]
+set PC,test_bloc
+
+;---------------------------------------------
+;MACRO NOT USABLE BY ITSELF
+;Division d'une cellule
+;test si la taille est égale
+;si oui --> maj de Z avec C
+;sinon calucle de la taille restante
+;si supérieur à 10 -> ecriture
+;sinon allocation en l'état
+;---------------------------------------------
+:division
+set Z,C    
+set [Z],0x1  ;statut utilisé
+sub B,A   
+ifl B,10      ;si la taille restante est trop petite i.e < à 10 on alloue en l’état
+   set PC,alloc_ok
+add C,1  
+set [C],A    ;on stocke la taille
+add C,1
+set X,[C]    ; sauvegarde du suivant
+set Y,C    
+add C,A
+set [Y],C  
+add [Y],1      ; on met à jour le suivant du bloc alloué
+add C,1
+set [C],0xFFFF       ; le statut du suivant est 0xFFFF : libre
+add C,1
+set [C],B               
+sub [C],3              ;mise à jour de la taille restante
+add C,1
+set [C],X              ;le suivant est celui qui a été sauvegardé
+set PC,alloc_ok
+
+;---------------------------------------------
+;MACRO NOT USABLE BY ITSELF
+;allocation ok, restaurer les registres et mettre l'adresse du bloc dans Z
+;---------------------------------------------
+:alloc_z_save dat 0xFFFF
+:alloc_ok
+set [alloc_z_save],Z
+jsr pop_regs
+set Z,[alloc_z_save]
+set PC,pop
+
+;---------------------------------------------
+;MACRO NOT USABLE BY ITSELF
+;Erreur d'allocation
+;mettre Z à 0x0
+;---------------------------------------------
+:erreur_alloc
+jsr pop_regs
+set Z,0
+set pc,pop
+
+;---------------------------------------------
+;FREE free the bloc in A, store 0xAAAA in Z if error
+;---------------------------------------------
+:free
+jsr push_regs
+ife [A],0xFFFF            ;si le bloc est libre , erreur
+   set PC,erreur_free
+set [A],0xFFFF
+set B,A
+add B,2
+set B,[B]
+ife [B],0xFFFF          ; si le bloc de droite est libre, on concatène à droite
+   set PC,concat_droite
+set PC,concat_gauche          ;dans tous les cas on essaie de concaténer à gauche
+
+;---------------------------------------------
+;NOT USABLE BY ITSELF
+;---------------------------------------------
+:concat_droite
+set C,B          
+add C,1
+set I,[C]             ;on récupere la taille du bloc suivant dans I
+add C , 1
+set J , [C]          ;on récupere le suivant dans J             
+set X,A                
+add X,1
+add [X],C             ;on ajoute les deux tailles
+add X , 1
+set [X] , J            ;on met le suivant à jour
+set PC,concat_gauche
+
+;---------------------------------------------
+;NOT USABLE BY ITSELF
+;---------------------------------------------
+:concat_gauche
+set C,[start_mem]
+set X,0x0
+:parcours
+ife C,A               ;si on est arrivé jusqu’au bloc que l’on vient de libérer, on essaie de recoller
+   set PC,recoller
+set X,C    ;sinon X <- C et C <- suivant de C
+add C,2
+set C,[C]
+set PC,parcours
+
+;---------------------------------------------
+;NOT USABLE BY ITSELF
+;---------------------------------------------
+:recoller
+ife X,0x0                   ;Si X = 0x0 , alors on essaie de recoller le premier bloc → fin traitement
+   set PC,pop
+set Y,C
+add Y,1
+set I,[Y]                    ;sauvegarde de la taille du bloc C dans Y
+add Y , 1
+set J , [Y]                  ;sauvegarde du suivant de C dans J
+set Z,X
+add Z,1
+set Z,[Z]                  ;sauvegarde de la taille du bloc X dans Z
+add Z,I                   ;on ajoute les deux taille
+set [X],0xFFFF       ;le bloc X est libre
+add X,1
+set [X],Z               ;sauvegarde de la taille               
+add X , 1
+set [X] , J              ;sauvegarde du suivant
+jsr pop_regs
+set PC,pop
+
+;---------------------------------------------
+;NOT USABLE BY ITSELF
+;---------------------------------------------
+:erreur_free
+jsr pop_regs
+set Z,0xAAAA ;erreur
+set PC,pop
+
+
+
+;-------------------------------------------------------
+;MEMCPY
+;memcpy, copy from [A] to [B] C words
+;doesn't modify any of the regs
+;-------------------------------------------------------
+:memcpy
+set push,I
+set push,J
+set J,A
+set I,B
+set push,Z
+set Z,A
+add Z,C
+:aq
+sti [I],[J]
+ifn J,Z
+    set PC,aq
+set Z,pop
+set J,pop
+set I,pop
+set PC,pop

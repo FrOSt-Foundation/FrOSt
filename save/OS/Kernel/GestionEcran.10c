@@ -1,0 +1,201 @@
+
+
+:init_ecran1
+
+set push , A
+set push , B
+set push , Z
+set A , 384
+JSR malloc
+ife Z , 0x0
+	set pc , end
+set A , 0
+set B , Z
+add B , 3
+hwi [id_ecran1]
+set [VRAM1] , B
+set Z , pop
+set B , pop
+set A , pop
+set pc , pop
+
+
+:efface_invite
+set push , i
+set push , j
+set i , [VRAM1]
+set j , 6
+add i , 358
+:boucle_efface
+ife J , 32
+  set pc , fin_boucle_efface
+set [I],0x0
+add I , 1
+add j , 1
+set pc , boucle_efface
+:fin_boucle_efface
+set j , pop
+set i , pop
+set pc , pop
+
+
+:affiche_invite
+set push  , A
+set push , i
+set A , [VRAM1]
+add A , 320
+set i , 0
+:boucle_invite
+ife i , 32
+	set pc , suite_invite
+set [a] , 0x2007
+add a , 1
+add i , 1
+set pc , boucle_invite
+:suite_invite
+set [A] , 0xF046
+add A , 1
+set [A] , 0xF072
+add A , 1
+set [A] , 0xF04F
+add A , 1
+set [A] , 0xF053
+add A , 1
+set [A] , 0xF074
+add A , 1
+set [A] , 0xF03E
+add A , 1
+set [A] , 0xF09F
+set [adr_curseur] , A
+set i , pop
+set A , POP
+set PC , POP
+
+
+:affiche_carac
+set push , A
+set push , B
+set A , [adr_curseur]
+set B , [VRAM1]
+add B , 383
+ife A , B
+  set pc , fin_affiche
+BOR C , 0xF000
+set [A] , C
+add [adr_curseur] , 1
+add A , 1
+set [A] , 0xF09F
+:fin_affiche
+set B , POP
+set A , POP
+set PC , POP
+
+:efface_carac
+set push , c
+set push , B
+set c , [adr_curseur]
+set B , [VRAM1]
+add B , 358
+ife c , B
+  set pc , fin_efface
+set [c] , 0x0020
+sub [adr_curseur] , 1
+sub c , 1
+set [c] , 0xF09F
+:fin_efface
+set B , POP
+set c , POP
+set PC , POP
+
+
+
+:affiche_commande
+
+set push , a
+set push , i
+set push , b
+JSR scroll
+set a , [VRAM1]
+set i , 0
+add a , 358
+set b , [VRAM1]
+add b , 288
+set [b] , 0x2024
+add b , 1
+:boucle_affiche_commande
+ife i , 25
+	set pc , fin_boucle_affiche_commande
+ifn [a] , 0xF09F	
+	set [b] , [a]
+ife [a] , 0xF09F
+	set [b] , 0x0
+add b , 1
+add a , 1
+add i , 1
+set pc , boucle_affiche_commande
+:fin_boucle_affiche_commande
+set b , pop
+set i , pop
+set a , pop
+set pc , pop
+
+
+
+:scroll
+set push , A
+set push , B
+set push , c
+set push , i
+set A , [VRAM1]
+set B , [VRAM1]
+add a , 32
+set c , 32
+set i , 0
+:boucle_scroll
+ife i , 9
+	set pc , fin_scroll
+JSR memcpy
+add i , 1
+add a , 32
+add b , 32
+set c , 32
+set pc , boucle_scroll
+:fin_scroll
+set i , pop
+set c , pop
+set b , pop
+set a , pop
+set pc , pop
+
+
+
+
+
+:affiche_message
+set push , A
+set push , B
+set push , c
+JSR scroll
+ife z , 1
+	set pc , cmd_uk	
+ife z , 2
+	set pc , cmd_test
+:suite_affiche_message
+set B , [VRAM1]
+add B , 288
+JSR memcpy
+set c , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:cmd_uk
+	set A , message_unknown
+	set c , 17
+	set pc , suite_affiche_message
+
+:cmd_test
+	set A , message_test
+	set c , 24
+	set pc , suite_affiche_message
+

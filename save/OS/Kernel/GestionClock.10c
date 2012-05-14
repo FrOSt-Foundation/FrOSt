@@ -1,0 +1,19 @@
+; --------------------------------------------
+; Title:   GestionClock
+; Author:  Alexis
+; Date:    09/05/2012
+; Version: 
+; --------------------------------------------
+
+:init_clock1
+set push , A
+set push , B
+set A , 0
+set B , [div_clock]
+hwi [id_clock1]
+set A , 2
+set B , 1
+hwi [id_clock1]
+set B , pop
+set A , pop
+set PC , POP
