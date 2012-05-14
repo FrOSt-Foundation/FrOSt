@@ -21,9 +21,10 @@ set push,b
 set push,c
 ifg b,a
 	jsr reverseab
-set c,b
+set c,a
 :pgcd_loop
-mod c,a
+
+mod c,b
 ife c,0
 	set pc,pgcd_setzb
 set a,b
