@@ -60,7 +60,7 @@ set PC,pop
 
 ;---------------------------------------------
 ;MALLOC
-;allocate A blocs of memory, return in Z a pointer if the allocation is ok, 0 otherwise 
+;allocate A blocs of memory, return a pointer in Z if the allocation is ok, 0 otherwise 
 ;---------------------------------------------
 :malloc
 jsr push_regs
