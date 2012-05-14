@@ -1,66 +1,32 @@
-FrOSt
+				FrOSt
+
 =====
 
 Dossiers :
 
-apps/ : Applications diverses
-kernel/ : Kernel système
+	apps/ : Applications diverses
+	kernel/ : Kernel système
+	OS/ : Projet complet sous 0x10c DevKit
 
-----------------------------------------------
+=====
 
-Vous avez à disposition des interruptions software : 
----
-msg 0x0 clear the screen
-msg 0x1 printf (store the adress of the string in B, print at X,Y)
-msg 0x2 print a character stored in B at X Y
-msg 0x3 print the value stored in B in base C at X Y
-msg 0x4 set video mem (store the adress in B)
-msg 0x5 scroll the screen by B lines
-msg 0x11 store number of ticks elapsed since last call in B (the clock ticks every 0,5s for now)
-msg 0x15 request a key placed in B (store it in C 1/0)
-msg 0x16 peek at the last key pushed, stored in B
-msg 0x17 clear the keyboard buffer
-msg 0x20 malloc B blocs (return in Z, 0 if error)
-msg 0x21 free bloc B
----
+Qu'est-ce que FrOSt ?
+FrOSt est un projet communautaire français ayant pour but de créer un OS libre français
+pour le jeu 0x10c de Notch
 
-Certaines fonctions sont déjà incluses dans l’OS : strlen, strcmp, strcat, strchr, strpbrk, strstr.
+Comment puis-je développer un logiciel pour cet OS ?
+Le wiki du projet contient toutes les informations utiles à ce sujet
 
-Votre programme sera exécuté comme s’il commençait à l’adresse 0 de la ram.
-Pour cela, il vous faudra respecter certaines conditions :
-	- set reg,label 					ne fonctionne pas
-	- set PC,label						fonctionne
-	- set PC,[label] 					fonctionne
-	- set SP,label 						fonctionne
-	- set SP,[label]					fonctionne
-	- set [label],anything 					fonctionne
-	- set reg,[label] 					fonctionne
-	- set [reg],anything	 				fonctionne
-	- set [label],[label] 					fonctionne
-	- jsr label						fonctionne
-	- jsr [label]						fonctionne
-	- add reg,[label] 					fonctionne
-	- add [label],reg					fonctionne
-	- add [label],[label] 					fonctionne
-	- sub reg,[label] 					fonctionne
-	- sub [label],reg					fonctionne
-	- sub [label],[label] 					fonctionne
-	- mul [label],reg 					fonctionne
-	- mul reg,[label] 					fonctionne
-	- mul [label],[label] 					fonctionne
-	- div [label],reg					fonctionne
-	- div reg,[label] 					fonctionne
-	- div [label],[label] 					fonctionne
-	- ife (avec les [label])				fonctionne
+=====
 
-Les dat sont à déclarer obligatoirement à la fin de votre programme pour l’instant.
-Il faut les entourer de trois 0xDA1A et de trois 0xE2D0 (0xE2D0 marquant la fin du programme).
+Lien vers les dernières spécifications du DCPU-16 et des hardware : https://docs.google.com/document/d/1H4M_PJBWtQduMWpMAsux1A9nClAwLAP5A7tPx_MKw5g/edit
 
-Exemple : 
+=====
 
-;prgramme fini, les dat
-dat 0xDA1A,0xDA1A,0xDA1A
-:PIMC1 dat "Bienvenue dans le Calculateur d'IMC",0x11,"Veuillez entrer votre taille en centimetres",0x11,"Exemple : 160",0
-:tmp_IMC dat 0
-dat 0xE2D0,0xE2ND,0xE2ND
-;le programme est complet à partir de ce mot (pour la recopie).
+Credits :
+	Alocer
+	ElectricBanana
+	Faërie
+	Franck97
+	natnat
+	Yamakaky
