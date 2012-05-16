@@ -8,12 +8,10 @@
 
 
 :BootSequence
-JSR push_regs
 JSR init_memoire
 JSR detection_periph
 JSR init_periph
 JSR init_interrupthandler
 JSR init_interpreteur
 JSR affiche_invite
-JSR pop_regs
 set pc , BoucleDeVie
