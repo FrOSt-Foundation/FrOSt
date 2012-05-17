@@ -1,0 +1,18 @@
+Liste des routines implémentées :
+Regs :
+ - push_regs : envoyer les registres dans le stack
+ - pop_regs : récupérer les registres
+
+Routines_nombres :
+ - reverseab : échanger des registres
+ - pgcd : calculer le pgcd
+ - puissance : calcul de puissance
+
+Routines_string
+ - strlen : renvoyer le longueur d'un string
+ - strcmp : comparer deux strings (booléen sur Z)
+ - strcat : mettre deux strings bout à bout
+ - strchr : recherche de char dans un string (premiere occurrence sur Z)
+ - strpbrk : recherche de plusieurs chars dans un string (depuis le stack)
+ - strstr : recherche de string dans un string
+ - 
