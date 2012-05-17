@@ -38,7 +38,7 @@ set b,pop
 set a,pop
 set pc,pop
 
-:puissance
+:puissance ;routine puissance, C=A^B
 SET PC, push_regs
 SET C, A
 SET X, 0
