@@ -37,3 +37,19 @@ set c,pop
 set b,pop
 set a,pop
 set pc,pop
+
+:puissance ;routine puissance, C=A^B
+SET PC, push_regs
+SET C, A
+SET X, 0
+
+:loop
+ADD x, 1
+IFE b, x
+SET PC, end
+MUL C, A
+SET PC, loop
+:end
+
+set PC, pop_regs
+SET PC, pop
