@@ -153,9 +153,9 @@ set push , B
 set push , C
 set push , Z
 set A , [parse_commande1]
-set B , commande_test
+set B , cmd_test
 set C , 4
-JSR strcmp
+JSR strcmp_nocol
 JSR launch_programme
 JSR vider_parse
 set Z , pop

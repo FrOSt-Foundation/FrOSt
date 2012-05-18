@@ -54,8 +54,32 @@ ifn [A],0
     ifn [B],0
         ife [A],[B]
             set PC,sc
-ife [A],[B]
-    set Z,1
+ife [A], [B]
+set Z, 1
+set B,pop
+set A,pop
+set PC,pop
+
+;---------------------------------------------
+;STRCMP_NOCOL return 0 in Z if the strings at A and at B are different, ignoring the colors of font/bg
+;---------------------------------------------
+:strcmp_nocol
+set push,A
+set push,B
+set Z,0
+mod A, 0x100
+mod B, 0x100
+sub A,1
+sub B,1
+:sc_nocol
+add A,1
+add B,1
+ifn [A],0
+    ifn [B],0
+        ife [A],[B]
+            set PC,sc_nocol
+ife [A], [B]
+set Z, 1
 set B,pop
 set A,pop
 set PC,pop
