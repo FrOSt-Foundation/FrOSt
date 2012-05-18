@@ -1,0 +1,13 @@
+; --------------------------------------------
+; Title:   FrOSt
+; Author:  Admin
+; Date:    18/05/2012
+; Version: 
+; --------------------------------------------
+
+:BEGIN
+
+set PC,BootSequence
+
+:BoucleDeVie
+sub PC,1

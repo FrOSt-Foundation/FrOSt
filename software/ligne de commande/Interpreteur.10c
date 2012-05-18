@@ -12,7 +12,7 @@ set push , z
 set A , 50
 JSR malloc
 ife z , 0
-	set pc , end
+	set pc , end_malloc
 set [adr_interpreteur] , Z
 add z , 3
 set [parse_commande1] , z
@@ -57,7 +57,7 @@ ife b , i
 ife [b] , 0xF020
 	set pc , saut_parseur
 ife x , 6
-	set pc , end
+	set pc , end_malloc
 ife [b] , 0xF09F
 	set pc , saut_parseur
 JSR copie_parseur

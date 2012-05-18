@@ -13,6 +13,8 @@
 ;Sauvegarde de tous les registres
 ;---------------------------------------------
 
+set PC,BEGIN
+
 :detection_periph
 JSR push_regs
 hwn I

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <name>routines</name>
+  <files>
+    <file path="Regs.10c" />
+    <file path="routines_string.dasm" />
+  </files>
+</project>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <name>software</name>
+  <files>
+    <file path="drivers\GestionPeriph.10c" />
+    <file path="ligne de commande\GestionEcran.10c" />
+    <file path="ligne de commande\Interpreteur.10c" />
+    <file path="drivers\GestionKeyboard.10c" />
+  </files>
+</project>

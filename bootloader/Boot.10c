@@ -15,3 +15,6 @@ JSR init_interrupthandler
 JSR init_interpreteur
 JSR affiche_invite
 set pc , BoucleDeVie
+
+
+:end_malloc sub PC,1
