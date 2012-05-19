@@ -83,7 +83,7 @@ ifn [A], 0
     ifn [B], 0
         ife J, I
             set PC,sc_nocol
-;ife J, I  ; /!\ enlevez ce ; devant ife pour rétablir le strcmp_nocol
+ife J, I
 set Z, 1
 set J, pop
 set I, pop
