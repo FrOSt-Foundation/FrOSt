@@ -1,3 +1,18 @@
+;This file is part of FrOSt.
+;
+;    FrOSt is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+
+;    FrOSt is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
+;
 ; --------------------------------------------
 ; Title:   Interpreteur
 ; Author:  Administrateur
@@ -138,9 +153,9 @@ set push , B
 set push , C
 set push , Z
 set A , [parse_commande1]
-set B , commande_test
+set B , mot_test
 set C , 4
-JSR strcmp
+JSR strcmp_nocol
 JSR launch_programme
 JSR vider_parse
 set Z , pop
