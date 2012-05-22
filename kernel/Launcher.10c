@@ -20,9 +20,13 @@
 ; --------------------------------------------
 
 :launch_programme
-ife z , 1
+
+IFE c, 1
 	JSR prog_test
-ife z , 0
+IFE c, 2
+    JSR prog_mines
+    
+ife C , 0
 	JSR prog_unknown
 
 

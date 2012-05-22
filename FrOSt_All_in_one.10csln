@@ -7,5 +7,6 @@
     <project path="routines\routines.10cproj" />
     <project path="kernel\kernel.10cproj" />
     <project path="FrOSt\FrOSt.10cproj" />
+    <project path="Minesweeper\Minesweeper.10cproj" />
   </projects>
 </solution>

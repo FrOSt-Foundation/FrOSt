@@ -153,9 +153,20 @@ set push , B
 set push , C
 set push , Z
 set A , [parse_commande1]
+SET C, 0
+;---------------test cmd test ----------------------
 set B , mot_test
-set C , 4
 JSR strcmp_nocol
+IFE z, 1 ; si la commande est reconnue
+SET c, 1 ; alors C désigne la commance test ( c=1 )
+
+;---------------test cmd mines ---------------------
+set B , mot_mines
+JSR strcmp_nocol
+IFE Z, 1 ; si la commande est reconnue
+SET c, 2 ; alors C designe la commande mines ( c=2 )
+
+;---------------on fait peter le programme ---------
 JSR launch_programme
 JSR vider_parse
 set Z , pop
