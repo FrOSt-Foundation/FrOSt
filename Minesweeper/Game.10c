@@ -27,6 +27,7 @@ JSR intro
 SET A, tile0
 SET B, 89
 SET C, [pointeur_font]
+ADD C, 2
 JSR storetiles
 
 :restart
@@ -92,18 +93,19 @@ SET B, 128
 SET C, [pointeur_font]
 JSR storetiles
 SET I, 0
-SET A, 0x8000
 
 SET A, logosmiley1
 SET B, 5
 SET C, [pointeur_ecran]
 ADD c, 0x8D
 JSR drawtiles
+
 SET A, logosmiley2
 SET B, 5
 SET C, [pointeur_ecran]
 ADD c, 0xAD
 JSR drawtiles
+
 SET A, logosmiley3
 SET B, 5
 SET C, [pointeur_ecran]
@@ -408,26 +410,35 @@ set A, 0x1000
 jsr pause
 
 set B, 0
+
 :buffloop
 	set A, 2
-	set B, 0x0061
-	hwi 1
+	set B, 0x0080
+	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0077
-	hwi 1
+	set B, 0x0081
+	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0064
-	hwi 1
+	set B, 0x0082
+	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0073
-	hwi 1
+	set B, 0x0083
+	hwi [id_keyboard1]
+	ife C, 1
+		set pc, buffloop_end
+	set B, 0x0011
+	hwi [id_keyboard1]
+	ife C, 1
+		set pc, buffloop_end
+	set B, 0x0066
+	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
 	set A, 1
-	hwi 1
+	hwi [id_keyboard1]
 	ife C, 0
 		SET pc, buffloop
 :buffloop_end
@@ -436,13 +447,13 @@ ife C, 1
 	set C, B
 
 SET A, 0
-IFE c, 0x0061
+IFE c, 0x0082
 	SET A, 2
-IFE c, 0x0077
+IFE c, 0x0080
 	SET A, 4
-IFE c, 0x0064
+IFE c, 0x0083
 	SET A, 1
-IFE c, 0x0073
+IFE c, 0x0081
 	SET A, 3
 IFE c, 0x0011
     JSR action
@@ -587,12 +598,14 @@ SET PUSH, C
     
 SET A, surprised_top
 SET B, 3
-SET C, 0x800E
+SET C, [pointeur_ecran]
+ADD c, 0xE
 JSR drawtiles
 
 SET A, surprised_btm
 SET B, 3
-SET C, 0x802E
+SET C, [pointeur_ecran]
+ADD c, 0x2E
 JSR drawtiles
 
 SET C, POP
@@ -635,12 +648,14 @@ JSR redraw_board
 
 SET A, norm_top
 SET B, 3
-SET C, 0x800E
+SET C, [pointeur_ecran]
+ADD c, 0xE
 JSR drawtiles
 
 SET A, norm_btm
 SET B, 3
-SET C, 0x802E
+SET C, [pointeur_ecran]
+ADD c, 0x2E
 JSR drawtiles
 
 JSR wincheck
@@ -696,7 +711,7 @@ ADD B, 7 ;change board pos to screen pos
 ADD C, 2
 MUL C, 32
 ADD B, C
-ADD B, 0x8000 ;move to video ram
+ADD B, [pointeur_ecran] ;move to video ram
 
 SET C, [A]
 
@@ -748,7 +763,7 @@ ADD B, 7 ;change board pos to screen pos
 ADD C, 2
 MUL C, 32
 ADD B, C
-ADD B, 0x8000 ;move to video ram
+ADD B, [pointeur_ecran] ;move to video ram
 SET [old_select_tile1], [B]
 ADD B, 1
 SET [old_select_tile2], [B]
@@ -849,12 +864,14 @@ SET PC, POP
 :lose
 SET A, wtf_top
 SET B, 3
-SET C, 0x800E
+SET C, [pointeur_ecran]
+ADD c, 0xE
 JSR drawtiles
 
 SET A, wtf_btm
 SET B, 3
-SET C, 0x802E
+SET C, [pointeur_ecran]
+ADD c, 0x2E
 JSR drawtiles
 
 SET A, tiletypes_left
@@ -975,7 +992,7 @@ MUL A, 2
 ADD A, 7 ;change x and y into screen position instead of game position
 MUL B, 32 ;multiply y by screen width to get memory offset
 ADD A, B ;the final offset moves into A
-ADD A, 0x8000 ;now it's the memory address, wasn't that fun
+ADD A, [pointeur_ecran] ;now it's the memory address, wasn't that fun
 SET PC, POP
 
 :old_select_x DAT 10 ;doesn't exist
