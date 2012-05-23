@@ -413,34 +413,36 @@ set B, 0
 
 :buffloop
 	set A, 2
-	set B, 0x0080
+	
+	set B, 0x0080 ;haut
 	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0081
+	set B, 0x0081 ;bas
 	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0082
+	set B, 0x0082 ;gauche
 	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0083
+	set B, 0x0083 ;droite
 	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0011
+	set B, 0x0011 ;entree
 	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set B, 0x0066
+	set B, 0x0066 ;f
 	hwi [id_keyboard1]
 	ife C, 1
 		set pc, buffloop_end
-	set A, 1
-	hwi [id_keyboard1]
-	ife C, 0
-		SET pc, buffloop
+SET A, 1
+hwi [id_keyboard1]
+IFE C, 0
+SET pc, buffloop
+
 :buffloop_end
 
 ife C, 1
