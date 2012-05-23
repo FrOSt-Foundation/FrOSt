@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project>
   <name>Tictactoe</name>
-  <files />
+  <files>
+    <file path="Game.10c" />
+  </files>
 </project>

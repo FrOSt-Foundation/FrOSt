@@ -1,6 +1,597 @@
 ; --------------------------------------------
 ; Title:   Game
-; Author:  Adrien
+; Author:  earth75
 ; Date:    23/05/2012
 ; Version: 
 ; --------------------------------------------
+
+;*******TIC-TAC-TOE***********;
+;MERCI  BEAUCOUP A ADBOOK
+;***************************************;
+;X and Y are the cursor's location
+
+;The grid is a 9 (3*3) words buffer beginning at 0x1000
+;If the case is empty, value=0, if player1, value=1, if player2, value=2
+
+;relative coordinates of the cursor are located in X and Y
+;A is the number of the player currently playing
+;B is used as return value
+;I and J are used for calculating
+
+;DAT is used for the other variables
+
+;Grid relative coords:
+
+; 0;0 | 1;0 | 2;0
+;-----+-----+-----
+; 0;1 | 1;1 | 2;1
+;-----+-----+----
+; 0;2 | 1;2 | 2;2
+
+
+
+;******************SYSTEM INITIALISATION**************;
+;find out hardware map
+; find out hardware map
+
+; blue border
+SET A, 3
+SET B, 0x8
+HWI [id_ecran1]
+SET A, 0
+SET B, 0
+SET I, 0
+SET J, 0
+SET X, 1
+SET Y, 0
+
+;*****************GAME INITIALISATION*****************;
+:game_init											  
+	JSR clear_grid
+	SET B, 1
+	SET C, 0
+	SET I, 0
+	SET J, 0
+	SET X, 0
+	SET Y, 0
+	SET Z, 0
+	SET A, 1
+;*****************GAME***********************************************;
+:main_loop
+	JSR clear_cursor
+	set j, 0
+	JSR move_cursor
+	JSR draw_strings
+	JSR draw_grid
+	JSR draw_cases
+	JSR draw_cursor
+	IFE J, 1
+		SET PC, player_won
+	IFE J, 2
+		SET PC, player_won
+	IFE J, 3
+		SET PC, player_won
+	SET B, 0
+	JSR get_char
+SET PC, main_loop
+
+:player_won
+	JSR clear_screen
+	IFE J, 3
+		SET PC, player_won_l1
+	SET B, player_won_str
+	SET PUSH, J
+	SET J, 3
+	SET I, 8
+	SET Z, 0xF000
+	JSR print_string
+	SET J, POP
+	ADD J, 0xf030
+	SET [VRAM1+0x6f], J
+	SUB J, 0xf030
+	IFE J, 1
+		ADD [player1_score], 1
+	IFE J, 2
+		ADD [player2_score], 1
+	SET PC, player_won_l2
+	:player_won_l1
+		SET B, no_winner_str
+		SET PUSH, J
+		SET J, 3
+		SET I, 8
+		SET Z, 0xF000
+		JSR print_string
+		SET J, POP
+	:player_won_l2
+	JSR get_char
+	JSR clear_screen
+	;SET PC, end
+	SET PC, game_init
+:end
+SET PC, end
+;****************GAME ROUTINES************************;
+:clear_grid
+	SET PUSH, A
+	SET PUSH, B
+	SET A, grid
+	SET B, A
+	ADD B, 9
+	:clear_grid_l1
+	SET [A], 0
+	ADD A, 1
+	IFN A, B
+		SET PC, clear_grid_l1
+	SET B, POP
+	SET A, POP
+SET PC, POP
+;checks if a player has won.Returns the player ID in J. This is the longest part
+:test_grid
+	SET PUSH, A
+	SET PUSH, B
+	SET PUSH, C
+	SET PUSH, X
+	SET PUSH, Y
+	SET PUSH, I
+	SET PUSH, Z
+	SET A, 0
+	SET B, 0
+	SET C, 0
+	SET J, 0
+	SET X, 0
+	SET Y, 0
+	SET I, 0
+	SET Z, 0
+	:test_grid_l1
+		SET PUSH, Y
+		MUL Y, 3
+		ADD Y, X
+		ADD Y, grid
+		IFN C, [Y]
+			SET A, 0
+		ADD A, [Y]
+		SET C, [Y]
+		;verifications
+		IFE [Y], 0
+			SET A, 0
+		
+		SET Y, POP
+		IFN X, Y
+			SET PC, test_grid_l3
+			SET PUSH, Y
+			MUL Y, 3
+			ADD Y, X
+			ADD Y, grid
+			IFN J, [Y]
+				SET I, 0
+			ADD I, [Y]
+			SET J, [Y]
+			;verifications
+			IFE [Y], 0
+				SET J, 0
+			
+			SET Y, POP
+		:test_grid_l3
+		
+		SET PUSH, X
+		SET X, Y
+		SET Y, POP
+		
+		SET PUSH, Y
+		MUL Y, 3
+		ADD Y, X
+		ADD Y, grid
+		IFN Z, [Y]
+			SET B, 0
+		ADD B, [Y]
+		SET Z, [Y]
+		IFE [Y], 0
+			SET B, 0
+		SET Y, POP
+		;verifications
+
+		SET PUSH, X
+		SET X, Y
+		SET Y, POP
+		
+		ADD X, 1
+		
+		IFN X, 3
+			SET PC, test_grid_l1
+			
+		IFE A, 3
+			SET J, 1
+		IFE A, 3
+			SET PC, test_grid_end
+		IFE A, 6
+			SET J, 2
+		IFE A, 6
+			SET PC, test_grid_end
+		IFE B, 3
+			SET J, 1
+		IFE B, 3
+			SET PC, test_grid_end
+		IFE B, 6
+			SET J, 2
+		IFE B, 6
+			SET PC, test_grid_end
+		IFE I, 3
+			SET J, 1
+		IFE I, 3
+			SET PC, test_grid_end
+		IFE I, 6
+			SET J, 2
+		IFE I, 6
+			SET PC, test_grid_end	
+
+			
+		SET A, 0	
+		SET B, 0
+		SET X, 0
+		ADD Y, 1
+		IFN Y, 3
+			SET PC, test_grid_l1
+	
+		SET A, 0
+		SET B, grid
+		ADD B, 2
+		IFE [B], 0
+			SET PC, test_grid_l5
+		ADD A, [B]
+		ADD B, 2
+		IFE [B], 0
+			SET PC, test_grid_l5
+		ADD A, [B]
+		ADD B, 2
+		IFE [B], 0
+			SET PC, test_grid_l5
+		ADD A, [B]		
+		IFE A, 3
+			SET J, 1
+		IFE A, 3
+			SET PC, test_grid_end
+		IFE A, 6
+			SET J, 2
+		IFE A, 6
+			SET PC, test_grid_end
+			
+		:test_grid_l5
+		
+		SET A, 0
+		SET B, grid
+		SET C, B
+		ADD C, 9
+		:test_grid_4
+		IFE [B], 0
+			SET A, 1
+		ADD B, 1
+		IFN B, C
+			SET PC, test_grid_4
+		IFE A, 0
+			SET J, 3
+		IFE A, 0
+			SET PC, test_grid_end
+		
+	SET J, 0
+	:test_grid_end
+	SET Z, POP
+	SET I, POP
+	SET Y, POP
+	SET X, POP
+	SET C, POP
+	SET B, POP
+	SET A, POP
+SET PC, POP
+
+;draws the strings for the game
+:draw_strings
+	SET PUSH, A
+	SET PUSH, Z
+	SET PUSH, B
+	SET PUSH, I
+	SET PUSH, J
+	
+	
+	SET B, scores_str
+	SET I, 3
+	SET J, 10
+	SET Z, 0xf000
+	JSR print_string
+	
+	SET B, player1_score
+	ADD [B], 0xf130
+	SET [VRAM1+ 0x14d], [B]
+	SUB [B], 0xf130
+	
+	SET B, player2_score
+	ADD [B], 0xf130
+	SET [VRAM1+0x15b], [B]
+	SUB [B], 0xf130
+	
+	SET B, tic_tac_toe_str
+	SET I, 3
+	SET J, 0
+	SET Z, 0xf100
+	JSR print_string
+	
+	SET B, your_turn
+	SET I, 10
+	SET J, 4
+	SET Z, 0xf000
+	JSR print_string
+	
+	ADD A, 0x0030
+	ADD A, 0xF000
+	SET [VRAM1+0x9C], A
+	
+	SET J, POP
+	SET I, POP
+	SET B, POP
+	SET Z, POP
+	SET A, POP
+SET PC, POP
+;moves the cursor in function of the key code passed in B as parameter
+:move_cursor
+	IFE B, 0x83 ;right arrow
+		ADD X, 1
+	IFE B, 0x82 ;left arrow
+		SUB X, 1
+	IFE B, 0x80 ;up arrow
+		SUB Y, 1
+	IFE B, 0x81 ;down arrow
+		ADD Y, 1
+	IFE B, 0x11
+		JSR player_action	
+	
+	:move_cursor_verif_loop ;makes sure that the cursor is in the grid
+		IFE Y, 0xffff
+			SET Y, 0	
+		IFE X, 0xffff
+			SET X, 0
+		IFG X, 2
+			SUB X, 1
+		IFG Y, 2
+			SUB Y, 1
+
+			
+		IFG X, 2
+			SET PC, move_cursor_verif_loop
+		IFG Y, 2	
+			SET PC, move_cursor_verif_loop	
+SET PC, POP
+
+:end_of_turn ;player id in A, returns the next player id
+	IFE A, 2
+		SET A, 3
+	IFE A, 1
+		SET A, 2
+	IFE A, 3
+		SET A, 1
+SET PC, POP
+
+:player_action
+	SET PUSH, B
+	SET PUSH, X
+	SET PUSH, Y
+	
+	MUL Y, 3
+	ADD Y, X
+	SET B, grid
+	ADD B, Y
+	IFN [B], 0
+		SET PC, player_action_end
+		
+	SET [B], A
+	SET J, 0
+	JSR test_grid
+	IFE J, 0
+		JSR end_of_turn
+	IFE J, 0
+		SET PC, player_action_end
+	SET PUSH, J
+;	JSR draw_strings
+;	JSR draw_grid
+;	JSR draw_cases
+;	JSR draw_cursor	
+	SET J, POP
+	:player_action_end
+		SET Y, POP
+		SET X, POP
+		SET B, POP
+SET PC, POP
+;****************'SYSTEM' ROUTINES********************;
+;returns the pressed character in B. Partially supports the shift key for AZERTY keyboards
+:get_char
+	SET PUSH, A
+	SET PUSH, C
+	SET A, 1
+	:get_char_l1
+		HWI [keyboard_n]
+		IFE C, 0
+			SET PC, get_char_l1
+	SET B, C
+	SET C, POP
+	SET A, POP
+SET PC, POP
+;*****************GRAPHIC ROUTINES********************;
+
+:draw_cases ;to call before draw_cursor
+	SET PUSH, X
+	SET PUSH, Y
+	SET PUSH, B
+	
+	SET X, 0
+	SET B, grid
+	:draw_cases_l1
+		SET PUSH, X
+		SET PUSH, Y
+		SET Y, X
+		DIV Y, 3
+		MOD X, 3
+		MUL X, 2
+		MUL Y, 2
+		MUL Y, 0x20
+		ADD Y, X
+		ADD Y, VRAM1+0x42
+		IFE [B], 1
+			SET [Y], 0xF02A
+		IFE [B], 2
+			SET [Y], 0xF04F
+		SET Y, POP
+		SET X, POP
+		
+		ADD X, 1
+		ADD B, 1
+	
+		IFN X, 9
+			SET PC, draw_cases_l1
+	SET B, POP	
+	SET Y, POP
+	SET X, POP
+	
+SET PC, POP
+
+
+:clear_cursor ;relative coordinates in X and Y
+	SET PUSH, X
+	SET PUSH, Y
+	MUL X, 2
+	MUL Y, 2
+	MUL Y, 32
+	ADD Y, X
+	ADD Y, VRAM1+0x42
+	SET [Y], 0x0000
+	SET Y, POP
+	SET X, POP
+
+SET PC, POP
+
+:draw_cursor ;Relative coordinates in X and Y
+	SET PUSH, X
+	SET PUSH, Y
+	MUL X, 2
+	MUL Y, 2
+	MUL Y, 32
+	ADD Y, X
+	ADD Y, VRAM1+0x42
+	IFE [Y], 0xF02A      ;THIS IS VERY DIRTY, BUT IT IS THE EASIEST WAY
+		SET [Y], 0xf12A
+	IFE [Y], 0xF04f
+		SET [Y], 0xf14f
+	IFE [Y], 0
+		SET [Y], 0xf120
+		
+	SET Y, POP
+	SET X, POP
+
+SET PC, POP
+
+:draw_grid ;unrolled for obvious speed reasons
+	SET [VRAM1+0x43], 0xf07c ; "|"
+	SET [VRAM1+0x63], 0xf011 ; cross
+	SET [VRAM1+0x62], 0xf02d ; '-'
+	SET [VRAM1+0x64], 0xf02d
+	SET [VRAM1+0x83], 0xf07c
+	SET [VRAM1+0xa3], 0xf011
+	SET [VRAM1+0xa2], 0xf02d
+	SET [VRAM1+0xa4], 0xf02d
+	SET [VRAM1+0xc3], 0xf07c
+
+	SET [VRAM1+0x45], 0xf07c ; "|"
+	SET [VRAM1+0x65], 0xf011 ; cross
+	SET [VRAM1+0x64], 0xf02d ; '-'
+	SET [VRAM1+0x66], 0xf02d
+	SET [VRAM1+0x85], 0xf07c
+	SET [VRAM1+0xa5], 0xf011
+	SET [VRAM1+0xa4], 0xf02d
+	SET [VRAM1+0xa6], 0xf02d
+	SET [VRAM1+0xc5], 0xf07c
+SET PC, POP
+
+
+; print decimal number B to location I
+:printdec
+	SET PUSH, A
+	SET PUSH, B
+	SET PUSH, I
+	SET PUSH, J
+	SET J, I
+	SUB J, 1
+	ADD I, 4
+	:printdec_l1
+		SET A, B
+		MOD A, 10
+		ADD A, 0xf030
+		SET [VRAM1+I], A
+		DIV B, 10
+		SUB I, 1
+		IFN I, J
+			SET PC, printdec_l1
+	SET J, POP
+	SET I, POP
+	SET B, POP
+	SET A, POP
+SET PC, POP
+
+
+; print hexadecimal number B to location I
+
+:clear_screen
+	SET A, [VRAM1]
+	:clear_screen_l1
+		SET [A], 0x0000
+		ADD A, 1
+	IFN A, VRAM1+0x200
+		SET PC, clear_screen_l1
+
+SET PC, POP
+
+:print_string ;string pointer in B, coords in I and J, colour in Z (0xFB00)
+	SET PUSH, B
+	SET PUSH, I
+	SET PUSH, J
+	
+	MUL J, 32
+	ADD J, I
+	ADD J, [VRAM1]
+	
+	:print_string_loop
+		ADD [B], Z
+		SET [J], [B]
+		SUB [B], Z
+		ADD J, 1
+		ADD B, 1
+		IFN [B], 0
+			SET PC, print_string_loop
+		
+	SET J, POP
+	SET I, POP
+	SET B, POP	
+SET PC, POP
+
+;variables
+:monitor_n
+	DAT 0x0000
+:keyboard_n
+	DAT 0x0000
+:tic_tac_toe_str
+	DAT "*TIC - TAC - TOE by Adbook*", 0
+:your_turn
+	DAT "Your turn, player   !", 0
+:player_won_str
+	DAT "Player   won !", 0
+:scores_str
+	DAT "Player 1:   - Player 2:  ", 0
+:no_winner_str
+	DAT "There is no winner !", 0
+:player1_score
+	DAT 0
+:player2_score
+	DAT 0
+:temp_value_1
+	DAT 0
+:temp_value_2
+	DAT 0
+:space_freeze
+	DAT 0, 0
+:grid 
+	DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;3*3 buffer

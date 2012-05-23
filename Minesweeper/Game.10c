@@ -7,20 +7,28 @@
 :prog_mines
 jsr efface_invite
 
-set A, 0
-set B, 0x8000
+SET push, A
+SET A, 0x181
+JSR malloc
+SET [pointeur_ecran], Z
+set B, Z
+SET A, 0
 hwi [id_ecran1]
 
-set A, 1
-set B, 0x8180
+SET A, 180
+JSR malloc
+SET [pointeur_font], Z
+set B, Z
+SET A, 1
 hwi [id_ecran1]
 
 JSR intro
 
 SET A, tile0
 SET B, 89
-SET C, 0x8182
+SET C, [pointeur_font]
 JSR storetiles
+
 :restart
 SET [gamestate], 0
 SET [gametimer], 0
@@ -30,12 +38,13 @@ SET [old_select_y], 10
 JSR clear_board
 SET A, boardtiles_l1
 SET B, 384
-SET C, 0x8000
+SET C, [pointeur_ecran]
 JSR drawtiles
 
 SET A, minestext
 SET B, 2
-SET C, 0x8122
+SET C, [pointeur_ecran]
+ADD c, 0x122
 SET Y, 0x8F00
 JSR drawtext
 JSR draw_timer
@@ -43,6 +52,8 @@ JSR draw_timer
 JSR change_selection
 SET PC, gameloop
 
+:pointeur_ecran dat 0x0
+:pointeur_font dat 0x0
 :gametimer DAT 0
 :timer_second_value DAT 575
 :youwintext DAT 0x004F, 0x0050, 0x0051, 0x0052, 0x0053, 0x0054, 0x0055
@@ -78,22 +89,25 @@ SET PC, gameloop
 :intro
 SET A, intro0
 SET B, 128
-SET C, 0x8180
+SET C, [pointeur_font]
 JSR storetiles
 SET I, 0
 SET A, 0x8000
 
 SET A, logosmiley1
 SET B, 5
-SET C, 0x808D
+SET C, [pointeur_ecran]
+ADD c, 0x8D
 JSR drawtiles
 SET A, logosmiley2
 SET B, 5
-SET C, 0x80AD
+SET C, [pointeur_ecran]
+ADD c, 0xAD
 JSR drawtiles
 SET A, logosmiley3
 SET B, 5
-SET C, 0x80CD
+SET C, [pointeur_ecran]
+ADD c, 0xCD
 JSR drawtiles
 
 SET I, 0
@@ -109,7 +123,8 @@ IFN J, 1000
 SET B, 3
 SET X, I
 MOD X, 3 ;3 animation frames
-SET C, 0x800E
+SET C, [pointeur_ecran]
+ADD c, 0xE
 SET Z, I
 DIV Z, 3 ;y pos
 MUL Z, 32
@@ -139,33 +154,40 @@ IFN I, 17
 ;draw white smiley
 SET A, logosmiley1
 SET B, 5
-SET C, 0x808D
+SET C, [pointeur_ecran]
+ADD c, 0x8D
 JSR drawtiles
 SET A, logosmiley2g
 SET B, 5
-SET C, 0x80AD
+SET C, [pointeur_ecran]
+ADD c, 0xAD
 JSR drawtiles
 SET A, logosmiley3
 SET B, 5
-SET C, 0x80CD
+SET C, [pointeur_ecran]
+ADD c, 0xCD
 JSR drawtiles    
 ;draw mine in white
 SET A, minewhitetop
 SET B, 18
-SET C, 0x8046
+SET C, [pointeur_ecran]
+ADD c, 0x46
 JSR drawtiles
 SET A, minewhitebtm	
 SET B, 18
-SET C, 0x8066
+SET C, [pointeur_ecran]
+ADD c, 0x66
 JSR drawtiles
 ;draw sweeper in white
 SET A, sweeperwhitetop
 SET B, 27
-SET C, 0x80E2
+SET C, [pointeur_ecran]
+ADD c, 0xE2
 JSR drawtiles
 SET A, sweeperwhitebtm	
 SET B, 27
-SET C, 0x8102
+SET C, [pointeur_ecran]
+ADD c, 0x02
 JSR drawtiles
 
 SET J, 0 ;wait for a bit
@@ -175,7 +197,7 @@ IFN J, 1000
 	SET PC, wait_logo
     
 SET J, 0 ;wait for a bit
-SET A, 0x8000
+SET A, [pointeur_ecran]
 :white_screen
 SET [A], 0xFF00
 ADD J, 1
@@ -187,15 +209,18 @@ IFN J, 384
 ;draw black smiley
 SET A, blklogosmiley1
 SET B, 5
-SET C, 0x808D
+SET C, [pointeur_ecran]
+ADD c, 0x8D
 JSR drawtiles
 SET A, blklogosmiley2
 SET B, 5
-SET C, 0x80AD
+SET C, [pointeur_ecran]
+ADD c, 0xAD
 JSR drawtiles
 SET A, blklogosmiley3
 SET B, 5
-SET C, 0x80CD
+SET C, [pointeur_ecran]
+ADD c, 0xCD
 JSR drawtiles  
     
 SET J, 0 ;cycle for a bit
@@ -205,20 +230,24 @@ ADD J, 1
 ;draw mine in rainbow
 SET A, minewhitetop
 SET B, 18
-SET C, 0x8046
+SET C, [pointeur_ecran]
+ADD c, 0x46
 JSR drawrainbow
 SET A, minewhitebtm	
 SET B, 18
-SET C, 0x8066
+SET C, [pointeur_ecran]
+ADD c, 0x66
 JSR drawrainbow
 ;draw sweeper in rainbow
 SET A, sweeperwhitetop
 SET B, 27
-SET C, 0x80E2
+SET C, [pointeur_ecran]
+ADD c, 0xE2
 JSR drawrainbow
 SET A, sweeperwhitebtm	
 SET B, 27
-SET C, 0x8102
+SET C, [pointeur_ecran]
+ADD c, 0x102
 JSR drawrainbow
 
 IFN J, 66
@@ -453,7 +482,8 @@ SET PC, POP
 SET PUSH, A
 SET PUSH, B
 SET PUSH, C
-SET A, 0x813B ;timer's positon on the screen
+SET A, [pointeur_ecran]
+ADD A, 0x13B ;timer's positon on the screen
 
 SET C, [gametimer]
 DIV C, 100 ;to get NXX (n being this character)
