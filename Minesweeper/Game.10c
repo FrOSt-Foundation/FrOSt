@@ -84,8 +84,8 @@ SET PC, gameloop
 
 :sweeperwhitebtm DAT 0xF060, 0xF061, 0xF062, 0xF063, 0xF064, 0xF065, 0xF066, 0xF067, 0xF068, 0xF069, 0xF06A, 0xF06B, 0xF06C, 0xF06D, 0xF06E, 0xF06F, 0xF070, 0xF071, 0xF072, 0xF073, 0xF074, 0xF075, 0xF076, 0xF077, 0xF078, 0xF079, 0xF07A, 0xF07B
 
-:mines DAT 10 ;change to your liking
-:minestext DAT 0x004E, 0x0045, 0x004E ;you should probably change this too
+:mines DAT 12 ;change to your liking
+:minestext DAT 0x004E, 0x0045, 0x0046 ;you should probably change this too
 
 :intro
 SET A, intro0
@@ -406,7 +406,7 @@ JSR draw_timer
 :skip_timer
 ;SET C, 0x9000
 
-set A, 0x1000
+set A, 0x800
 jsr pause
 
 set B, 0
@@ -501,10 +501,11 @@ ADD A, 0x13B ;timer's positon on the screen
 SET C, [gametimer]
 DIV C, 100 ;to get NXX (n being this character)
 MOD C, 10 ;get lowest int
-SET B, 0x8F44
+SET B, [pointeur_font]
+ADD b, 0xdc2
 ADD B, C ;get tile pos
 IFE C, 0
-	SET B, 0x8F4E ;0
+	SET B, [pointeur_font + 0xdcc] ;0
     
 SET [A], B
 ADD A, 1
@@ -512,17 +513,19 @@ ADD A, 1
 SET C, [gametimer]
 DIV C, 10 ;to get XNX (n being this character)
 MOD C, 10 ;get lowest int
-SET B, 0x8F44
+SET B, [pointeur_font]
+ADD b, 0xdc2
 ADD B, C ;get tile pos
 IFE C, 0
-	SET B, 0x8F4E ;0
+	SET B, [pointeur_font + 0xdcc] ;0
     
 SET [A], B
 ADD A, 1
 
 SET C, [gametimer]
 MOD C, 10 ;get lowest int
-SET B, 0x8F44
+SET B, [pointeur_font]
+ADD b, 0xdc2
 ADD B, C ;get tile pos
 IFE C, 0
 	SET B, 0x8F4E ;0
@@ -1348,28 +1351,6 @@ SET PC, storetiles_loop
 :storetiles_end
 SET I, POP
 SET PC, POP
-
-:screen dat 0
-:keyboard dat 0
-
-:map_hardware
-set push, i
-
-hwn i
-:map_hardware_loop
-sub i, 1
-hwq i
-ife a, 0xF615
-	ife b, 0x7349
-		set [screen], i
-ife a, 0x7406
-	ife b, 0x30CF
-		set [keyboard], i
-ifn i, 0
-	set pc, map_hardware_loop
-
-set i, pop
-set pc, pop
 
 ; A is the time to wait
 ; wait till b = a

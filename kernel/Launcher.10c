@@ -22,13 +22,28 @@
 :launch_programme
 
 IFE c, 1
-	JSR prog_test
-IFE c, 2
-    JSR prog_mines
-    
+	JSR prog_test   
 ife C , 0
 	JSR prog_unknown
+	
+SET [progc], C
 
+IFE [progn], 1
+SET [prog1], C
+IFE [progn], 2
+SET [prog2], C
+ADD [progn], 1
+
+IFE C, 2
+JSR prog_mines
+IFE C, 3
+JSR new_prog
+
+:prog1 dat 0x1
+:prog2 dat 0x0
+:prog0 dat 0x0
+:progn dat 0x1
+:progc dat 0x1
 
 
 :fin_launcher
@@ -49,3 +64,6 @@ JSR affiche_commande
 JSR affiche_message
 set z , pop
 set pc , fin_launcher
+
+:new_prog
+SET PC, pop

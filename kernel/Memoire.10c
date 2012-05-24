@@ -19,10 +19,6 @@
 ; Version: 
 ; --------------------------------------------
 
-
-
-
-
 ;---------------------------------------------
 ;INIT MEMORY HANDLER
 ;the memory begin at [start_mem] and end at [end_mem]
