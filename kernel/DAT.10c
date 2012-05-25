@@ -21,6 +21,13 @@
 
 :start_mem dat 0x1000
 :end_mem dat 0xFDFF
+
+:prog1 dat 0x1
+:prog2 dat 0x0
+:prog3 dat 0x0
+:progn dat 0x1
+:progc dat 0x1
+
 :nb_periph dat 0x0
 :tmpV dat 0x0
 :nb_ecran dat 0x0
