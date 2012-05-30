@@ -470,7 +470,6 @@ set PC,pop
 set push,A
 set push,X
 set push,Y
-set push,Z
 set push,[COLOR]
 :de
 jsr printSTR
@@ -486,7 +485,6 @@ set A,Z
 ifn [Z],0
         set PC,de
 set [COLOR],pop
-set Z,pop
 set Y,pop
 set X,pop
 set A,pop
