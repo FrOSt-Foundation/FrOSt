@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<project>
-  <name>BootLoader</name>
-  <files>
-    <file path="Boot.10c" />
-  </files>
-</project>

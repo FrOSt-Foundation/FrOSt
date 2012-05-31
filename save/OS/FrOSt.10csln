@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<solution>
-  <name>FrOSt</name>
-  <projects>
-    <project path="Frost\Frost.10cproj" />
-    <project path="BootLoader\BootLoader.10cproj" />
-    <project path="Kernel\Kernel.10cproj" />
-  </projects>
-</solution>
