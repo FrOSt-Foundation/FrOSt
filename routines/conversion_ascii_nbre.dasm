@@ -1,0 +1,66 @@
+;ascii_to_number
+;a : pointeur vers le mot ascii, return en z, 0 si pas nbre
+:ascii_to_number
+set push,c
+set push,b
+set push,a
+set b,0
+:atn_loop_verif
+add a,1
+set c,[a]
+ife c,0
+	set pc,atn_suite
+ifl c,0x30
+	set pc,atn_error
+ifg c,0x3A
+	set pc,atn_error
+ife b,3
+	set pc,atn_suite
+add b,1
+set pc,atn_loop_verif
+:atn_suite
+set a,peek
+set b,12
+set z,0
+:atn_loop_convert
+set c,[a]
+sub c,0x30
+shl c,b
+add z,c
+ife b,0
+	set pc,atn_end
+sub b,4
+add a,1
+set pc,atn_loop_convert
+:atn_error
+set z,0
+:atn_end
+set a,pop
+set b,pop
+set c,pop
+set pc,pop
+
+;number_to_ascii
+;a : nbre , z : pointeur vers les 4 char
+:return dat 0,0,0,0
+:number_to_ascii
+set push,b
+set push,a
+set z,return
+set b,12
+:nta_loop_convert
+shr a,b
+and a,0b1111
+add a,0x30
+set [z],a
+ife b,0
+	set pc,nta_end
+add z,1
+sub b,4
+set a,peek
+set pc,nta_loop_convert
+:nta_end
+set z,return
+set a,pop
+set b,pop
+set pc,pop
