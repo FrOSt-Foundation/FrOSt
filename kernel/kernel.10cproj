@@ -1,11 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <project>
   <name>kernel</name>
   <files>
-    <file path="DAT.10c" />
-    <file path="GestionClock.10c" />
-    <file path="InterruptHandler.10c" />
-    <file path="Launcher.10c" />
-    <file path="Memoire.10c" />
+    <file path="DAT.dasm" />
+    <file path="GestionClock.dasm" />
+    <file path="InterruptHandler.dasm" />
+    <file path="Launcher.dasm" />
+    <file path="allocation_memoire.dasm" />
+    <file path="routines_kernel.dasm" />
+    <file path="Memoire.dasm" />
+    <file path="MMU.dasm" />
   </files>
 </project>

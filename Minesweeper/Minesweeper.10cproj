@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <project>
   <name>Minesweeper</name>
   <files>
-    <file path="Game.10c" />
+    <file path="Game.dasm" />
   </files>
 </project>
