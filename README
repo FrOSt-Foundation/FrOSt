@@ -2,14 +2,6 @@
 
 =====
 
-Dossiers :
-
-	apps/ : Applications diverses
-	kernel/ : Kernel système
-	OS/ : Projet complet sous 0x10c DevKit
-
-=====
-
 Qu'est-ce que FrOSt ?
 FrOSt est un projet communautaire français ayant pour but de créer un OS libre français
 pour le jeu 0x10c de Notch
