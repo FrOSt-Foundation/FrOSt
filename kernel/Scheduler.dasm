@@ -1,0 +1,88 @@
+; --------------------------------------------
+; Title:   Scheduler
+; Author:  Admin
+; Date:    03/06/2012
+; Version: 
+; --------------------------------------------
+
+;16 programs can work at the same time
+:Sched_number dat 0
+:Sched_time dat 0
+
+:Sched_table_prog dat 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the adr of PC when stopped
+;prio : 0x msg msg hw prio
+:Sched_table_prio dat 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the word of prio
+:Sched_table_sp dat   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the adr of SP when stopped
+:Sched_current dat 0
+
+:Sched_tmp dat 0
+
+:Scheduler
+ifl [Sched_number],2
+	rfi 0
+set [Sched_tmp],pop
+set A,pop
+set push,Ex
+set push,I
+set push,J
+set push,X
+set push,Y
+set push,Z
+set push,C
+set push,B
+set push,A
+set A,[Sched_current]
+add A,Sched_table_prog
+set [A],[Sched_tmp]
+set A,[Sched_current]
+add A,Sched_table_sp
+set [A],SP
+;save of current program finished (frozen)
+ife [clock_int],1
+	set PC,Sched_clock
+ife [key_int],1
+	set PC,Sched_key
+ife [disk_int],1
+	set PC,Sched_disk
+;error, we come back to the current program
+:Sched_back
+set A,[Sched_current]
+add A,[Sched_table_SP]
+set SP,A
+set A,[Sched_current]
+add A,[Sched_table_prog]
+set [Sched_tmp],A
+set A,pop
+set B,pop
+set C,pop
+set Z,pop
+set Y,pop
+set X,pop
+set J,pop
+set I,pop
+set Ex,pop
+set push,A
+set push,[Sched_tmp]
+rfi 0
+
+:Sched_clock ;pour l'instant un tourniquet
+set [clock_int],0
+sub [Sched_time],1
+ifn [Sched_time],0
+	set PC,Sched_back
+add [Sched_current],1 ;on passe au programme suivant
+ifg [Sched_current],[Sched_number]
+	set [Sched_current],0
+ife [Sched_current],[Sched_number]
+	set [Sched_current],0
+set [Sched_time],[div_clock] ;on récupère la rapidité de l'horloge
+div [Sched_time],[Sched_number] ;on divise par le nombre de programmes en cours
+set PC,Sched_back
+
+:Sched_key ;reveille le programme qui attend le clavier
+set [key_int],0
+set PC,Sched_time
+
+:Sched_disk ;reiveille le programme qui attend le lecteur de disquette
+set [disk_int],0
+set PC,Sched_back

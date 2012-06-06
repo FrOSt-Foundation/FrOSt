@@ -1,0 +1,28 @@
+; --------------------------------------------
+; Title:   BootSequence
+; Author:  Administrateur
+; Date:    15/05/2012
+; Version: 
+; --------------------------------------------
+
+:BootSequence
+
+JSR init_memoire
+JSR detection_periph
+JSR init_interrupthandler
+JSR init_periph
+JSR init_interpreteur
+JSR init_launcher
+JSR init_console
+set [FOCUS_CLAVIER] , 0x1
+set push, A
+set push , I
+set push , J
+set A , message_bienvenue
+set I , 1
+set J , 1
+JSR printf
+set J , pop
+set i , pop
+set a , pop
+set pc , test

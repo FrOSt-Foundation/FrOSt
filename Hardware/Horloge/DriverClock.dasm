@@ -1,0 +1,35 @@
+:init_clock ;a=id clock
+	jsr save_ab
+	
+	set [clock_id],a
+	
+	set a,0
+	set b,[clock_tick]
+	hwi [clock_id]
+	
+	set a,2
+	set b,[clock_msg]
+	hwi [clock_id]
+
+	set pc,return_ab
+
+:set_clock_tick ;60/b ticks, 0=off
+	jsr save_ab
+
+	set a,0
+	hwi [clock_id]
+
+	set pc,return_ab
+
+:set_clock_int ;b=message des int, 0=off
+	jsr save_ab
+
+	set a,2
+	hwi [clock_id]
+
+	set pc,return_ab
+
+
+:clock_id dat 0
+:clock_tick dat 60
+:clock_msg dat 0

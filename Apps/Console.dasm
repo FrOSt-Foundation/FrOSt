@@ -1,0 +1,125 @@
+; --------------------------------------------
+; Title:   Console
+; Author:  Administrateur
+; Date:    15/05/2012
+; Version: 
+; --------------------------------------------
+
+;---------------------------------------------
+;DAT CONSOLE
+;---------------------------------------------
+:invite_FrSH dat "FrSH>",0
+:pos_curseur dat 6
+:curseur_FrSH dat 0x9F , 0
+
+
+
+
+;---------------------------------------------
+;INITIALISATION DE LA CONSOLE
+;ON EFFACE L'ECRAN ET ON AFFICHE L'INVITE
+;---------------------------------------------
+:init_console
+int 0xF
+set B , 0x2000
+int 0x4
+JSR affiche_invite
+JSR affiche_curseur
+set pc , pop
+
+:affiche_invite
+set push , B
+set push , I
+set push , J
+set B , invite_FrSH
+set i , 12
+set j , 1
+int 0x3
+set J , pop
+set I , pop
+set B , pop
+set pc , pop
+
+:affiche_curseur
+set push , B
+set push , I
+set push , J
+set B , curseur_FrSH
+set i , 12
+set j , [pos_curseur]
+MOD j , 32
+int 0x3
+set J , pop
+set I , pop
+set B , pop
+set pc , pop
+
+
+
+:console_traiter_caractere
+
+ifg C , 0x29
+	ifl C , 0x40
+		JSR affiche_caractere
+ifg C , 0x60
+	ifl C , 0x7F
+		JSR affiche_caractere
+ife c , 0x20
+	JSR affiche_caractere
+ife C , 0x10
+	JSR efface_caractere
+ife C , 0x11
+	JSR valide_commande
+set pc , pop
+
+
+:affiche_caractere
+set push , I
+set push , J
+ife [pos_curseur] , 31
+	set pc , fin_affiche_caractere
+set i , 12
+set j , [pos_curseur]
+int 0x6
+add [pos_curseur] , 1
+JSR affiche_curseur
+set pc , fin_affiche_caractere
+:fin_affiche_caractere
+set j , pop
+set i , pop
+set pc , pop
+
+:efface_caractere
+set push , i
+set push , j
+ife [pos_curseur] , 6
+	set pc , fin_efface_caractere
+set i , 12
+set j , [pos_curseur]
+set C , 0x20
+int 0x6
+sub [pos_curseur] , 1
+JSR affiche_curseur
+set pc , fin_efface_caractere
+:fin_efface_caractere
+set j , pop
+set i , pop
+set pc , pop
+
+
+:valide_commande
+set push , I
+set I , 12
+JSR interprete_commande
+int 0x10
+int 0x7
+JSR affiche_invite
+set [pos_curseur] , 6
+JSR affiche_curseur
+JSR vider_parse
+set i , pop
+set pc , pop
+
+:touche_echap
+int 0xB
+set pc , pop

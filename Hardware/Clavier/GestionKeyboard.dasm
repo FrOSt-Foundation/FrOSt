@@ -12,22 +12,24 @@
 ;
 ;    You should have received a copy of the GNU General Public License
 ;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
+;
 ; --------------------------------------------
-; Title:   GestionClock
+; Title:   GestionKeyboard
 ; Author:  Alexis
 ; Date:    09/05/2012
 ; Version: 
 ; --------------------------------------------
 
-:init_clock1
-set push , A
-set push , B
-set A , 0
-set B , [div_clock]
-hwi [id_clock1]
-set A , 2
-set B , 1
-hwi [id_clock1]
-set B , pop
-set A , pop
+
+:init_keyboard1
+set push,A
+set push,B
+set push,C
+set A , 3
+set B , 2
+set C , [id_keyboard1]
+hwi [id_keyboard1]
+set C,pop
+set B,pop
+set A,pop
 set PC , POP

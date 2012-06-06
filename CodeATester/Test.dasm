@@ -1,14 +1,10 @@
 ; --------------------------------------------
-; Title:   Frost
+; Title:   Test
 ; Author:  Administrateur
 ; Date:    15/05/2012
 ; Version: 
+; Description: Ici vous pouvez coller votre code à tester
 ; --------------------------------------------
-
-set pc , BootSequence
-
-
-
-
-:end
+:test
+;JSR frostGUI_start
 set pc , end

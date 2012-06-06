@@ -1,0 +1,41 @@
+:init_hardware
+	hwn I
+	set J , 0
+	:boucle_periph
+	ife I , J
+		set PC , fin_boucle_periph
+	hwq J
+	ife B , 0x7349
+		set PC , sauvegarde_screen
+	ife B , 0x30cf
+		set PC , sauvegarde_keyboard
+	ife B , 0x12d0
+		set PC , sauvegarde_clock
+	add J , 1
+	set PC , boucle_periph
+
+	:fin_boucle_periph
+	set PC , POP	
+
+
+:save_ab ;routine interne
+	set push,a
+	set push,b
+	set pc,pop
+
+:return_ab ;routine interne
+	set b,pop
+	set a,pop
+	set pc,pop
+
+:save_abc ;routine interne
+	set push,a
+	set push,b
+	set push,c
+	set pc,pop
+
+:return_abc ;routine interne
+	set c,pop
+	set b,pop
+	set a,pop
+	set pc,pop

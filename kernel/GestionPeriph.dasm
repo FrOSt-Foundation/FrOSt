@@ -1,24 +1,10 @@
-;This file is part of FrOSt.
-;
-;    FrOSt is free software: you can redistribute it and/or modify
-;    it under the terms of the GNU General Public License as published by
-;    the Free Software Foundation, either version 3 of the License, or
-;    (at your option) any later version.
-
-;    FrOSt is distributed in the hope that it will be useful,
-;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;    GNU General Public License for more details.
-;
-;    You should have received a copy of the GNU General Public License
-;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
-;
 ; --------------------------------------------
 ; Title:   GestionPeriph
-; Author:  Alexis
-; Date:    09/05/2012
+; Author:  Administrateur
+; Date:    15/05/2012
 ; Version: 
 ; --------------------------------------------
+
 
 ;---------------------------------------------
 ;Detection du nombre de periph
@@ -27,8 +13,6 @@
 ;Socke l'id de l'écran 1 dans id_ecran1
 ;Sauvegarde de tous les registres
 ;---------------------------------------------
-
-set PC,BEGIN
 
 :detection_periph
 JSR push_regs
@@ -44,15 +28,19 @@ set J , 0
 		set PC , sauvegarde_keyboard
 	ife B , 0x12d0
 		set PC , sauvegarde_clock
+	ife B , 0x74fa
+		set pc , sauvegarde_disquette
 	add J , 1
 	set PC , boucle_periph
 
-	:fin_boucle_periph
-	JSR pop_regs
-	set PC , POP
+:fin_boucle_periph
+JSR pop_regs
+set PC , POP
 
 ;----------------PRIVATE-------------------	
 :sauvegarde_screen
+ifg [nb_ecran],2
+	add J , 1
 ifg [nb_ecran] , 2
 	set PC , boucle_periph
 add [nb_ecran] , 1
@@ -65,6 +53,8 @@ set PC , boucle_periph
 
 ;----------------PRIVATE-------------------
 :sauvegarde_keyboard
+ifg [nb_keyboard],1
+	add J , 1
 ifg [nb_keyboard] , 1
 	set PC , boucle_periph
 add [nb_keyboard] , 1
@@ -75,6 +65,8 @@ set PC , boucle_periph
 
 ;----------------PRIVATE-------------------
 :sauvegarde_clock
+ifg [nb_clock],1
+	add J , 1
 ifg [nb_clock] , 1
 	set PC , boucle_periph
 add [nb_clock] , 1
@@ -85,7 +77,16 @@ set PC , boucle_periph
 
 
 
-
+:sauvegarde_disquette
+ifg [nb_disquette],1
+	add J , 1
+ifg [nb_disquette] , 1
+	set PC , boucle_periph
+add [nb_disquette] , 1
+ife [nb_disquette] , 1
+	set [id_disquette1] , j
+add J , 1
+set pc , boucle_periph
 
 
 
@@ -101,11 +102,11 @@ set PC , boucle_periph
 :init_periph
 ifg [nb_ecran] , 0
 	JSR init_ecran1
-;ifg [nb_ecran] , 1
-;	JSR init_ecran2
 ifg [nb_keyboard] , 0
 	JSR init_keyboard1
 ifg [nb_clock] , 0
 	JSR init_clock1
+ifg [nb_disquette] , 0
+	JSR init_disquette1
 set PC , POP
 

@@ -1,0 +1,215 @@
+; --------------------------------------------
+; Title:   Loader
+; Author:  Administrateur
+; Date:    15/05/2012
+; Version: 
+; --------------------------------------------
+
+:load
+set push , A
+set push , b
+set push , c
+set push , X
+set push , Z
+set push , I
+set push , J
+JSR clear
+set A , message_test_disquette
+set i , 1
+set J , 1
+JSR printf
+JSR disquette_presente
+ifn Z , 1
+	set pc , error_load_presence
+set A , message_oui
+set i , 2
+set j , 1
+JSR printf
+JSR recupere_info_disquette
+ife X , 1
+	set A , message_disquette_verouillee
+ife X , 0
+	set A , message_disquette_libre
+set i , 3
+set j , 1
+JSR printf
+;Calcule du nombre de mots présents
+set A , B
+mul A , C
+JSR clear
+JSR malloc
+ife z , 0
+	set pc , error_load_malloc
+set a , 0x10
+set x , z
+add x , 3
+
+set C , 180
+div C , B
+add c , 1
+set B , 0
+hwi [id_disquette1]
+ifn A , 0
+	set pc , error_load_copy
+set A , 0x4
+hwi [id_disquette1]
+set J , pop
+set I , pop
+set Z , pop
+set x , pop
+set c , pop
+set b , pop
+set A , pop
+set pc , pop
+
+:error_load_presence
+set A , message_non
+set I , 2
+set J , 1
+JSR printf
+set J , pop
+set I , pop
+set Z , pop
+set x , pop
+set c , pop
+set b , pop
+set A , pop
+set pc , pop
+
+:error_load_malloc
+set C , [couleur]
+set B , 0x4000
+JSR change_couleur
+set A , message_disquette_erreur_malloc
+set I , 4
+set J , 1
+JSR printf
+set B , C
+JSR change_couleur
+set J , pop
+set I , pop
+set Z , pop
+set x , pop
+set c , pop
+set b , pop
+set A , pop
+set pc , pop
+
+:error_load_copy
+set C , [couleur]
+set B , 0x4000
+JSR change_couleur
+set A , message_disquette_erreur_copy
+set I , 4
+set J , 1
+JSR printf
+set B , C
+JSR change_couleur
+set J , pop
+set I , pop
+set Z , pop
+set x , pop
+set c , pop
+set b , pop
+set A , pop
+set pc , pop
+
+;---------------------------------------------
+;LOADER loads a program at adress A from hw B
+;args are in C,X,Y,Z,I,J
+;a new stack is prepared
+;call with jsr
+;---------------------------------------------
+:Loader
+;recuperer la taille du programme dans C
+add C,0x200 ;pour la pile
+set push,A
+set push,Z
+jsr malloc
+ife Z,0
+	set PC,Loader_end
+set A,pop
+;copier le programme en [Z+3]
+add Z,3
+set A,Z
+add A,1
+set B,0
+set C,Z
+jsr MMU ;on a deplace les offsets
+set Z,pop
+jsr push_regs
+set [KER_SP],SP
+sub A,2
+set SP,[A]
+add A,2
+;on enregistre le programme dans le sched
+set B,[Sched_table_prog]
+sub B,1
+add B,1
+ifn [B],0
+	sub PC,3
+set [B],A
+sub B,Sched_table_prog
+set [Sched_current],B
+add B,Sched_table_prio
+set [B],[A] ;on met le mot de prio
+add A,1
+add [Sched_number],1
+;IL faut modifier les dats présents en fonction des priorités.
+set PC,A ;on passe la main au prog
+:Loader_end
+set Z,pop
+set A,pop
+set PC,pop
+
+
+;---------------------------------------------
+;FINISHER finish a program properly
+;call with jsr
+;return to the console
+;---------------------------------------------
+:Finisher
+;boucle pour savoir dans quel bloc on est
+set A,pop ;A contient ancienne adr de PC
+set B,[start_mem]
+:Finisher_loop
+set C,B
+add C,[C+1]
+ifg A,B
+	ifl A,C
+		set PC,Finisher_next
+set B,[B+2]
+set PC,Finisher_loop
+:Finisher_next
+;on a en B le bloc
+set A,B
+jsr free
+set A,Sched_table_prog
+set X,Sched_table_prio
+set I,Sched_table_sp
+set Z,[Sched_current]
+add A,Z
+add X,Z
+add I,Z
+:Finisher_modif
+add Z,1
+ife Z,15
+	set PC,Finisher_next_next
+set B,A
+set Y,X
+set J,I
+add A,1
+add X,1
+add I,1
+set [B],[A]
+set [Y],[X]
+set [J],[I]
+set PC,Finisher_modif
+set [A],0
+set [X],0
+set [I],0
+:Finisher_next_next
+set SP,[KER_SP]
+jsr pop_regs
+sub [Sched_number],1
+set PC,pop

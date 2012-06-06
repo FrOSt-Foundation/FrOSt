@@ -1,64 +1,428 @@
-;This file is part of FrOSt.
-;
-;    FrOSt is free software: you can redistribute it and/or modify
-;    it under the terms of the GNU General Public License as published by
-;    the Free Software Foundation, either version 3 of the License, or
-;    (at your option) any later version.
-
-;    FrOSt is distributed in the hope that it will be useful,
-;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;    GNU General Public License for more details.
-;
-;    You should have received a copy of the GNU General Public License
-;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
 ; --------------------------------------------
 ; Title:   Launcher
-; Author:  D994293
-; Date:    14/05/2012
+; Author:  Administrateur
+; Date:    15/05/2012
 ; Version: 
 ; --------------------------------------------
 
-:launch_programme
-
-IFE c, 1
-	JSR prog_test   
-ife C , 0
-	JSR prog_unknown
-	
-SET [progc], C
-
-IFE [progn], 1
-SET [prog2], C
-IFE [progn], 2
-SET [prog3], C
-ADD [progn], 1
-
-IFE C, 2
-JSR prog_mines
-
-IFE C, 3
-JSR new_prog
 
 
-:fin_launcher
+:init_launcher
+set pc ,pop
+
+
+:launch
+set push , A
+set push , B
+
+set A , [parse_commande1]
+set B , commande_help
+JSR strcmp
+ife Z , 1
+	set pc , launch_help
+set a , [parse_commande1]
+set B , commande_version
+JSR strcmp
+ife Z , 1
+	set pc , launch_version
+set a , [parse_commande1]
+set B , commande_echo
+JSR strcmp
+ife Z , 1
+	set pc , launch_echo
+set a, [parse_commande1]
+set B , commande_couleur
+JSR strcmp
+ife Z , 1
+	set pc , launch_couleur
+set a, [parse_commande1]
+set B , commande_clear
+JSR strcmp
+ife Z , 1
+	set pc , launch_clear
+set a, [parse_commande1]
+set B , commande_load
+JSR strcmp
+ife Z , 1
+	set pc , launch_load
+set a, [parse_commande1]
+set B , commande_ls
+JSR strcmp
+ife Z , 1
+	set pc , launch_ls
+set a, [parse_commande1]
+set B , commande_cd
+JSR strcmp
+ife Z , 1
+	set pc , launch_cd
+set a, [parse_commande1]
+set B , commande_kill
+JSR strcmp
+ife Z , 1
+	set pc , launch_kill
+set a, [parse_commande1]
+set B , commande_mem
+JSR strcmp
+ife Z , 1
+	set pc , launch_mem
+set a, [parse_commande1]
+set B , commande_run
+JSR strcmp
+ife Z , 1
+	set pc , launch_run
+set a, [parse_commande1]
+set B , commande_mkdir
+JSR strcmp
+ife Z , 1
+	set pc , launch_mkdir
+set a, [parse_commande1]
+set B , commande_mv
+JSR strcmp
+ife Z , 1
+	set pc , launch_mv
+set a, [parse_commande1]
+set B , commande_cp
+JSR strcmp
+ife Z , 1
+	set pc , launch_cp
+set a, [parse_commande1]
+set B , commande_touch
+JSR strcmp
+ife Z , 1
+	set pc , launch_touch
+set a, [parse_commande1]
+set B , commande_cat
+JSR strcmp
+ife Z , 1
+	set pc , launch_cat
+set A,[parse_commande1]
+set B,commande_startx
+jsr strcmp
+ife Z,1
+	set PC,launch_startx
+set pc , launch_inconnu
+
+
+
+:launch_help
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_help
+JSR printf
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , pop
+set i , pop
+set b , pop
+set a , pop
 set pc , pop
 
-:prog_test
-set push , z
-set z , 0x2
-JSR affiche_commande
-JSR affiche_message
-set z , pop
-set pc , fin_launcher
 
-:prog_unknown
-set push , z
-set z , 0x1
-JSR affiche_commande
-JSR affiche_message
-set z , pop
-set pc , fin_launcher
+:launch_version
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
 
-:new_prog
-SET PC, pop
+set A , message_version
+JSR printf
+
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_inconnu
+set push , I
+set push , j
+set push , x
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set x , [couleur]
+set B , 0x4000
+JSR change_couleur
+set A , message_inconnu
+JSR printf
+set B , x
+JSR change_couleur
+JSR scroll_ecran
+set x , pop
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_echo
+set push , I
+set push , j
+set push , Z
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set A , 50
+JSR malloc
+ife Z , 0
+	set pc , fin_launch_echo
+set A , Z
+add A , 3
+set B , [parse_commande2]
+set C , [parse_commande3]
+JSR coller_string
+set B , A
+set C , [parse_commande4]
+JSR coller_string
+set B , A
+set C , [parse_commande5]
+JSR coller_string
+JSR printf
+set i , 11
+JSR scroll_from
+set a , Z
+JSR efface_memoire
+JSR free
+:fin_launch_echo
+JSR scroll_ecran
+set z , pop
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_couleur
+set push , Z
+set push , I
+set push , C
+set push , X
+set C, [parse_commande2]
+set Z , 0
+set I , 3
+:boucle_launch_couleur
+set X , [C]
+ife I , 0
+	set pc , launch_couleur_change
+JSR carac_to_hexa
+ife Z , 0xFFFF
+	set pc , end_launch_couleur
+mul z , 0x10
+sub i , 1
+add C , 1
+set pc , boucle_launch_couleur
+:launch_couleur_change
+ife Z , 0x0000
+	set pc , end_launch_couleur
+set B , Z
+JSR change_couleur
+:end_launch_couleur
+set x , pop
+set c , pop
+set i , pop
+set z , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_clear
+JSR clear
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_load
+JSR load
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_ls
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_cd
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_kill
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_run ;on recupere le programme a charger et on le charge
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_mem
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A,[free_mem]
+set B,16
+set push,C
+set C,mem_print
+jsr dump
+set C,pop
+set A , message_mem
+JSR printf
+set J,pop
+set I,pop
+set push,I
+set push,J
+add J,19
+sub I,1
+set A,mem_print
+jsr printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_mkdir
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_mv
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_cp
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_touch
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_cat
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:launch_startx
+iaq 0
+jsr frostGUI_start
+set b , pop
+set a , pop
+set pc , pop

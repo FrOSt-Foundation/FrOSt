@@ -1,57 +1,145 @@
-;This file is part of FrOSt.
-;
-;    FrOSt is free software: you can redistribute it and/or modify
-;    it under the terms of the GNU General Public License as published by
-;    the Free Software Foundation, either version 3 of the License, or
-;    (at your option) any later version.
-
-;    FrOSt is distributed in the hope that it will be useful,
-;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;    GNU General Public License for more details.
-;
-;    You should have received a copy of the GNU General Public License
-;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
 ; --------------------------------------------
 ; Title:   InterruptHandler
-; Author:  Alexis
-; Date:    09/05/2012
+; Author:  Administrateur
+; Date:    15/05/2012
 ; Version: 
 ; --------------------------------------------
 
 
 
-
+;---------------------------------------------
+;INITIALISATION DE L'IH
+;PAS DE MODIFICATION DES REGISTRES
+;---------------------------------------------
 :init_interrupthandler
-JSR push_regs
-IAS interrupthandler
-JSR pop_regs
-set PC , POP
-
-
-
-:interrupthandler
-ife a , 1
-	set pc , ih_clock
-ife a , 2
-	set pc , ih_keyboard
+IAS interrupt_handler
 set pc , pop
 
+;--------------------------------------------------------
+;INTERRUPT HANDLER
+;msg 0xabab is for the clock
+;msg 0xbcbc is for the keyboard
+;msg 0xcdcd -> lecteur de disquette
+;msf 0x1 malloc B blocs
+;msg 0x2 free the b bloc
+;msg 0x3 printf B-> string I-> line J-> colonne
+;msg 0x4 changer de couleur, couleur dans B
+;msg 0x5 scroll ecran d'une ligne
+;msg 0x6 printc carac dans C, ligne dans I, colone dans J
+;msg 0x7 efface ligne I
+;msg 0x8 scroll from, ligne dans I
+;msg 0x9 clear ecran
+;msg 0xA efface memoire
+;msg 0xF clear the screen
+;msg 0x10 launch
 
 
-:ih_clock
-rfi 0
+;--------------------------------------------------------
+:interrupt_handler
 
+ife A , 0x1
+	set pc , ih_malloc
+ife A , 0x2
+	set pc , ih_free
+ife A , 0x3
+	set pc , ih_printf
+ife A , 0x4
+	set pc , ih_couleur
+ife A , 0x5
+	set pc , ih_scroll_ecran
+ife A , 0x6
+	set pc , ih_printc
+ife A , 0x7
+	set pc , ih_efface_ligne
+ife A , 0x8
+	set pc , ih_scroll_from
+ife A, 0x9
+	set pc , ih_clear_screen
+ife A , 0xA
+	set pc , ih_efface_memoire
+ife A , 0xF
+	set pc , ih_clear
+ife A , 0x10
+	set pc , ih_launch
+ife A, 0xabab
+		set pc , ih_clock
+ife A,0xbcbc
+       set pc , ih_clavier
+ife A , 0xcdcd
+	set pc , ih_disquette
+rfi 1
 
-:ih_keyboard
+:ih_clavier
+iaq 0
+set push,C
 set A , 1
 hwi [id_keyboard1]
-ife C , 0x10
-	JSR efface_carac
-ifg C , 0x60	
-	JSR affiche_carac
-ife c , 0x20
-	JSR affiche_carac
-ife c , 0x11
-	JSR interprete_commande	
+ife c , 0x1B
+	JSR ecran_bascule_ecran
+ife [FOCUS_CLAVIER] , 0x1
+	JSR console_traiter_caractere
+set [key_int],1
+set A,C
+set C,pop
+set PC,Scheduler
+	
+:ih_clear
+JSR clear
 rfi 0
+
+:ih_malloc
+set A , B
+JSR malloc
+rfi 0
+
+:ih_free
+set A , B
+JSR free
+rfi 0
+
+:ih_printf
+set A , B
+JSR printf
+rfi 0
+
+:ih_couleur
+JSR change_couleur
+rfi 0
+
+:ih_scroll_ecran
+JSR scroll_ecran
+rfi 0
+
+:ih_printc
+JSR printc
+rfi 0
+
+:ih_efface_ligne
+JSR efface_ligne
+rfi 0
+
+:ih_scroll_from
+JSR scroll_from
+rfi 0
+
+:ih_clear_screen
+JSR clear
+rfi 0
+
+:ih_efface_memoire
+set A , B
+JSR efface_memoire
+rfi 0
+
+:ih_clock
+set [clock_int],1
+set PC,Scheduler
+
+:ih_launch
+JSR launch
+rfi 0
+
+:ih_disquette
+set [disk_int],1
+set PC,Scheduler
+

@@ -1,0 +1,39 @@
+; --------------------------------------------
+; Title:   Registres
+; Author:  Administrateur
+; Date:    15/05/2012
+; Version: 
+; --------------------------------------------
+
+;-------------------------------------------------
+;SAVE REGS
+
+;-------------------------------------------------
+:push_regs
+set [tmpV],pop
+set push,Ex
+set push,I
+set push,J
+set push,X
+set push,Y
+set push,Z
+set push,C
+set push,B
+set push,A
+set PC,[tmpV]
+
+;--------------------------------------------------
+;RESTORE REGS
+;--------------------------------------------------
+:pop_regs
+set [tmpV],pop
+set A,pop
+set B,pop
+set C,pop
+set Z,pop
+set Y,pop
+set X,pop
+set J,pop
+set I,pop
+set Ex,pop
+set PC,[tmpV]

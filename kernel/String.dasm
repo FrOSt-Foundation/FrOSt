@@ -1,0 +1,93 @@
+; --------------------------------------------
+; Title:   String
+; Author:  Administrateur
+; Date:    15/05/2012
+; Version: 
+; --------------------------------------------
+
+
+
+;---------------------------------------------
+;Calcule la longueur d'une string
+;Adresse de la string dans A
+;Retour dans Z
+;---------------------------------------------
+:strlen
+set push , B
+set z , 0
+:boucle_strlen
+	set B , [A]	
+	ife B , 0
+		set pc , fin_strlen
+	add a , 1
+	add z , 1
+	set pc , boucle_strlen
+:fin_strlen	
+set b , pop
+set pc , pop
+
+:strcmp
+set push , X
+set push , Y
+:boucle_strcmp
+set X , [A]
+set Y , [B]
+ife Y , 0
+	set pc , fin_B_strcmp
+ife X , 0
+	set pc , fin_A_strcmp
+ifn X , Y
+	set pc , strcmp_KO
+add a , 1
+add b , 1
+set pc , boucle_strcmp
+:fin_A_strcmp
+ife [B] , 0
+	set pc , strcmp_OK
+ifn [B] , 0
+	set pc , strcmp_KO
+:fin_B_strcmp
+ife [A] , 0
+	set pc , strcmp_OK
+ifn [A] , 0
+	set pc , strcmp_KO
+:strcmp_KO
+set Z , 0
+set y , pop
+set x , pop
+set pc , pop
+:strcmp_OK
+set y , pop
+set x , pop
+set Z , 1
+set pc , pop
+
+
+
+:coller_string
+set push , A
+set push , I
+set I , B
+
+:boucle_collerB
+ife [I] , 0
+	set pc , coller_C
+set [A] , [I]
+add i , 1
+add A , 1
+set pc , boucle_collerB
+:coller_C
+set [A] , 0x20
+add a , 1
+set I , C
+:boucle_collerC
+ife [I] , 0
+	set pc , fin_coller
+set [A] , [I]
+add i , 1
+add A , 1
+set pc , boucle_collerC
+:fin_coller
+set i , pop
+set a , pop
+set pc , pop

@@ -1,33 +1,19 @@
-;This file is part of FrOSt.
-;
-;    FrOSt is free software: you can redistribute it and/or modify
-;    it under the terms of the GNU General Public License as published by
-;    the Free Software Foundation, either version 3 of the License, or
-;    (at your option) any later version.
-
-;    FrOSt is distributed in the hope that it will be useful,
-;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;    GNU General Public License for more details.
-;
-;    You should have received a copy of the GNU General Public License
-;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
 ; --------------------------------------------
 ; Title:   DAT
-; Author:  Alexis
-; Date:    09/05/2012
+; Author:  Administrateur
+; Date:    15/05/2012
 ; Version: 
 ; --------------------------------------------
 
+:KER_SP dat 0x0
+:clock_int dat 0x0
+:key_int dat 0
+:disk_int dat 0
+
+:mem_print dat 0x0,0x0,0x0,0x0,0x0
+:free_mem dat 0x0
 :start_mem dat 0x1000
 :end_mem dat 0xFDFF
-
-:prog1 dat 0x1
-:prog2 dat 0x0
-:prog3 dat 0x0
-:progn dat 0x1
-:progc dat 0x1
-
 :nb_periph dat 0x0
 :tmpV dat 0x0
 :nb_ecran dat 0x0
@@ -38,16 +24,40 @@
 :nb_clock dat 0x0
 :id_clock1 dat 0x0
 :div_clock dat 60
+:nb_disquette dat 0
+:id_disquette1 dat 0x0
 :VRAM1 dat 0x0
-:adr_curseur dat 0x0
-:adr_interpreteur dat 0x0
-:parse_commande1 dat 0x0
-:parse_commande2 dat 0x0
-:parse_commande3 dat 0x0
-:parse_commande4 dat 0x0
-:parse_commande5 dat 0x0
-:mot_cls dat 0x2063, 0x206C, 0x2073 ; cls
-:mot_test dat 0x2074, 0x2065, 0x2073, 0x2074, 0x0; test
-:mot_mines dat 0x206d, 0x2069, 0x206e, 0x2065, 0x2073, 0x0 ; mines
-:message_unknown dat 0x2043, 0x206f, 0x206d, 0x206d, 0x2061, 0x206e, 0x2064, 0x2065, 0x2020, 0x2069, 0x206e, 0x2063, 0x206f, 0x206e, 0x206e, 0x2075, 0x2065, 0x2020, 0x2020, 0x2020, 0x2020, 0x0 ; Commande inconnue
-:message_test dat 0x2042,0x2069,0x2065,0x206e,0x2076,0x2065,0x206e,0x2075,0x2065,0x2020,0x2064,0x2061,0x206e,0x2073,0x2020,0x2046,0x2072,0x204f,0x2053,0x2074, 0x0020, 0x0920, 0x0F20, 0x0420, 0x0 ; Bienvenue dans FrOSt
+:VRAM2 dat 0x0
+:ecran_actif dat 0x0
+:COULEUR dat 0xF000
+:FOCUS_CLAVIER dat 0x0 ; Focus du clavier : 0x1 -> console, 0x2 -> interface graphique, 0x3 -> ecran appli
+:commande_help dat "help",0
+:commande_version dat "version",0
+:commande_echo dat "echo",0
+:commande_couleur dat "couleur",0
+:commande_clear dat "clear",0
+:commande_load dat "load",0
+:commande_ls dat "ls",0
+:commande_cd dat "cd",0
+:commande_kill dat "kill",0
+:commande_mem dat "mem",0
+:commande_run dat "run",0
+:commande_mkdir dat "mkdir",0
+:commande_mv dat "mv",0
+:commande_cp dat "cp",0
+:commande_touch dat "touch",0
+:commande_startx dat "startx",0
+:commande_cat dat "cat",0
+:message_oui dat "Oui",0
+:message_non dat "Non",0
+:message_help dat "Liste des commandes :",0x11,0x1F,"- help ",0x1f,"- version",0x11,0x1F,"- echo ",0x1F,"- couleur",0x11,0x1F,"- clear",0x1F,"- load",0x11,0x1F,"- ls   ",0x1F,"- cd",0x11,0x1F,"- kill ",0x1F,"- mem",0x11,0x1F,"- run  ",0x1F,"- mkdir",0x11,0x1f,"- mv   ",0x1F,"- cp",0x11,0x1F,"- touch",0x1F,"- cat",0x11,0x1F,"- startx",0
+:message_version dat "Version 1.0",0
+:message_inconnu dat "Commande inconnue",0
+:message_bienvenue dat "Welcome on board",0x11,"FrOSt fully loaded",0x11,"type help if you are completely lost",0
+:message_test_disquette dat "Disquette presente?",0
+:message_disquette_verouillee dat "Disquette lecture seule",0
+:message_disquette_libre dat "Disquette non verrouillee",0
+:message_disquette_erreur_malloc dat "Chargement impossible : malloc impossible",0
+:message_disquette_erreur_copy dat "Chargement impossible : erreur de copie",0
+:message_mem dat "Memoire libre : 0x     mots",0
+:message_todo dat "TODO",0

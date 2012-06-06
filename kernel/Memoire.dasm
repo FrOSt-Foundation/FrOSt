@@ -1,23 +1,11 @@
-;This file is part of FrOSt.
-;
-;    FrOSt is free software: you can redistribute it and/or modify
-;    it under the terms of the GNU General Public License as published by
-;    the Free Software Foundation, either version 3 of the License, or
-;    (at your option) any later version.
-
-;    FrOSt is distributed in the hope that it will be useful,
-;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;    GNU General Public License for more details.
-;
-;    You should have received a copy of the GNU General Public License
-;    along with FrOSt.  If not, see <http://www.gnu.org/licenses/>.
 ; --------------------------------------------
 ; Title:   Memoire
-; Author:  Alexis
-; Date:    09/05/2012
+; Author:  Administrateur
+; Date:    15/05/2012
 ; Version: 
 ; --------------------------------------------
+
+
 
 ;---------------------------------------------
 ;INIT MEMORY HANDLER
@@ -36,7 +24,7 @@ sub [start_mem],3    ;on remet start_mem à sa valeur d’origine
 set [I],A  ;taille de la mémoire réellement utilisable en mots
 add I,1  
 set [I],[end_mem]    ;bloc suivant -> si fin de mémoire pas de bloc suivant
-    
+set [free_mem],A     ;memoire libre
 set A,pop
 set I,pop
 set PC,pop
@@ -49,6 +37,8 @@ set PC,pop
 jsr push_regs
 ife A,0              ;allocation de 0 mots → erreur
    set PC,erreur_alloc
+ifg A,[free_mem]     ;pas assez de free mem
+	set PC,erreur_alloc
 set C,[start_mem]   ;C est le bloc courant, initialisé à la première adresse
 set PC,test_bloc      
 
@@ -124,6 +114,9 @@ set PC,alloc_ok
 :alloc_z_save dat 0xFFFF
 :alloc_ok
 set [alloc_z_save],Z
+;set B , A
+;set A , Z
+sub [free_mem],A ;on enleve la taille a la mem libre
 jsr pop_regs
 set Z,[alloc_z_save]
 set PC,pop
@@ -147,12 +140,12 @@ ife [A],0xFFFF            ;si le bloc est libre , erreur
    set PC,erreur_free
 set [A],0xFFFF
 set B,A
-add B,2
+add B , 2
+add [free_mem],[B]      ;on ajoute la mem libere
 set B,[B]
 ife [B],0xFFFF          ; si le bloc de droite est libre, on concatène à droite
    set PC,concat_droite
-set PC,concat_gauche          ;dans tous les cas on essaie de concaténer à gauche
-
+set pc , concat_gauche          ;dans tous les cas on essaie de concaténer à gauche
 ;---------------------------------------------
 ;NOT USABLE BY ITSELF
 ;---------------------------------------------
@@ -164,7 +157,7 @@ add C , 1
 set J , [C]          ;on récupere le suivant dans J             
 set X,A                
 add X,1
-add [X],C             ;on ajoute les deux tailles
+add [X],I             ;on ajoute les deux tailles
 add X , 1
 set [X] , J            ;on met le suivant à jour
 set PC,concat_gauche
@@ -188,7 +181,9 @@ set PC,parcours
 ;---------------------------------------------
 :recoller
 ife X,0x0                   ;Si X = 0x0 , alors on essaie de recoller le premier bloc → fin traitement
-   set PC,pop
+   set PC, fin_free
+ifn [X], 0xFFFF
+	set pc , fin_free
 set Y,C
 add Y,1
 set I,[Y]                    ;sauvegarde de la taille du bloc C dans Y
@@ -203,9 +198,7 @@ add X,1
 set [X],Z               ;sauvegarde de la taille               
 add X , 1
 set [X] , J              ;sauvegarde du suivant
-jsr pop_regs
-set PC,pop
-
+set pc , fin_free
 ;---------------------------------------------
 ;NOT USABLE BY ITSELF
 ;---------------------------------------------
@@ -213,6 +206,10 @@ set PC,pop
 jsr pop_regs
 set Z,0xAAAA ;erreur
 set PC,pop
+
+:fin_free
+JSR pop_regs
+set pc , pop
 
 
 
@@ -237,3 +234,22 @@ set Z,pop
 set J,pop
 set I,pop
 set PC,pop
+
+:efface_memoire
+set push , A
+set push , B
+add A , 1
+
+set B , [A]
+add A , 2
+:boucle_efface_memoire
+ife B , 0
+	set pc , fin_efface_memoire
+set [A] , 0
+sub B , 1
+add A , 1
+set pc , boucle_efface_memoire
+:fin_efface_memoire
+set B , pop
+set A , pop
+set pc , pop

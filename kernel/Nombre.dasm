@@ -1,0 +1,85 @@
+; --------------------------------------------
+; Title:   Nombre
+; Author:  D994293
+; Date:    23/05/2012
+; Version: 
+; --------------------------------------------
+
+;---------------------------------------------
+;Convertit le caractere dans X en nombre dans Z
+;---------------------------------------------
+
+:carac_to_hexa
+ife x , '0'
+	add Z , 0x0
+ife x , '1'
+	add Z , 0x1
+ife x , '2'
+	add Z , 0x2
+ife x , '3'
+	add Z , 0x3
+ife x , '4'
+	add Z , 0x4
+ife x , '5'
+	add Z , 0x5
+ife x , '6'
+	add Z , 0x6
+ife x , '7'
+	add Z , 0x7
+ife x , '8'
+	add Z , 0x8
+ife x , '9'
+	add Z , 0x9
+ife x , 'a'
+	add Z , 0xA
+ife x , 'b'
+	add Z , 0xB
+ife x , 'c'
+	add Z , 0xC
+ife x , 'd'
+	add Z , 0xD
+ife x , 'e'
+	add Z , 0xE
+ife x , 'f'
+	add Z , 0xF
+set pc , pop
+
+:erreur_cth
+set Z , 0xFFFF
+set pc , pop
+
+;--------------------------------------------------------
+;DUMP print the content of A in [C] in base B. Need at most 4 words
+;doesn't modify any of the regs
+;--------------------------------------------------------
+:dump
+set push,I
+set I,B
+set push,A
+set push,B
+set push,J
+set J,0
+:dump_loop
+set B,A
+mod B,I
+ifg B,9
+	add PC,3
+add B,48
+add PC,2
+add B,55
+set push,B
+div A,I
+add J,1
+ifn A,0
+	set PC,dump_loop
+:dump_print
+set [C],pop
+add C,1
+sub J,1
+ifn J,0
+	set PC,dump_print
+set J,pop
+set B,pop
+set A,pop
+set I,pop
+set PC,pop

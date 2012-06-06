@@ -1,0 +1,31 @@
+:init_clavier ;a=id clavier
+	jsr save_ab
+
+	set [clavier_id],a
+	
+	set a,0
+	hwi [clavier_id]
+
+	set a,3
+	set b,[clavier_msg]
+	hwi [clavier_id]
+	
+	set pc,return_ab
+
+:
+
+:is_pressed ;a=ascii, z=booléen
+	jsr save_abc
+
+	set b,a
+	set a,2
+	hwi [clavier_id]
+
+	set z,c
+
+	set pc,return_abc
+
+
+
+:clavier_id dat 0
+:clavier_msg dat 0
