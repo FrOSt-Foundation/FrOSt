@@ -5,10 +5,11 @@
 ; Version: 
 ; --------------------------------------------
 
-set pc , BootSequence
-
-
-
-
+set pc, BootSequence
+;
+;
+; code ici
+;
+;
 :end
 set pc , end

@@ -21,7 +21,7 @@
 ; --------------------------------------------
 
 
-:init_keyboard1
+:init_keyb
 set push,A
 set push,B
 set push,C

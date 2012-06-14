@@ -67,7 +67,7 @@ set PC , boucle_periph
 :sauvegarde_clock
 ifg [nb_clock],1
 	add J , 1
-ifg [nb_clock] , 1
+ifg [nb_clock], 1
 	set PC , boucle_periph
 add [nb_clock] , 1
 	ife [nb_clock] , 1
@@ -101,7 +101,7 @@ set pc , boucle_periph
 
 :init_periph
 ifg [nb_ecran] , 0
-	JSR init_ecran1
+	JSR init_ecran
 ifg [nb_keyboard] , 0
 	JSR init_keyboard1
 ifg [nb_clock] , 0

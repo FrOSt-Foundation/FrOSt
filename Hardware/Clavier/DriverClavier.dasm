@@ -1,4 +1,5 @@
-:init_clavier ;a=id clavier
+:init_clavier
+;a=id clavier
 	jsr save_ab
 
 	set [clavier_id],a
@@ -11,8 +12,7 @@
 	hwi [clavier_id]
 	
 	set pc,return_ab
-
-:
+	
 
 :is_pressed ;a=ascii, z=booléen
 	jsr save_abc
