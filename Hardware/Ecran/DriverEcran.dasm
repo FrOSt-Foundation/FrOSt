@@ -1,7 +1,16 @@
-:init_ecran
+; --------------------------------------------
+; Title:   DriverEcran
+; Author:  Adrien
+; Date:    14/06/2012
+; Version: 
+; --------------------------------------------
+
+
+
 ;a=id ecran
-	set [ecran_id],a
-	set a,[ecran_taille]
+:init_ecran
+set [ecran_id],a
+set a,[ecran_taille]
 	jsr malloc
 
 	set [ecran_vram],z
@@ -9,26 +18,27 @@
 
 	set pc,update_vram
 
-:change_font
+
 ;b=pointeur font,0=default
-	set a,1
+:change_font
+set a,1
 	hwi [ecran_id]
 	set pc,pop
 
-:change_palette
 ;b=pointeur palette,0=default
+:change_palette
 	set a,2
 	hwi [ecran_id]
 	set pc,pop
 
-:change_bordure
 ;b=color (0-F)
+:change_bordure
 	set a,3
 	hwi [ecran_id]
 	set pc,pop
 
-:get_font
 ;pointeur en z,0 si plus de place
+:get_font
 	set a,256
 	jsr malloc
 	ife z,0
@@ -39,8 +49,8 @@
 	:gf_end
 	set pc,pop
 
-:get_palette
 ;pointeur en z,0 si plus de place
+:get_palette
 	set a,16
 	jsr malloc
 	ife z,0
@@ -48,28 +58,47 @@
 	set a,5
 	set b,z
 	hwi [ecran_id]
-	:gf_end
+	:gp_end
 	set pc,pop
 
-:get_vram
 ;pointeur en z
+:get_vram
 	set z,[ecran_vram]
 	set pc,pop
 
-:set_vram
 ;pointeur en b, 0=default
+:set_vram
 	ife b,0
 		set b,ecran_default_vram
 	set [ecran_vram],b
 	set pc,update_vram
 
-:update_vram
+
 ;routine interne
+:update_vram
 	set a,0
 	set b,[ecran_vram]
 	hwi [ecran_id]
 	set pc,pop
 
+;efface l'écran
+
+:clear
+SET push, I
+SET push, j
+SET I, 0
+SET J, ecran_taille
+:clear_boucle
+IFG I, J
+SET PC, fin_clear
+SET [ecran_vram + I], 0x0
+ADD I, 1
+SET pc, clear_boucle
+
+:clear_end
+SET J, pop
+SET I, pop
+SET pc, pop
 
 :ecran_id dat 0
 :ecran_taille dat 384
