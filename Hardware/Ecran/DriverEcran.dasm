@@ -1,6 +1,6 @@
 ; --------------------------------------------
 ; Title:   DriverEcran
-; Author:  Adrien
+; Author:  Yaya
 ; Date:    14/06/2012
 ; Version: 
 ; --------------------------------------------
@@ -83,7 +83,7 @@ set a,1
 
 ;efface l'écran
 
-:clear
+:cls
 SET push, I
 SET push, j
 SET I, 0
