@@ -12,7 +12,7 @@
 :frostGUI_start
 set push , i
 set push , J
-JSR clear
+JSR cls
 set I , 1
 set J , 0
 set B , frostGUI
