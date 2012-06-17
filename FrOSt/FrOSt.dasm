@@ -23,9 +23,5 @@
 
 set pc, BootSequence
 ;
-;
-; code ici
-;
-;
-:end
+
 set pc , end

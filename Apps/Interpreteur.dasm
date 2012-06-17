@@ -18,7 +18,7 @@ set push , z
 set B , 135
 int 0x1
 ife z , 0
-	set pc , end
+;	set pc , end
 set [adr_interpreteur] , Z
 add z , 3
 set [parse_commande1] , z

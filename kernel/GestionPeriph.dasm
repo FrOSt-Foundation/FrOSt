@@ -110,3 +110,16 @@ ifg [nb_disquette] , 0
 	JSR init_disquette1
 set PC , POP
 
+
+
+:nb_periph dat 0x0
+:tmpV dat 0x0
+:nb_ecran dat 0x0
+:id_ecran1 dat 0x0
+:id_ecran2 dat 0x0
+:nb_keyboard dat 0x0
+:id_keyboard1 dat 0x0
+:nb_clock dat 0x0
+:id_clock1 dat 0x0
+:div_clock dat 60
+
