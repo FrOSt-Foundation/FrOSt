@@ -10,31 +10,23 @@
 ;---------------------------------------------
 
 :carac_to_hexa
-set push,x
-set z,0
-ifg peek,0x2F
-	ifl peek,0x3A
-		set pc,cth_num ;le char est un nombre
-and peek,0b1101 1111 ;tout en majuscule
-ifg peek,0x40
-	ifl peek,0x47
-		set pc,cth_char ;le char est [a-fA-F]
-add sp,1 ;enlever la variable locale
-set pc,pop
-:cth_char
-sub peek,0x37
-set z,pop
-set pc,pop
-:cth_num
-sub peek,0x30
-set z,pop
+set x,0x70
+set z,0xFFFF
+ifl x,0x30
+	set pc,pop
+set z,x
+sub z,0x30
+ifl z,0xA
+	set pc,pop
+and z,0xDF ;tout en majuscule
+ifl z,0x11
+    set z,0x6
+sub z,0x7
+ifl z,0x10
+	set pc,pop
+set z,0xFFFF
 set pc,pop
 
-
-
-:erreur_cth
-set Z , 0xFFFF
-set pc , pop
 
 ;--------------------------------------------------------
 ;DUMP print the content of A in [C] in base B. Need at most 4 words
