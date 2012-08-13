@@ -10,39 +10,27 @@
 ;---------------------------------------------
 
 :carac_to_hexa
-ife x , '0'
-	add Z , 0x0
-ife x , '1'
-	add Z , 0x1
-ife x , '2'
-	add Z , 0x2
-ife x , '3'
-	add Z , 0x3
-ife x , '4'
-	add Z , 0x4
-ife x , '5'
-	add Z , 0x5
-ife x , '6'
-	add Z , 0x6
-ife x , '7'
-	add Z , 0x7
-ife x , '8'
-	add Z , 0x8
-ife x , '9'
-	add Z , 0x9
-ife x , 'a'
-	add Z , 0xA
-ife x , 'b'
-	add Z , 0xB
-ife x , 'c'
-	add Z , 0xC
-ife x , 'd'
-	add Z , 0xD
-ife x , 'e'
-	add Z , 0xE
-ife x , 'f'
-	add Z , 0xF
-set pc , pop
+set push,x
+set z,0
+ifg peek,0x2F
+	ifl peek,0x3A
+		set pc,cth_num ;le char est un nombre
+and peek,0b1101 1111 ;tout en majuscule
+ifg peek,0x40
+	ifl peek,0x47
+		set pc,cth_char ;le char est [a-fA-F]
+add sp,1 ;enlever la variable locale
+set pc,pop
+:cth_char
+sub peek,0x37
+set z,pop
+set pc,pop
+:cth_num
+sub peek,0x30
+set z,pop
+set pc,pop
+
+
 
 :erreur_cth
 set Z , 0xFFFF
