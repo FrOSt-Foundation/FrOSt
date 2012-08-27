@@ -1,12 +1,3 @@
-; --------------------------------------------
-; Title:   InterruptHandler
-; Author:  Administrateur
-; Date:    15/05/2012
-; Version: 
-; --------------------------------------------
-
-
-
 ;---------------------------------------------
 ;INITIALISATION DE L'IH
 ;PAS DE MODIFICATION DES REGISTRES

@@ -1,10 +1,3 @@
-; --------------------------------------------
-; Title:   Interpreteur
-; Author:  Administrateur
-; Date:    15/05/2012
-; Version: 
-; --------------------------------------------
-
 :adr_interpreteur dat 0x0
 :parse_commande1 dat 0x0
 :parse_commande2 dat 0x0
@@ -13,30 +6,28 @@
 :parse_commande5 dat 0x0
 
 :init_interpreteur
-set push , a
-set push , z
+set push,B
 set B , 135
 int 0x1
-ife z , 0
-;	set pc , end
-set [adr_interpreteur] , Z
-add z , 3
-set [parse_commande1] , z
-add z , 27
-set [parse_commande2] , z
-add z , 27
-set [parse_commande3] , z
-add z , 27
-set [parse_commande4] , z
-add z , 27
-set [parse_commande5] , z
-set z , pop
-set a , pop
-set pc , pop
+ife B , 0xFFFF
+;error
+	sub pc,1
+set [adr_interpreteur] , B
+set [parse_commande1] , B
+add B , 27
+set [parse_commande2] , B
+add B , 27
+set [parse_commande3] , B
+add B , 27
+set [parse_commande4] , B
+add B , 27
+set [parse_commande5] , B
+set B,pop
+set pc,pop
 
 :interprete_commande
-JSR parseur_commande
-set pc , pop
+set pc,parseur_commande
+;set pc,pop
 
 
 

@@ -1,12 +1,3 @@
-; --------------------------------------------
-; Title:   DriverEcran
-; Author:  Yaya
-; Date:    14/06/2012
-; Version: 
-; --------------------------------------------
-
-
-
 ;a=id ecran
 :init_ecran
 set [ecran_id],a

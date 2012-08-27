@@ -1,10 +1,3 @@
-; --------------------------------------------
-; Title:   Loader
-; Author:  Administrateur
-; Date:    15/05/2012
-; Version: 
-; --------------------------------------------
-
 :load
 set push , A
 set push , b
@@ -118,25 +111,26 @@ set pc , pop
 ;LOADER loads a program at adress A from hw B
 ;args are in C,X,Y,Z,I,J
 ;a new stack is prepared
-;call with jsr
+;call this with jsr
 ;---------------------------------------------
 :Loader
 ;recuperer la taille du programme dans C
-add C,0x200 ;pour la pile
+;pour la pile
+add C,0x200
 set push,A
-set push,Z
 jsr malloc
-ife Z,0
+ife B,0xFFF
 	set PC,Loader_end
 set A,pop
-;copier le programme en [Z+3]
-add Z,3
-set A,Z
+;copier le programme en [B]
+set A,B
 add A,1
+set push,B
 set B,0
-set C,Z
-jsr MMU ;on a deplace les offsets
-set Z,pop
+set C,peek
+jsr MMU
+;on a deplace les offsets
+set B,pop
 jsr push_regs
 set [KER_SP],SP
 sub A,2
@@ -152,11 +146,13 @@ set [B],A
 sub B,Sched_table_prog
 set [Sched_current],B
 add B,Sched_table_prio
-set [B],[A] ;on met le mot de prio
+;on met le mot de prio
+set [B],[A]
 add A,1
 add [Sched_number],1
 ;IL faut modifier les dats présents en fonction des priorités.
-set PC,A ;on passe la main au prog
+;on passe la main au prog
+set PC,A
 :Loader_end
 set Z,pop
 set A,pop
@@ -170,7 +166,8 @@ set PC,pop
 ;---------------------------------------------
 :Finisher
 ;boucle pour savoir dans quel bloc on est
-set A,pop ;A contient ancienne adr de PC
+;A contient ancienne adr de PC
+set A,pop
 set B,[start_mem]
 :Finisher_loop
 set C,B

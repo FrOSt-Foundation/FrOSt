@@ -1,15 +1,12 @@
-; --------------------------------------------
-; Title:   DAT
-; Author:  Administrateur
-; Date:    15/05/2012
-; Version: 
-; --------------------------------------------
+:end set pc,end
 
 :KER_SP dat 0x0
 :clock_int dat 0x0
 :key_int dat 0
 :disk_int dat 0
 
+;ID du programme en cours d'execution, 0 -> OS
+:currently_running dat 0
 :mem_print dat 0x0,0x0,0x0,0x0,0x0
 :free_mem dat 0x0
 :start_mem dat 0x1000
@@ -30,7 +27,8 @@
 :VRAM2 dat 0x0
 :ecran_actif dat 0x0
 :COULEUR dat 0xF000
-:FOCUS_CLAVIER dat 0x0 ; Focus du clavier : 0x1 -> console, 0x2 -> interface graphique, 0x3 -> ecran appli
+:FOCUS_CLAVIER dat 0x0 
+; Focus du clavier : 0x1 -> console, 0x2 -> interface graphique, 0x3 -> ecran appli
 :commande_help dat "help",0
 :commande_version dat "version",0
 :commande_echo dat "echo",0

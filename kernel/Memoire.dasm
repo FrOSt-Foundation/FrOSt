@@ -1,256 +1,184 @@
-; --------------------------------------------
-; Title:   Memoire
-; Author:  Administrateur
-; Date:    15/05/2012
-; Version: 
-; --------------------------------------------
+;memoire
+;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
 
-
-
-;---------------------------------------------
-;INIT MEMORY HANDLER
-;the memory begin at [start_mem] and end at [end_mem]
-;---------------------------------------------
-
-:init_memoire
-set push,I
-set push,A
-set I,[start_mem]   ;adresse de début de la mémoire utilisable
-set [I],0xFFFF    ;statut 0xFFFF : disponible
-add I,1
-add [start_mem],3    ;debut de la memoire reellement utilisable
-set A,[end_mem]      
-sub A,[start_mem]   ;taillle de la memoire utilisable
-sub [start_mem],3    ;on remet start_mem à sa valeur d’origine
-set [I],A  ;taille de la mémoire réellement utilisable en mots
-add I,1  
-set [I],[end_mem]    ;bloc suivant -> si fin de mémoire pas de bloc suivant
-set [free_mem],A     ;memoire libre
-set A,pop
-set I,pop
-set PC,pop
-
-;---------------------------------------------
-;MALLOC
-;allocate A blocs of memory, return in Z a pointer if the allocation is ok, 0 otherwise
-;---------------------------------------------
+;malloc
+;A contient la taille, retour de l'adresse dans B si B=0xFFFF alors erreur
 :malloc
-jsr push_regs
-ife A,0              ;allocation de 0 mots → erreur
-   set PC,erreur_alloc
-ifg A,[free_mem]     ;pas assez de free mem
-	set PC,erreur_alloc
-set C,[start_mem]   ;C est le bloc courant, initialisé à la première adresse
-set PC,test_bloc      
-
-;----------------------------------------------
-;MACRO NOT USABLE BY ITSELF
-;Test du bloc courant
-;Vérifie si le bloc courant n'est pas 0x0
-;Sinon vérification du statut
-;Si libre --> test de la taille
-;Sinon avance sur prochain bloc
-;----------------------------------------------
-:test_bloc
-ife C,[end_mem]       ;si le bloc courant est la fin de la memoire → erreur
-   set PC,erreur_alloc
-ife [C],0xFFFF           ;si le bloc est libre, on controle la taille
-   set PC,controle_taille
-add C,2                     ;sinon on récupere l’adresse du bloc suivant et on relance
-set C,[C]
-set PC,test_bloc
-
-;---------------------------------------------
-;MACRO NOT USABLE BY ITSELF
-;Controle de la taille disponible dans le bloc courant contenu dans C
-;Si taille OK --> division
-;Sinon, on avance su prochain bloc et relance du test
-;---------------------------------------------
-:controle_taille
-set B,C
-add B,1
-set B,[B]    ; B est la taille dispo
-ifg B,A       ; si la taille dispo est suffisante on passe a la division
-   set PC,division             
-add C,2    ; sinon on relance le test sur le bloc suivant
-set C,[C]
-set PC,test_bloc
-
-;---------------------------------------------
-;MACRO NOT USABLE BY ITSELF
-;Division d'une cellule
-;test si la taille est égale
-;si oui --> maj de Z avec C
-;sinon calucle de la taille restante
-;si supérieur à 10 -> ecriture
-;sinon allocation en l'état
-;---------------------------------------------
-:division
-set Z,C    
-set [Z],0x1  ;statut utilisé
-sub B,A   
-ifl B,10      ;si la taille restante est trop petite i.e < à 10 on alloue en l’état
-   set PC,alloc_ok
-add C,1  
-set [C],A    ;on stocke la taille
-add C,1
-set X,[C]    ; sauvegarde du suivant
-set Y,C    
-add C,A
-set [Y],C  
-add [Y],1      ; on met à jour le suivant du bloc alloué
-add C,1
-set [C],0xFFFF       ; le statut du suivant est 0xFFFF : libre
-add C,1
-set [C],B               
-sub [C],3              ;mise à jour de la taille restante
-add C,1
-set [C],X              ;le suivant est celui qui a été sauvegardé
-set PC,alloc_ok
-
-;---------------------------------------------
-;MACRO NOT USABLE BY ITSELF
-;allocation ok, restaurer les registres et mettre l'adresse du bloc dans Z
-;---------------------------------------------
-:alloc_z_save dat 0xFFFF
-:alloc_ok
-set [alloc_z_save],Z
-;set B , A
-;set A , Z
-sub [free_mem],A ;on enleve la taille a la mem libre
-jsr pop_regs
-set Z,[alloc_z_save]
-set PC,pop
-
-;---------------------------------------------
-;MACRO NOT USABLE BY ITSELF
-;Erreur d'allocation
-;mettre Z à 0x0
-;---------------------------------------------
-:erreur_alloc
-jsr pop_regs
-set Z,0
+set B,0xFFFF
+set push,A
+add A,2
+ifg A,[free_mem]
+	set pc,pop
+ifl A,0 ;si la taille est inferieure ou egale a 0
+	set pc,pop
+ife A,0
+	set pc,pop
+sub [free_mem],A
+;on parcours la mémoire pour savoir s'il y a un bloc assez grand
+set push,I
+set I,[start_mem]
+.malloc_boucle
+ife [I],0xFFFF
+	set pc,malloc_bloc_libre	
+.malloc_continue
+add I,[I+1]
+ifn I,[end_mem]
+	set pc,malloc_boucle
+set I,pop
+set A,pop
+set pc,pop
+;un bloc est libre, verification de la taille
+.malloc_bloc_libre
+ifg [I+1],A
+		set pc,malloc_new_bloc
+ife [I+1],A
+		set pc,malloc_return
+set pc,malloc_continue
+;on a une taille trop grande
+;on decoupe
+.malloc_new_bloc
+set push,[I+1]
+set [I+1],A
+add I,A
+set [I],0xFFFF
+sub peek,A
+set [I+1],pop
+sub I,A
+;on retourne le pointeur apres avoir update l'header
+.malloc_return
+set B,I
+set [B],[currently_running]
+add B,2
+set I,pop
+set A,pop
 set pc,pop
 
-;---------------------------------------------
-;FREE free the bloc in A, store 0xAAAA in Z if error
-;---------------------------------------------
+;adresse dans A
 :free
-jsr push_regs
-ife [A],0xFFFF            ;si le bloc est libre , erreur
-   set PC,erreur_free
+;on trouve le bon bloc memoire, au cas ou
+set push,B
+set push,A
+set A,[start_mem]
+set B,[start_mem]
+add B,[B+1]
+.free_boucle
+ifg B,peek
+	set pc,free_found
+set A,B
+add B,[B+1]
+set pc,free_boucle
+;bloc memoire a free trouve, on libere
+.free_found
 set [A],0xFFFF
-set B,A
-add B , 2
-add [free_mem],[B]      ;on ajoute la mem libere
-set B,[B]
-ife [B],0xFFFF          ; si le bloc de droite est libre, on concatène à droite
-   set PC,concat_droite
-set pc , concat_gauche          ;dans tous les cas on essaie de concaténer à gauche
-;---------------------------------------------
-;NOT USABLE BY ITSELF
-;---------------------------------------------
-:concat_droite
-set C,B          
-add C,1
-set I,[C]             ;on récupere la taille du bloc suivant dans I
-add C , 1
-set J , [C]          ;on récupere le suivant dans J             
-set X,A                
-add X,1
-add [X],I             ;on ajoute les deux tailles
-add X , 1
-set [X] , J            ;on met le suivant à jour
-set PC,concat_gauche
-
-;---------------------------------------------
-;NOT USABLE BY ITSELF
-;---------------------------------------------
-:concat_gauche
+add [free_mem],[A+1]
+;recollage a droite
+ifn [B],0xFFFF
+	set pc,free_gauche
+add A,1
+add [A],[B+1]
+sub A,1
+;recollage a gauche
+.free_gauche
+set B,[start_mem]
+set push,C
 set C,[start_mem]
-set X,0x0
-:parcours
-ife C,A               ;si on est arrivé jusqu’au bloc que l’on vient de libérer, on essaie de recoller
-   set PC,recoller
-set X,C    ;sinon X <- C et C <- suivant de C
-add C,2
-set C,[C]
-set PC,parcours
+;on recupere l'adresse du bloc a gauche
+.free_gauche_boucle
+add C,[C+1]
+ife A,C
+	set pc,free_gauche_end
+add B,[B+1]
+set pc,free_gauche_boucle
+;on concatene si besoin est
+.free_gauche_end
+ifn [B],0xFFFF
+	set pc,free_end
+add B,1
+add [B],[A+1]
+.free_end
+set C,pop
+set A,pop
+set B,pop
+set pc,pop
 
-;---------------------------------------------
-;NOT USABLE BY ITSELF
-;---------------------------------------------
-:recoller
-ife X,0x0                   ;Si X = 0x0 , alors on essaie de recoller le premier bloc → fin traitement
-   set PC, fin_free
-ifn [X], 0xFFFF
-	set pc , fin_free
-set Y,C
-add Y,1
-set I,[Y]                    ;sauvegarde de la taille du bloc C dans Y
-add Y , 1
-set J , [Y]                  ;sauvegarde du suivant de C dans J
-set Z,X
-add Z,1
-set Z,[Z]                  ;sauvegarde de la taille du bloc X dans Z
-add Z,I                   ;on ajoute les deux taille
-set [X],0xFFFF       ;le bloc X est libre
-add X,1
-set [X],Z               ;sauvegarde de la taille               
-add X , 1
-set [X] , J              ;sauvegarde du suivant
-set pc , fin_free
-;---------------------------------------------
-;NOT USABLE BY ITSELF
-;---------------------------------------------
-:erreur_free
-jsr pop_regs
-set Z,0xAAAA ;erreur
-set PC,pop
+;libere toute la memoire allouee par un programme, ID du programme dans A
+:free_program
+set push,A
+set A,[start_mem]
+.boucle_recherche
+ife [A],peek
+	jsr free
+add A,[A+1]
+ifn A,[end_mem]
+	set pc,boucle_recherche
+set A,pop
+set pc,pop
 
-:fin_free
-JSR pop_regs
-set pc , pop
+;met 0 dans la memoire allouee en A
+:efface_memoire
+;on trouve le bon bloc memoire
+set push,B
+set push,A
+set A,[start_mem]
+set B,[start_mem]
+add B,[B+1]
+.eff_boucle
+ifg B,peek
+	set pc,eff_found
+set A,B
+add B,[B+1]
+set pc,eff_boucle
+;bloc memoire a effacer trouve, on efface
+.eff_found
+set B,SP
+set SP,A
+add SP,[A+1]
+.eff_eff
+set [push],0
+ifn A,SP
+	set pc,eff_eff
+;bloc entierement vide
+set SP,B
+set A,pop
+set B,pop
+set pc,pop
 
-
-
-;-------------------------------------------------------
-;MEMCPY
-;memcpy, copy from [A] to [B] C words
-;doesn't modify any of the regs
-;-------------------------------------------------------
+;--------------------------------------
+;memcpy copy de B vers A C mots
+;--------------------------------------
 :memcpy
 set push,I
 set push,J
-set J,A
-set I,B
-set push,Z
-set Z,A
-add Z,C
-:aq
+set push,C
+set I,A
+set J,B
+.memcpy_boucle
 sti [I],[J]
-ifn J,Z
-    set PC,aq
-set Z,pop
+sub C,1
+ifn C,0
+	set pc, memcpy_boucle
+set C,pop
 set J,pop
 set I,pop
-set PC,pop
+set pc,pop
 
-:efface_memoire
-set push , A
-set push , B
-add A , 1
-
-set B , [A]
-add A , 2
-:boucle_efface_memoire
-ife B , 0
-	set pc , fin_efface_memoire
-set [A] , 0
-sub B , 1
-add A , 1
-set pc , boucle_efface_memoire
-:fin_efface_memoire
-set B , pop
-set A , pop
-set pc , pop
+;--------------------------------------
+;size renvoie la taille dans B de l'adresse A
+;--------------------------------------
+:size
+;on trouve le bon bloc memoire
+set push,A
+set A,[start_mem]
+set B,[start_mem]
+add B,[B+1]
+.size_boucle
+ifg B,peek
+	set pc,size_found
+set A,B
+add B,[B+1]
+set pc,size_boucle
+;bloc memoire trouve, on efface
+.size_found
+set B,[A+1]
+set A,pop
+set pc,pop

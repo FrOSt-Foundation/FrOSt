@@ -1,11 +1,3 @@
-; --------------------------------------------
-; Title:   GestionPeriph
-; Author:  Administrateur
-; Date:    15/05/2012
-; Version: 
-; --------------------------------------------
-
-
 ;---------------------------------------------
 ;Detection du nombre de periph
 ;Stocke le nombre de periph dans nb_periph
