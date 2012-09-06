@@ -7,21 +7,23 @@
 
 :init_interpreteur
 set push,B
+set push,Z
 set B , 135
 int 0x1
-ife B , 0xFFFF
+ife Z , 0xFFFF
 ;error
 	sub pc,1
-set [adr_interpreteur] , B
-set [parse_commande1] , B
-add B , 27
-set [parse_commande2] , B
-add B , 27
-set [parse_commande3] , B
-add B , 27
-set [parse_commande4] , B
-add B , 27
-set [parse_commande5] , B
+set [adr_interpreteur] , Z
+set [parse_commande1] , Z
+add Z , 27
+set [parse_commande2] , Z
+add Z , 27
+set [parse_commande3] , Z
+add Z , 27
+set [parse_commande4] , Z
+add Z , 27
+set [parse_commande5] , Z
+set Z,pop
 set B,pop
 set pc,pop
 
