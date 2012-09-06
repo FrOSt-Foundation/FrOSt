@@ -64,7 +64,7 @@ rfi 1
 iaq 0
 set push,C
 set A , 1
-hwi [id_keyboard1]
+hwi [id_clavier]
 ife c , 0x1B
 	JSR ecran_bascule_ecran
 ife [FOCUS_CLAVIER] , 0x1

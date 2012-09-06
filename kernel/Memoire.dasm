@@ -1,18 +1,25 @@
+; --------------------------------------------
+; Title:   Allocation
+; Author:  Faërie
+; Date:    08/07/2012
+; Version: beta
+; --------------------------------------------
+
 ;memoire
 ;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
 
 ;malloc
-;A contient la taille, retour de l'adresse dans B si B=0xFFFF alors erreur
+;A contient la taille, retour de l'adresse dans Z si B=0xFFFF alors erreur
 :malloc
-set B,0xFFFF
+set Z,0xFFFF
 set push,A
 add A,2
 ifg A,[free_mem]
-	set pc,pop
-ifl A,0 ;si la taille est inferieure ou egale a 0
-	set pc,pop
-ife A,0
-	set pc,pop
+	set pc,malloc_error
+ifl A,2 ;si la taille est inferieure ou egale a 0
+	set pc,malloc_error
+ife A,2
+	set pc,malloc_error
 sub [free_mem],A
 ;on parcours la mémoire pour savoir s'il y a un bloc assez grand
 set push,I
@@ -24,6 +31,7 @@ ife [I],0xFFFF
 add I,[I+1]
 ifn I,[end_mem]
 	set pc,malloc_boucle
+.malloc_error
 set I,pop
 set A,pop
 set pc,pop
@@ -46,9 +54,9 @@ set [I+1],pop
 sub I,A
 ;on retourne le pointeur apres avoir update l'header
 .malloc_return
-set B,I
-set [B],[currently_running]
-add B,2
+set Z,I
+set [Z],[currently_running]
+add Z,2
 set I,pop
 set A,pop
 set pc,pop
@@ -60,7 +68,6 @@ set push,B
 set push,A
 set A,[start_mem]
 set B,[start_mem]
-add B,[B+1]
 .free_boucle
 ifg B,peek
 	set pc,free_found
@@ -114,14 +121,13 @@ ifn A,[end_mem]
 set A,pop
 set pc,pop
 
-;met 0 dans la memoire allouee en A
+;met 0 dans la memoire allouee en A /!\ il faut que la memoire soit allouee !
 :efface_memoire
 ;on trouve le bon bloc memoire
 set push,B
 set push,A
 set A,[start_mem]
 set B,[start_mem]
-add B,[B+1]
 .eff_boucle
 ifg B,peek
 	set pc,eff_found
@@ -144,7 +150,7 @@ set B,pop
 set pc,pop
 
 ;--------------------------------------
-;memcpy copy de B vers A C mots
+;memcpy copy de [B] vers [A] C mots
 ;--------------------------------------
 :memcpy
 set push,I
@@ -152,10 +158,10 @@ set push,J
 set push,C
 set I,A
 set J,B
+add C,B
 .memcpy_boucle
 sti [I],[J]
-sub C,1
-ifn C,0
+ifn C,J
 	set pc, memcpy_boucle
 set C,pop
 set J,pop
@@ -170,7 +176,6 @@ set pc,pop
 set push,A
 set A,[start_mem]
 set B,[start_mem]
-add B,[B+1]
 .size_boucle
 ifg B,peek
 	set pc,size_found
@@ -180,5 +185,6 @@ set pc,size_boucle
 ;bloc memoire trouve, on efface
 .size_found
 set B,[A+1]
+sub B,2
 set A,pop
 set pc,pop

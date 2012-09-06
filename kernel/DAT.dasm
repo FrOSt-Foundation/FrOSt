@@ -11,24 +11,30 @@
 :free_mem dat 0x0
 :start_mem dat 0x1000
 :end_mem dat 0xFDFF
-:nb_periph dat 0x0
 :tmpV dat 0x0
-:nb_ecran dat 0x0
-:id_ecran1 dat 0x0
-:id_ecran2 dat 0x0
-:nb_keyboard dat 0x0
-:id_keyboard1 dat 0x0
-:nb_clock dat 0x0
-:id_clock1 dat 0x0
+
+:nb_ecrans dat 0x0
+:id_ecran dat 0x0
+
+:nb_claviers dat 0x0
+:id_clavier dat 0x0
+:msg_clavier dat 0xbcbc
+
+:id_clock dat 0x0
 :div_clock dat 60
+:msg_clock dat 0xabab
+
 :nb_disquette dat 0
-:id_disquette1 dat 0x0
+:id_disquette dat 0x0
+
 :VRAM1 dat 0x0
 :VRAM2 dat 0x0
+:ecran_taille dat 384
 :ecran_actif dat 0x0
 :COULEUR dat 0xF000
 :FOCUS_CLAVIER dat 0x0 
 ; Focus du clavier : 0x1 -> console, 0x2 -> interface graphique, 0x3 -> ecran appli
+
 :commande_help dat "help",0
 :commande_version dat "version",0
 :commande_echo dat "echo",0

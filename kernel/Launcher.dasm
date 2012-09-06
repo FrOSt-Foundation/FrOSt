@@ -229,7 +229,17 @@ set a , pop
 set pc , pop
 
 :launch_load
-JSR load
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
 set b , pop
 set a , pop
 set pc , pop
