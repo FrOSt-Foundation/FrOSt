@@ -1,3 +1,5 @@
 :test
 ;JSR frostGUI_start
-set pc , end
+set A,0
+set B,2
+sub pc,1
