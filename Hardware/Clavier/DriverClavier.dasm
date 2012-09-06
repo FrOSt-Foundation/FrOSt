@@ -1,31 +1,35 @@
 :init_clavier
-;a=id clavier
-	jsr save_ab
-
-	set [clavier_id],a
+;J=id clavier
+	set push,A
+	set push,B
+	ife [nb_claviers],1
+			set pc,init_clavier_end
+	add [nb_claviers],1
+	set [id_clavier],J
 	
 	set a,0
-	hwi [clavier_id]
+	hwi [id_clavier]
 
 	set a,3
-	set b,[clavier_msg]
-	hwi [clavier_id]
-	
-	set pc,return_ab
+	set b,[msg_clavier]
+	hwi [id_clavier]
+.init_clavier_end
+	set B,pop
+	set A,pop
+	set pc,pop
 	
 
 :is_pressed ;a=ascii, z=booléen
-	jsr save_abc
+	set push,A
+	set push,B
+	set push,C
 
 	set b,a
 	set a,2
-	hwi [clavier_id]
+	hwi [id_clavier]
 
 	set z,c
 
-	set pc,return_abc
-
-
-
-:clavier_id dat 0
-:clavier_msg dat 0
+	set C,pop
+	set B,pop
+	set C,pop

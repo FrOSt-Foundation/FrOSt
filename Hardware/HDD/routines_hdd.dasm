@@ -1,7 +1,3 @@
-;variable
-:AdresseLecteur dat 0xFFFF
- 
- 
 ;A utiliser dans l'ordre : GetAdresseLecteur
 ;                          GetDisqueUtilisable
 ;                          et si il y a un disue ,les autres.
@@ -10,10 +6,16 @@
 ; GetAdresseLecteur  : enregistre l'adresse du lecteur. Ne retourne rien
  
 :GetAdresseLecteur
-add [AdresseLecteur],1
-hwq [AdresseLecteur]
+jsr push_regs
+.Getaddr
+ife [nb_disquette],1
+	set pc,pop
+add [id_disquette],1
+hwq [id_disquette]
 ifn a,0x4cae
-  set PC,GetAdresseLecteur
+  set PC,GetAddr
+add [nb_disquette],1
+jsr pop_regs
 set PC,POP
  
 ;---------------------------------------------
@@ -28,11 +30,11 @@ ife b,0x7FFF
 set pc,pop
 :GetDisqueUtilisable2
 set a,0x0000
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
 :GetDisqueQualite
 set a,0xFFFF
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set PC,pop
  
  
@@ -45,7 +47,7 @@ set PC,pop
  
 :GetDisqueProperties
 set a,0x0001
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
  
 ;---------------------------------------------
@@ -54,7 +56,7 @@ set pc,pop
  
 :GetDisqueFlag
 set a,0x0002
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
  
 ;---------------------------------------------
@@ -63,7 +65,7 @@ set pc,pop
  
 :SetDisqueFlag
 set a,0x0003
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
  
 ;---------------------------------------------
@@ -74,7 +76,7 @@ set pc,pop
  
 :GetDisqueInterupt
 set a,0x0004
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
  
 ;---------------------------------------------
@@ -82,7 +84,7 @@ set pc,pop
  
 :SetMessageInterupt
 set a,0x0005
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
  
 ;---------------------------------------------
@@ -91,7 +93,7 @@ set pc,pop
 ;                                                X= la premiere adresse d'enregistrement de ces donnes
 :ReadDisque
 set a,0x0010
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
  
 ;---------------------------------------------
@@ -100,5 +102,5 @@ set pc,pop
 ;                                                      X= l'adresses des donnes a ecrire(sur la ram)
 :WriteDisque
 set a,0x0011
-hwi [AdresseLecteur]
+hwi [id_disquette]
 set pc,pop
