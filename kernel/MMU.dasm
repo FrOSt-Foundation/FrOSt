@@ -48,10 +48,14 @@ ife B,0x78
 :MMU_end_loop
 add A,1
 ifn A,I
-	ifn [A],0xDA1A
-		ifn [A+1],0xDA1A
-			ifn [A+2],0xDA1A
-				set PC,MMU_loop
+	ife [A],0xDA1A
+		ife [A+1],0xDA1A
+			ife [A+2],0xDA1A
+				set pc,MMU_end
+ife A,I
+	set pc,MMU_end
+set pc,MMU_loop
+.MMU_end
 set I,pop
 set B,pop
 set A,pop

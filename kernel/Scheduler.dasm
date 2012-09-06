@@ -1,6 +1,6 @@
 ;16 programs can work at the same time
 :Sched_number dat 0
-:Sched_time dat 0
+:Sched_time dat 1
 
 :Sched_table_prog dat 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the adr of PC when stopped
 ;prio : 0x msg msg hw prio   hw=1->key   hw=2->disk
@@ -13,8 +13,9 @@
 :Scheduler
 ifl [Sched_number],2
 	rfi 0
-set [Sched_tmp],pop
+:sched_init
 set A,pop
+set [Sched_tmp],pop
 set push,Ex
 set push,I
 set push,J
@@ -39,12 +40,14 @@ ife [disk_int],1
 	set PC,Sched_disk
 ;error, we come back to the current program
 :Sched_back
+set [currently_running],[Sched_current]
+add [currently_running],1
 set A,[Sched_current]
-add A,[Sched_table_SP]
-set SP,A
+add A,Sched_table_SP
+set SP,[A]
 set A,[Sched_current]
-add A,[Sched_table_prog]
-set [Sched_tmp],A
+add A,Sched_table_prog
+set [Sched_tmp],[A]
 set A,pop
 set B,pop
 set C,pop
@@ -54,8 +57,8 @@ set X,pop
 set J,pop
 set I,pop
 set Ex,pop
-set push,A
 set push,[Sched_tmp]
+set push,A
 rfi 0
 
 :Sched_clock ;pour l'instant un tourniquet

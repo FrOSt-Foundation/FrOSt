@@ -57,6 +57,7 @@
 :message_help dat "Liste des commandes :",0x11,0x1F,"- help ",0x1f,"- version",0x11,0x1F,"- echo ",0x1F,"- couleur",0x11,0x1F,"- clear",0x1F,"- load",0x11,0x1F,"- ls   ",0x1F,"- cd",0x11,0x1F,"- kill ",0x1F,"- mem",0x11,0x1F,"- run  ",0x1F,"- mkdir",0x11,0x1f,"- mv   ",0x1F,"- cp",0x11,0x1F,"- touch",0x1F,"- cat",0x11,0x1F,"- startx",0
 :message_version dat "Version 1.0",0
 :message_inconnu dat "Commande inconnue",0
+:message_run dat "Usage : run [adresse] [media=RAM]",0
 :message_bienvenue dat "Welcome on board",0x11,"FrOSt fully loaded",0x11,"type help if you are completely lost",0
 :message_test_disquette dat "Disquette presente?",0
 :message_disquette_verouillee dat "Disquette lecture seule",0

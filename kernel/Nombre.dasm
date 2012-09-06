@@ -2,25 +2,6 @@
 ;Convertit le caractere dans X en nombre dans Z
 ;---------------------------------------------
 
-:carac_to_hexa
-set x,0x70
-set z,0xFFFF
-ifl x,0x30
-	set pc,pop
-set z,x
-sub z,0x30
-ifl z,0xA
-	set pc,pop
-and z,0xDF ;tout en majuscule
-ifl z,0x11
-    set z,0x6
-sub z,0x7
-ifl z,0x10
-	set pc,pop
-set z,0xFFFF
-set pc,pop
-
-
 ;--------------------------------------------------------
 ;DUMP print the content of A in [C] in base B. Need at most 4 words
 ;doesn't modify any of the regs
@@ -32,20 +13,18 @@ set push,A
 set push,B
 set push,J
 set J,0
-:dump_loop
+.dump_loop
 set B,A
 mod B,I
 ifg B,9
-	add PC,3
+	add B,7
 add B,48
-add PC,2
-add B,55
 set push,B
 div A,I
 add J,1
 ifn A,0
 	set PC,dump_loop
-:dump_print
+.dump_print
 set [C],pop
 add C,1
 sub J,1
@@ -56,3 +35,67 @@ set B,pop
 set A,pop
 set I,pop
 set PC,pop
+
+;-----------------------------------------
+;take a char* in [A], the base in B and return the number in Z
+;Si 0x alors change la base pour 16
+;Si 0d alors change la base pour 10
+;Si 0b alors change la base pour 2
+;-----------------------------------------
+:ctoi
+set push,X
+set push,I
+set push,B
+set push,A
+set X,SP
+sub X,1
+set J,A
+set Z,0
+ife [A+1],'x'
+	set pc,ctoi_pre
+ife [A],0x30
+	ife [A+1],'d'
+		set pc,ctoi_pre
+ife [A],0x30
+	ife [A+1],'b'
+		set pc,ctoi_pre
+ife [A+1],'o'
+	set pc,ctoi_pre
+.ctoi_avance
+set push,[A]
+add A,1
+ifn [A],0
+	set pc,ctoi_avance
+set I,SP
+set SP,X
+.ctoi_boucle
+ifg peek,0x57
+;lettre
+	sub peek,0x27
+sub peek,0x30
+set A,peek
+mul Z,B
+add Z,A
+ifn SP,I
+	ifn push,I
+		set pc,ctoi_boucle
+.ctoi_end
+add X,1
+set SP,X
+set A,pop
+set B,pop
+set I,pop
+set X,pop
+set pc,pop
+.ctoi_pre
+add A,1
+ife [A],'x'
+	set B,16
+ife [A],'d'
+	set B,10
+ife [A],'b'
+	set B,2
+ife [A],'o'
+	set B,8
+add A,1
+set pc,ctoi_avance

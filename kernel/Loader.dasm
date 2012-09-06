@@ -1,34 +1,47 @@
 ;---------------------------------------------
-;LOADER loads a program at adress A from hw B
+;LOADER loads a program at adress A from hw B.
 ;args are in C,X,Y,Z,I,J
 ;a new stack is prepared
 ;call this with jsr
 ;---------------------------------------------
 :Loader
 ;recuperer la taille du programme dans C
-;pour la pile
-add C,0x200
+ife B,0
+;programme dans la RAM
+	jsr size
+set push,C
+set push,Z
+;pour la pile on ajoute 0x200
+set C,B
+add B,0xFF
 set push,A
-jsr malloc
-ife B,0xFFF
-	set PC,Loader_end
-set A,pop
-;copier le programme en [B]
 set A,B
-add A,1
-set push,B
-set B,0
-set C,peek
-jsr MMU
-;on a deplace les offsets
+set [currently_running],[Sched_number]
+add [currently_running],1
+jsr malloc
+ife Z,0xFFF
+	set PC,Loader_end
+;copier le programme en [B]
 set B,pop
+set A,Z
+jsr memcpy
+;programme copie, on deplace les offsets
+set B,C
+set C,A
+jsr MMU
+set Z,pop
+set C,pop
+;on a deplace les offsets
 jsr push_regs
 set [KER_SP],SP
-sub A,2
-set SP,[A]
-add A,2
+set SP,A
+sub A,1
+add SP,[A]
+sub SP,2
+set push,A
+add A,1
 ;on enregistre le programme dans le sched
-set B,[Sched_table_prog]
+set B,Sched_table_prog
 sub B,1
 add B,1
 ifn [B],0
@@ -43,7 +56,16 @@ add A,1
 add [Sched_number],1
 ;IL faut modifier les dats présents en fonction des priorités.
 ;on passe la main au prog
-set PC,A
+set B,[B]
+and B,0x00F0
+ife B,0x30
+	jsr ecran_bascule_ecran
+set [FOCUS_CLAVIER],2
+set push,A
+set push,0
+ife [Sched_number],1
+	set pc,sched_init
+rfi 0
 :Loader_end
 set Z,pop
 set A,pop

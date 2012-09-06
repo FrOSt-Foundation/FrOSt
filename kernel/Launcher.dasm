@@ -191,35 +191,14 @@ set pc , pop
 
 :launch_couleur
 set push , Z
-set push , I
-set push , C
-set push , X
-set C, [parse_commande2]
-set Z , 0
-set I , 3
-:boucle_launch_couleur
-set X , [C]
-ife I , 0
-	set pc , launch_couleur_change
-JSR carac_to_hexa
-ife Z , 0xFFFF
-	set pc , end_launch_couleur
-mul z , 0x10
-sub i , 1
-add C , 1
-set pc , boucle_launch_couleur
-:launch_couleur_change
-ife Z , 0x0000
-	set pc , end_launch_couleur
-set B , Z
+set A, [parse_commande2]
+set B,16
+jsr ctoi
+set B,Z
 JSR change_couleur
-:end_launch_couleur
-set x , pop
-set c , pop
-set i , pop
-set z , pop
-set b , pop
-set a , pop
+set Z,  pop
+set B,pop
+set A,pop
 set pc , pop
 
 :launch_clear
@@ -293,13 +272,23 @@ set a , pop
 set pc , pop
 
 :launch_run ;on recupere le programme a charger et on le charge
-set push , I
-set push , j
+set A,[parse_commande2]
+set B,16
+set push,Z
+jsr ctoi
+set B,0
+set A,Z
+set Z,[parse_commande2]
+ifn [Z],0
+	jsr loader
+set Z,pop
+set push,I
+set push,J
 JSR scroll_ecran
 set I , 11
 JSR scroll_from
 set j , 0
-set A , message_TODO
+set A , message_run
 JSR printf
 JSR scroll_ecran
 set j , pop

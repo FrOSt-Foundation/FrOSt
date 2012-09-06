@@ -17,8 +17,8 @@ set pc , pop
 ;msg 0x4 changer de couleur, couleur dans B
 ;msg 0x5 scroll ecran d'une ligne
 ;msg 0x6 printc carac dans C, ligne dans I, colone dans J
-;msg 0x7 efface ligne I
-;msg 0x8 scroll from, ligne dans I
+;msg 0x7 efface ligne I abandonne
+;msg 0x8 scroll from, ligne dans I abandonne
 ;msg 0x9 clear ecran
 ;msg 0xA efface memoire
 ;msg 0xF clear the screen
@@ -40,10 +40,6 @@ ife A , 0x5
 	set pc , ih_scroll_ecran
 ife A , 0x6
 	set pc , ih_printc
-ife A , 0x7
-	set pc , ih_efface_ligne
-ife A , 0x8
-	set pc , ih_scroll_from
 ife A, 0x9
 	set pc , ih_clear_screen
 ife A , 0xA
@@ -53,20 +49,22 @@ ife A , 0xF
 ife A , 0x10
 	set pc , ih_launch
 ife A, 0xabab
-		set pc , ih_clock
+	set pc , ih_clock
 ife A,0xbcbc
-       set pc , ih_clavier
+    set pc , ih_clavier
 ife A , 0xcdcd
 	set pc , ih_disquette
 rfi 1
 
 :ih_clavier
-iaq 0
 set push,C
 set A , 1
 hwi [id_clavier]
 ife c , 0x1B
 	JSR ecran_bascule_ecran
+ife [FOCUS_CLAVIER],0x1
+	set [currently_running],0
+iaq 0
 ife [FOCUS_CLAVIER] , 0x1
 	JSR console_traiter_caractere
 set [key_int],1
@@ -75,7 +73,12 @@ set C,pop
 set PC,Scheduler
 	
 :ih_clear
+set A,[ecran_actif]
+set [ecran_actif],[VRAM2]
+ifl [SP+1],[start_mem]
+	set [ecran_actif],[VRAM1]
 JSR clear
+set [ecran_actif],A
 rfi 0
 
 :ih_malloc
@@ -89,8 +92,14 @@ JSR free
 rfi 0
 
 :ih_printf
+set A,[ecran_actif]
+set [ecran_actif],[VRAM2]
+ifl [SP+1],[start_mem]
+	set [ecran_actif],[VRAM1]
+set push,A
 set A , B
 JSR printf
+set [ecran_actif],pop
 rfi 0
 
 :ih_couleur
@@ -98,23 +107,33 @@ JSR change_couleur
 rfi 0
 
 :ih_scroll_ecran
-JSR scroll_ecran
+set A,[ecran_actif]
+set [ecran_actif],[VRAM2]
+ifl [SP+1],[start_mem]
+	set [ecran_actif],[VRAM1]
+set push,I
+set I,B
+JSR scroll
+set I,pop
+set [ecran_actif],A
 rfi 0
 
 :ih_printc
+set A,[ecran_actif]
+set [ecran_actif],[VRAM2]
+ifl [SP+1],[start_mem]
+	set [ecran_actif],[VRAM1]
 JSR printc
-rfi 0
-
-:ih_efface_ligne
-JSR efface_ligne
-rfi 0
-
-:ih_scroll_from
-JSR scroll_from
+set [ecran_actif],A
 rfi 0
 
 :ih_clear_screen
+set A,[ecran_actif]
+set [ecran_actif],[VRAM2]
+ifl [SP+1],[start_mem]
+	set [ecran_actif],[VRAM1]
 JSR clear
+set [ecran_actif],A
 rfi 0
 
 :ih_efface_memoire
@@ -134,3 +153,18 @@ rfi 0
 set [disk_int],1
 set PC,Scheduler
 
+:ih_ask_clavier
+set A,Sched_table_prio
+add A,[Sched_current]
+add [A],1
+set [Sched_time],0
+set [clock_int],0
+set pc,Scheduler
+
+:ih_ask_disk
+set A,Sched_table_prio
+add A,[Sched_current]
+add [A],2
+set [Sched_time],0
+set [clock_int],0
+set pc,Scheduler
