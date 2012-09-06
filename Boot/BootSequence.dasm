@@ -2,13 +2,12 @@
 
 JSR init_memoire
 JSR detection_periph
+set [FOCUS_CLAVIER] , 0x1
 JSR init_interrupthandler
 JSR init_periph
 JSR init_interpreteur
 JSR init_launcher
 JSR init_console
-set [FOCUS_CLAVIER] , 0x1
-set push, A
 set push , I
 set push , J
 set A , message_bienvenue
@@ -17,8 +16,10 @@ set J , 1
 JSR printf
 set J , pop
 set i , pop
-set a , pop
-set pc , end
+;set pc , end
+;test du chargement des programmes
+;sera enleve apres
+set pc,test
 
 ;---------------------------------------------
 ;INITIALISATION DE L'IH
