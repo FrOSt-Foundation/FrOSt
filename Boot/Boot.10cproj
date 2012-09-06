@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <name>Boot</name>
+  <files>
+    <file path="BootSequence.dasm" />
+    <file path="MemoryInit.dasm" />
+  </files>
+</project>

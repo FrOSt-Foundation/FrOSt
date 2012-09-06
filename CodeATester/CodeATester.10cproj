@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <name>CodeATester</name>
+  <files>
+    <file path="Test.dasm" />
+  </files>
+</project>
