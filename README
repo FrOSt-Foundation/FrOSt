@@ -11,6 +11,13 @@ Le wiki du projet contient toutes les informations utiles à ce sujet
 
 =====
 
+Deux branches sont disponibles : 
+-une Dev-kit v1.7.3 ready, vous avez juste à télécharger
+ et à ouvrir le projet dans Dev-kit. Il fonctionnera directement.
+-une projet only, qui ne contient que les sources de FrOSt.
+
+=====
+
 Lien vers les dernières spécifications du DCPU-16 et des hardware : https://docs.google.com/document/d/1H4M_PJBWtQduMWpMAsux1A9nClAwLAP5A7tPx_MKw5g/edit
 
 =====
