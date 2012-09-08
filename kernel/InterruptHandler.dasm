@@ -23,6 +23,7 @@ set pc , pop
 ;msg 0xA efface memoire
 ;msg 0xF clear the screen
 ;msg 0x10 launch
+;msg 0x11 stop the execution of a program, return msg in B
 
 
 ;--------------------------------------------------------
@@ -48,6 +49,8 @@ ife A , 0xF
 	set pc , ih_clear
 ife A , 0x10
 	set pc , ih_launch
+ife A,0x11
+	set pc,ih_stop
 ife A, 0xabab
 	set pc , ih_clock
 ife A,0xbcbc
@@ -168,3 +171,6 @@ add [A],2
 set [Sched_time],0
 set [clock_int],0
 set pc,Scheduler
+
+:ih_stop
+set pc,Finisher

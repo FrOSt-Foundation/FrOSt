@@ -74,52 +74,12 @@ set PC,pop
 
 ;---------------------------------------------
 ;FINISHER finish a program properly
-;call with jsr
+;call with INT 0x11
 ;return to the console
 ;---------------------------------------------
 :Finisher
-;boucle pour savoir dans quel bloc on est
-;A contient ancienne adr de PC
 set A,pop
-set B,[start_mem]
-:Finisher_loop
-set C,B
-add C,[C+1]
-ifg A,B
-	ifl A,C
-		set PC,Finisher_next
-set B,[B+2]
-set PC,Finisher_loop
-:Finisher_next
-;on a en B le bloc
-set A,B
-jsr free
-set A,Sched_table_prog
-set X,Sched_table_prio
-set I,Sched_table_sp
-set Z,[Sched_current]
-add A,Z
-add X,Z
-add I,Z
-:Finisher_modif
-add Z,1
-ife Z,15
-	set PC,Finisher_next_next
-set B,A
-set Y,X
-set J,I
-add A,1
-add X,1
-add I,1
-set [B],[A]
-set [Y],[X]
-set [J],[I]
-set PC,Finisher_modif
-set [A],0
-set [X],0
-set [I],0
-:Finisher_next_next
-set SP,[KER_SP]
-jsr pop_regs
-sub [Sched_number],1
-set PC,pop
+set B,pop
+set push,end
+set push,A
+rfi 0
