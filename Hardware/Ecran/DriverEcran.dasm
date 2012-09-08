@@ -265,20 +265,10 @@ set pc , pop
 
 ;------------------------------
 ;AJOUT DE BLANC TANT QU'ON EST
-;PAS EN DEBUT DE LIGNE
+;PAS EN DEBUT DE LIGNE (plus vraiment maintenant... :p)
 ;------------------------------
 
 :p_return
-;set X,I
-;sub X,[ecran_actif]
-;mod X,32
-;.p_return_boucle
-;set [I],0
-;add I,1
-;sub X,1
-;ifn X,0
-;	set pc,p_return_boucle
-;add J,1
 set X,I
 sub X,[ecran_actif]
 mod X,32
@@ -298,7 +288,7 @@ sub X,[ecran_actif]
 mod X,32
 ifg X,29
 	set pc , ptab1
-set [I],0x0
+set [I],0
 add I,1
 set [I],0
 add I,1
@@ -320,35 +310,10 @@ set PC,boucle_printf
 ;CLEAR the screen
 ;-------------------------------------
 :clear
-set push,I
-set push,J
 set push,A
-set push,B
 set A,[ecran_actif]
-jsr size
-set I,[ecran_actif]
-set J,0
-set push,B
-mod peek,2
-ifn peek,0
-	set pc,clear_screen_boucle2
-.clear_screen_boucle
-sti [I],0
-.clear_screen_boucle2
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-ifn J,B
-    set PC,clear_screen_boucle
-set B,pop
-set B,pop
+jsr efface_memoire
 set A,pop
-set J,pop
-set I,pop
 set PC,pop
 
 

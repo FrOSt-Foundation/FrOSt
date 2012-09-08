@@ -132,8 +132,9 @@ set pc,eff_boucle
 set B,SP
 set SP,A
 add SP,[A+1]
+add A,2
 .eff_eff
-set [push],0
+set push,0
 ifn A,SP
 	set pc,eff_eff
 ;bloc entierement vide
@@ -149,17 +150,48 @@ set pc,pop
 set push,I
 set push,J
 set push,C
+set push,C
 set I,A
 set J,B
 add C,B
+ifl peek,8
+	set pc,memcpy_boucle2
+mod peek,8
+ifn peek,0
+	set pc,memcpy_boucle3
 .memcpy_boucle
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
 sti [I],[J]
 ifn C,J
 	set pc, memcpy_boucle
 set C,pop
+set C,pop
 set J,pop
 set I,pop
 set pc,pop
+.memcpy_boucle2
+sti [I],[J]
+ifn C,J
+	set pc,memcpy_boucle
+set C,pop
+set C,pop
+set C,pop
+set C,pop
+set J,pop
+set I,pop
+set pc,pop
+.memcpy_boucle3
+sti [I],[J]
+sub peek,1
+ifn peek,0
+	set pc,memcpy_boucle3
+set pc,memcpy_boucle
 
 ;--------------------------------------
 ;size renvoie la taille dans B de l'adresse A
