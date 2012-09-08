@@ -1,7 +1,3 @@
-;---------------------------------------------
-;Convertit le caractere dans X en nombre dans Z
-;---------------------------------------------
-
 ;--------------------------------------------------------
 ;DUMP print the content of A in [C] in base B. Need at most 4 words
 ;doesn't modify any of the regs

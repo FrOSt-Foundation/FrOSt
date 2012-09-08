@@ -316,7 +316,7 @@ set J,pop
 set I,pop
 set push,I
 set push,J
-add J,19
+add J,15
 sub I,1
 set A,mem_print
 jsr printf

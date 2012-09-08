@@ -29,6 +29,11 @@ set pc,update_vram
 	set A,pop
 	set pc,pop
 
+;b=couleur, aucun controle sur b
+:change_couleur
+set [COULEUR] , B
+set pc , pop
+
 ;b=pointeur palette,0=default
 :change_palette
 	set push,A
@@ -111,14 +116,17 @@ sub i , 1
 mul i , 32
 add i , [ecran_actif]
 set j , 0
-	:boucle_efface_ligne
-	ife j , 32
-		set pc , fin_efface_ligne
-	set [i] , 0
-	add i , 1
-	add j , 1
-	set pc , boucle_efface_ligne
-:fin_efface_ligne
+.boucle_efface_ligne
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+ifn J,32
+	set pc,boucle_efface_ligne
 set j , pop
 set i , pop
 set pc , pop
@@ -141,7 +149,7 @@ ife i , 1
 	set pc , fin_scroll
 ifg i , 12
 	set i , 12
-sub i , 1	
+sub i , 1
 set j , i
 sub j , 1
 mul i , 32
@@ -156,9 +164,7 @@ BOR y , [couleur]
 		set pc , fin_scroll
 	ife [i] , y
 		set pc , fin_scroll
-	set [j] , [i]
-	add i , 1
-	add j , 1
+	sti [j] , [i]
 	add x , 1
 	set pc , boucle_scroll
 :fin_scroll
@@ -204,18 +210,6 @@ set j , pop
 set i , pop
 set pc , POP
 
-
-;---------------------------------
-;Modification de la couleur d'affichage
-;Couleur dans B (0x7000)
-;Aucun controle sur la couleur
-;---------------------------------
-:change_couleur
-set [COULEUR] , B
-set pc , pop
-
-
-
 ;--------------------------------
 ;Afficher une phrase à l'écran
 ;Ligne dans I , 1 < I < 12
@@ -223,50 +217,50 @@ set pc , pop
 ;Adresse de du texte dans A
 ;--------------------------------
 :printf
-set push , b
-set push , c
-ifl i , 1
-	set i , 1
-ifg i , 12
-	set i , 12
-ifl j , 1
-	set j , 1
-ifg j , 32
-	set j , 32
-sub i , 1
-sub j , 1
-mul i , 32
-add i , j
-add i , [ecran_actif]
-set c , [ecran_actif]
-add c , 384
-
+set push,B
+set push,I
+set push,J
+set push,X
+ifl i,1
+	set I,1
+ifg I,12
+	set I,12
+ifl J,1
+	set J,1
+ifg J,32
+	set J,32
+sub I,1
+sub J,1
+set I,I
+mul I,32
+add I,J
+add I,[ecran_actif]
+set J,A
+add [ecran_taille],[ecran_actif]
 :boucle_printf
-	set b , [A]
-	ife b , 0
-		set pc , fin_printf
-	ife i , c
-		JSR scroll_printf
-		
-	ife b , 0x11
-		set pc , p_return
-	ife b , 0x1F
-		set pc , p_tab	
-	
-	BOR b , [COULEUR]
-	set [i] , b
-	add a , 1
-	add i , 1
-	
-	set pc , boucle_printf
+set B,[J]
+ife B,0
+	set pc,fin_printf
+ife I,[ecran_taille]
+	JSR scroll_printf
+ife B,0x11
+	set pc,p_return
+ife B,0x1F
+	set pc,p_tab	
+BOR B,[COULEUR]
+sti [I],B
+set pc , boucle_printf
 :fin_printf
-set c , pop
-set b , pop
-set pc , pop
+sub [ecran_taille],[ecran_actif]
+set X,pop
+set J,pop
+set I,pop
+set B,pop
+set pc,pop
 
 :scroll_printf
 JSR scroll_ecran
-sub i , 32
+sub I,32
 set pc , pop
 
 ;------------------------------
@@ -275,17 +269,23 @@ set pc , pop
 ;------------------------------
 
 :p_return
-set x , i
-sub x , [ecran_actif]
-MOD x , 32
-ifn x , 0
-	set pc , p_return1
-add a , 1
-set PC,boucle_printf
-:p_return1
-set [i] , 0x20
-add i , 1
-set pc , p_return
+;set X,I
+;sub X,[ecran_actif]
+;mod X,32
+;.p_return_boucle
+;set [I],0
+;add I,1
+;sub X,1
+;ifn X,0
+;	set pc,p_return_boucle
+;add J,1
+set X,I
+sub X,[ecran_actif]
+mod X,32
+add I,32
+sub I,X
+add J,1
+set pc,boucle_printf
 
 
 
@@ -293,27 +293,27 @@ set pc , p_return
 ;AJOUT DE 3 BLANCS OU RETOUR A LA LIGNE
 ;--------------------------------------
 :p_tab
-set Z , 0x20
-set Y , I
-sub y , [ecran_actif]
-MOD Y , 32
-ifg y , 29
+set X,I
+sub X,[ecran_actif]
+mod X,32
+ifg X,29
 	set pc , ptab1
-set [i] , Z
-add i , 1
-set [i] , Z
-add i , 1
-set [i] , Z
-add i , 1
-set pc , fin_ptab
+set [I],0x0
+add I,1
+set [I],0
+add I,1
+set [I],0
+add I,1
+set pc,fin_ptab
 :ptab1
-ife y , 32
-	set pc , fin_ptab
-add y , 1
-add i , 1
-set pc , ptab1
+ife X,32
+	set pc,fin_ptab
+add X,1
+set [I],0
+add I,1
+set pc,ptab1
 :fin_ptab
-add a , 1
+add J,1
 set PC,boucle_printf
 
 ;-------------------------------------
@@ -328,10 +328,23 @@ set A,[ecran_actif]
 jsr size
 set I,[ecran_actif]
 set J,0
+set push,B
+mod peek,2
+ifn peek,0
+	set pc,clear_screen_boucle2
 .clear_screen_boucle
+sti [I],0
+.clear_screen_boucle2
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
+sti [I],0
 sti [I],0
 ifn J,B
     set PC,clear_screen_boucle
+set B,pop
 set B,pop
 set A,pop
 set J,pop
@@ -341,11 +354,14 @@ set PC,pop
 
 ;------------------------------
 ;AFFICHER UN CARACTERE
-;CARACETRE DANS C
+;CARACTERE DANS C
 ;I , ligne
 ;J , colonne
 ;-----------------------------
 :printc
+set push,I
+set push,J
+set push,C
 ifl i , 1
 	set i , 1
 ifg i , 12
@@ -361,6 +377,9 @@ add i , j
 add i , [ecran_actif]
 BOR c , [COULEUR]
 set [i] , c
+set C,pop
+set J,pop
+set I,pop
 set pc , pop
 
 ;-------------------------
