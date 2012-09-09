@@ -3,7 +3,7 @@
 ;---------------------------------------------
 :invite_FrSH dat "FrSH>",0
 :pos_curseur dat 6
-:curseur_FrSH dat 0x9F , 0
+:curseur_FrSH dat 0x9F
 
 
 
@@ -37,11 +37,11 @@ set pc , pop
 set push , B
 set push , I
 set push , J
-set B , curseur_FrSH
+set C , [curseur_FrSH]
 set i , 12
 set j , [pos_curseur]
 MOD j , 32
-int 0x3
+int 0x6
 set J , pop
 set I , pop
 set B , pop
@@ -50,20 +50,14 @@ set pc , pop
 
 
 :console_traiter_caractere
-
-ifg C , 0x29
-	ifl C , 0x40
-		JSR affiche_caractere
-ifg C , 0x60
-	ifl C , 0x7F
-		JSR affiche_caractere
-ife c , 0x20
-	JSR affiche_caractere
 ife C , 0x10
-	JSR efface_caractere
+	set pc,efface_caractere
 ife C , 0x11
-	JSR valide_commande
-set pc , pop
+	set pc,valide_commande
+ifl C,0x80
+	ifg C,0x19
+		set pc,affiche_caractere
+set pc,pop
 
 
 :affiche_caractere
@@ -89,8 +83,11 @@ ife [pos_curseur] , 6
 	set pc , fin_efface_caractere
 set i , 12
 set j , [pos_curseur]
-set C , 0x20
+set C , 0
+set push,[couleur]
+set [couleur],0
 int 0x6
+set [couleur],pop
 sub [pos_curseur] , 1
 JSR affiche_curseur
 set pc , fin_efface_caractere

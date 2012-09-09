@@ -5,6 +5,7 @@
 ;---------------------------------------------
 :init_memoire ;initialisation de la memoire
 set push,A
+set [start_mem],FrOSt_end
 set A,[start_mem]
 set [A],0xFFFF ;libre
 set [A+1],[end_mem]

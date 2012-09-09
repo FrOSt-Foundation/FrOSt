@@ -1,101 +1,34 @@
 :init_launcher
+set A,commandes_ptr
+sub A,commandes_txt
+set [nombre_commandes],A
 set pc ,pop
 
 
 :launch
-set push , A
-set push , B
-
-set A , [parse_commande1]
-set B , commande_help
-JSR strcmp
-ife Z , 1
-	set pc , launch_help
-set a , [parse_commande1]
-set B , commande_version
-JSR strcmp
-ife Z , 1
-	set pc , launch_version
-set a , [parse_commande1]
-set B , commande_echo
-JSR strcmp
-ife Z , 1
-	set pc , launch_echo
-set a, [parse_commande1]
-set B , commande_couleur
-JSR strcmp
-ife Z , 1
-	set pc , launch_couleur
-set a, [parse_commande1]
-set B , commande_clear
-JSR strcmp
-ife Z , 1
-	set pc , launch_clear
-set a, [parse_commande1]
-set B , commande_load
-JSR strcmp
-ife Z , 1
-	set pc , launch_load
-set a, [parse_commande1]
-set B , commande_ls
-JSR strcmp
-ife Z , 1
-	set pc , launch_ls
-set a, [parse_commande1]
-set B , commande_cd
-JSR strcmp
-ife Z , 1
-	set pc , launch_cd
-set a, [parse_commande1]
-set B , commande_kill
-JSR strcmp
-ife Z , 1
-	set pc , launch_kill
-set a, [parse_commande1]
-set B , commande_mem
-JSR strcmp
-ife Z , 1
-	set pc , launch_mem
-set a, [parse_commande1]
-set B , commande_run
-JSR strcmp
-ife Z , 1
-	set pc , launch_run
-set a, [parse_commande1]
-set B , commande_mkdir
-JSR strcmp
-ife Z , 1
-	set pc , launch_mkdir
-set a, [parse_commande1]
-set B , commande_mv
-JSR strcmp
-ife Z , 1
-	set pc , launch_mv
-set a, [parse_commande1]
-set B , commande_cp
-JSR strcmp
-ife Z , 1
-	set pc , launch_cp
-set a, [parse_commande1]
-set B , commande_touch
-JSR strcmp
-ife Z , 1
-	set pc , launch_touch
-set a, [parse_commande1]
-set B , commande_cat
-JSR strcmp
-ife Z , 1
-	set pc , launch_cat
+set push,A
+set push,B
+set push,C
+set C,commandes_txt
 set A,[parse_commande1]
-set B,commande_startx
+.launch_boucle
+set B,[C]
+add C,1
 jsr strcmp
-ife Z,1
-	set PC,launch_startx
-set pc , launch_inconnu
+ife C,commandes_ptr
+	ife Z,0
+		set pc,l_inconnu
+ife Z,0
+	set pc,launch_boucle
+set B,C
+sub B,1
+add B,[nombre_commandes]
+set C,pop
+set pc,[B]
 
 
 
-:launch_help
+:l_help
 set push , I
 set push , j
 JSR scroll_ecran
@@ -114,7 +47,7 @@ set a , pop
 set pc , pop
 
 
-:launch_version
+:l_version
 set push , I
 set push , j
 JSR scroll_ecran
@@ -132,7 +65,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_inconnu
+:l_inconnu
 set push , I
 set push , j
 set push , x
@@ -151,11 +84,12 @@ JSR scroll_ecran
 set x , pop
 set j , pop
 set i , pop
+set C,pop
 set b , pop
 set a , pop
 set pc , pop
 
-:launch_echo
+:l_echo
 set push , I
 set push , j
 JSR scroll_ecran
@@ -163,9 +97,9 @@ set I , 11
 JSR scroll_from
 set A , 50
 JSR malloc
-ife B , 0xFFFF
+ife Z , 0xFFFF
 	set pc , fin_launch_echo
-set A , B
+set A , Z
 set push,A
 set B , [parse_commande2]
 set C , [parse_commande3]
@@ -189,25 +123,33 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_couleur
+:l_couleur
 set push , Z
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
 set A, [parse_commande2]
 set B,16
 jsr ctoi
 set B,Z
 JSR change_couleur
+jsr scroll_ecran
+set J,pop
+set I,pop
 set Z,  pop
 set B,pop
 set A,pop
 set pc , pop
 
-:launch_clear
+:l_clear
 JSR clear
 set b , pop
 set a , pop
 set pc , pop
 
-:launch_load
+:l_load
 set push , I
 set push , j
 JSR scroll_ecran
@@ -223,7 +165,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_ls
+:l_ls
 set push , I
 set push , j
 JSR scroll_ecran
@@ -239,7 +181,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_cd
+:l_cd
 set push , I
 set push , j
 JSR scroll_ecran
@@ -255,7 +197,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_kill
+:l_kill
 set push , I
 set push , j
 JSR scroll_ecran
@@ -271,7 +213,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_run ;on recupere le programme a charger et on le charge
+:l_run ;on recupere le programme a charger et on le charge
 set A,[parse_commande2]
 set B,16
 set push,Z
@@ -297,7 +239,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_mem
+:l_mem
 set push , I
 set push , j
 JSR scroll_ecran
@@ -327,7 +269,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_mkdir
+:l_mkdir
 set push , I
 set push , j
 JSR scroll_ecran
@@ -343,7 +285,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_mv
+:l_mv
 set push , I
 set push , j
 JSR scroll_ecran
@@ -359,7 +301,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_cp
+:l_cp
 set push , I
 set push , j
 JSR scroll_ecran
@@ -375,7 +317,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_touch
+:l_touch
 set push , I
 set push , j
 JSR scroll_ecran
@@ -391,7 +333,7 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_cat
+:l_cat
 set push , I
 set push , j
 JSR scroll_ecran
@@ -407,9 +349,41 @@ set b , pop
 set a , pop
 set pc , pop
 
-:launch_startx
+:l_startx
 iaq 0
 jsr frostGUI_start
+set b , pop
+set a , pop
+set pc , pop
+
+:l_man
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
+set b , pop
+set a , pop
+set pc , pop
+
+:l_ps
+set push , I
+set push , j
+JSR scroll_ecran
+set I , 11
+JSR scroll_from
+set j , 0
+set A , message_TODO
+JSR printf
+JSR scroll_ecran
+set j , pop
+set i , pop
 set b , pop
 set a , pop
 set pc , pop

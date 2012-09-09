@@ -158,27 +158,23 @@ set pc , pop
 
 
 :vider_parse
-set push , A
+set push , J
 set push , I
 :init_vide_parse1
-set a , [parse_commande1]
+set J , [parse_commande1]
 set i , 0
 :vide_parse1
 ife i , 27
 set pc , init_vide_parse2
-set [A] , 0
-add i , 1
-add a , 1
+sti [J] , 0
 set pc , vide_parse1
 :init_vide_parse2
-set a , [parse_commande2]
+set J , [parse_commande2]
 set i , 0
 :vide_parse2
 ife i , 27
 set pc , init_vide_parse3
-set [A] , 0
-add i , 1
-add a , 1
+sti [J] , 0
 set pc , vide_parse2
 :init_vide_parse3
 set a , [parse_commande3]
@@ -186,9 +182,7 @@ set i , 0
 :vide_parse3
 ife i , 27
 set pc , init_vide_parse4
-set [A] , 0
-add i , 1
-add a , 1
+sti [J] , 0
 set pc , vide_parse4
 :init_vide_parse4
 set a , [parse_commande4]
@@ -196,9 +190,7 @@ set i , 0
 :vide_parse4
 ife i , 27
 set pc , init_vide_parse5
-set [A] , 0
-add i , 1
-add a , 1
+sti [J] , 0
 set pc , vide_parse4
 :init_vide_parse5
 set a , [parse_commande5]
@@ -206,12 +198,10 @@ set i , 0
 :vide_parse5
 ife i , 27
 set pc , fin_vide_parse
-set [A] , 0
-add i , 1
-add a , 1
+sti [J] , 0
 set pc , vide_parse5
 :fin_vide_parse
 set i , pop
-set a , pop
+set J , pop
 set pc , pop
 
