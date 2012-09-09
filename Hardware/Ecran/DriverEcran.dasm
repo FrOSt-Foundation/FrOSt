@@ -31,7 +31,7 @@ set pc,update_vram
 
 ;b=couleur, aucun controle sur b
 :change_couleur
-set [COULEUR] , B
+set [couleur] , B
 set pc , pop
 
 ;b=pointeur palette,0=default
@@ -340,7 +340,7 @@ sub j , 1
 mul i , 32
 add i , j
 add i , [ecran_actif]
-BOR c , [COULEUR]
+BOR c , [couleur]
 set [i] , c
 set C,pop
 set J,pop

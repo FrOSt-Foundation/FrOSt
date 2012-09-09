@@ -9,7 +9,7 @@
 :currently_running dat 0
 :mem_print dat 0x0,0x0,0x0,0x0,0x0
 :free_mem dat 0x0
-:start_mem dat 0x1000
+:start_mem dat 0x1500
 :end_mem dat 0xFDFF
 :tmpV dat 0x0
 
@@ -31,33 +31,42 @@
 :VRAM2 dat 0x0
 :ecran_taille dat 384
 :ecran_actif dat 0x0
-:COULEUR dat 0xF000
+:couleur dat 0xF000
 :FOCUS_CLAVIER dat 0x0 
 ; Focus du clavier : 0x1 -> console, 0x2 -> interface graphique, 0x3 -> ecran appli
 
-:commande_help dat "help",0
-:commande_version dat "version",0
-:commande_echo dat "echo",0
-:commande_couleur dat "couleur",0
-:commande_clear dat "clear",0
-:commande_load dat "load",0
-:commande_ls dat "ls",0
-:commande_cd dat "cd",0
-:commande_kill dat "kill",0
-:commande_mem dat "mem",0
-:commande_run dat "run",0
-:commande_mkdir dat "mkdir",0
-:commande_mv dat "mv",0
-:commande_cp dat "cp",0
-:commande_touch dat "touch",0
-:commande_startx dat "startx",0
-:commande_cat dat "cat",0
+;Tableaux de pointeurs pour la console
+:nombre_commandes dat 0
+:commandes_txt dat c_help,c_version,c_echo,c_couleur,c_clear,c_load,c_ls,c_cd,c_kill,c_mem,c_run,c_mkdir,c_mv,c_cp,c_touch,c_startx,c_cat,c_man,c_ps
+:commandes_ptr dat l_help,l_version,l_echo,l_couleur,l_clear,l_load,l_ls,c_cd,l_kill,l_mem,l_run,l_mkdir,l_mv,l_cp,l_touch,l_startx,l_cat,l_man,l_ps
+;:messages_man  dat m_help,m_version,m_echo,m_couleur,m_clear,m_load,m_ls,c_cd,m_kill,m_mem,m_run,m_mkdir,m_mv,m_cp,m_touch,m_startx,m_cat,m_man,m_ps
+;Commandes de la console
+:c_help dat "help",0
+:c_version dat "version",0
+:c_echo dat "echo",0
+:c_couleur dat "couleur",0
+:c_clear dat "clear",0
+:c_load dat "load",0
+:c_ls dat "ls",0
+:c_cd dat "cd",0
+:c_kill dat "kill",0
+:c_mem dat "mem",0
+:c_run dat "run",0
+:c_mkdir dat "mkdir",0
+:c_mv dat "mv",0
+:c_cp dat "cp",0
+:c_touch dat "touch",0
+:c_startx dat "startx",0
+:c_cat dat "cat",0
+:c_man dat "man",0
+:c_ps dat "ps",0
 :message_oui dat "Oui",0
 :message_non dat "Non",0
-:message_help dat "Liste des commandes :",0x11,0x1F,"- help ",0x1f,"- version",0x11,0x1F,"- echo ",0x1F,"- couleur",0x11,0x1F,"- clear",0x1F,"- load",0x11,0x1F,"- ls   ",0x1F,"- cd",0x11,0x1F,"- kill ",0x1F,"- mem",0x11,0x1F,"- run  ",0x1F,"- mkdir",0x11,0x1f,"- mv   ",0x1F,"- cp",0x11,0x1F,"- touch",0x1F,"- cat",0x11,0x1F,"- startx",0
+:message_help dat "Liste des commandes :",0x11,0x1F,"- help ",0x1f,"- version",0x11,0x1F,"- man",0x1F,"- echo ",0x1F,0x11,"- couleur",0x1F,"- clear",0x11,0x1F,"- load",0x1F,"- ls   ",0x11,0x1F,"- cd",0x1F,"- kill ",0x11,0x1F,"- mem",0x1F,"- run  ",0x11,0x1F,"- mkdir",0x1f,"- mv   ",0x11,0x1F,"- cp",0x1F,"- touch",0x11,0x1F,"- cat",0x1F,"- startx",0x11,0x1F,"- ps",0
 :message_version dat "Version 1.0",0
 :message_inconnu dat "Commande inconnue",0
 :message_run dat "Usage : run [adresse] [media=RAM]",0
+:message_kill dat "Usage : kill [nom ou ID]",0
 :message_bienvenue dat "Welcome on board",0x11,"FrOSt fully loaded",0x11,"type help if you are completely lost",0
 :message_test_disquette dat "Disquette presente?",0
 :message_disquette_verouillee dat "Disquette lecture seule",0
@@ -66,3 +75,25 @@
 :message_disquette_erreur_copy dat "Chargement impossible : erreur de copie",0
 :message_mem dat "Memoire libre : 0x     mots",0
 :message_todo dat "TODO",0
+
+;Man commande 
+;:message_man dat "Usage : man [commande]",0
+;:m_man dat "Affiche des informations supplementaires sur les commandes.",0x11,"Usage : man [commande]",0
+;:m_help dat "Commande d'aide qui affiche les commandes.",0x11,"Usage : help",0
+;:m_version dat "Affiche la version de la console.",0x11,"Usage : version",0
+;:m_echo dat "Permet d'afficher du texte a l'ecran.",0x11,"Usage : echo [texte]",0
+;:m_couleur dat "Permet de changer la couleur de la console. Accepte le decimal (0dvaleur), l'hexadecimal (0xvaleur), le binaire (0bvaleur) et l'octet (0ovaleur). L'hexadecimal est suppose si pas de prefixe.",0x11,"Usage : couleur [valeur=hexadecimal]",0
+;:m_clear dat "Permet de vider la console.",0x11,"Usage : clear",0
+;:m_load dat "En construction.",0
+;:m_ls dat "En construction.",0
+;:m_cd dat "En construction.",0
+;:m_kill dat "Permet de tuer un processus en cours par son nom ou son ID.",0x11,"Usage : kill [nom ou ID]",0
+;:m_mem dat "Permet d'afficher la ram libre restante.",0x11,"Usage : mem",0
+;:m_run dat "Permet de lancer un programme tiers.",0x11,"Usage : run [adresse] [media=RAM]",0
+;:m_mkdir dat "En construction.",0
+;:m_mv dat "En construction.",0
+;:m_cp dat "En construction.",0
+;:m_touch dat "En construction.",0
+;:m_startx dat "Permet de lancer le bureaau graphique. Toujours en contruction pour l'instant.",0x11,"Usage : startx",0
+;:m_cat dat "En construction.",0
+;:m_ps dat "Permet d'afficher les programmes tiers en cours d'execution ainsi que leur ID.",0x11,"Usage : ps",0
