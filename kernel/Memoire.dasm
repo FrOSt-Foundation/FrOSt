@@ -1,4 +1,4 @@
-;memoire
+﻿;memoire
 ;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
 
 ;malloc
@@ -212,4 +212,86 @@ set pc,size_boucle
 set B,[A+1]
 sub B,2
 set A,pop
+set pc,pop
+
+;--------------------------------------
+;Realloc, realloue l'adresse A avec la taille B, et copie les donnees de A vers B (tronque si A>B)
+;si l'adresse suivante est libre, on empiete
+;A contient la nouvelle adresse, 0xFFFF si erreur
+;--------------------------------------
+:realloc
+set push,C
+set push,A
+set A,[start_mem]
+set C,[start_mem]
+.realloc_boucle
+ifg C,peek
+	set pc,realloc_found
+set A,C
+add C,[C+1]
+set pc,realloc_boucle
+.realloc_found
+add SP,1
+set push,B
+ifl B,[A+1]
+	set pc,realloc_down
+ife [C],0xFFFF
+	set pc,realloc_up
+.realloc_malloc
+set push,A
+set push,Z
+set A,B
+jsr malloc
+ife Z,0xFFFF
+	set pc,realloc_error
+.realloc_fin
+set C,pick 1
+set C,[C+1]
+sub C,2
+set B,Z
+set Z,pop
+set A,pop
+add A,2
+set push,A
+set A,B
+set B,pop
+jsr memcpy
+set push,A
+set A,B
+jsr free
+set A,pop
+set B,pop
+set C,pop
+set pc,pop
+.realloc_error
+set B,pop
+set C,pop
+set A,0xFFFF
+set pc,pop
+.realloc_up
+ifl [C+1],B
+	set pc,realloc_malloc
+sub B,[A+1]
+;B contient la taille necessaire
+set push,A
+set push,Z
+set A,B
+jsr malloc
+set Z,pop
+set A,pop
+add [A+1],B
+add [A+1],2
+set B,pop
+set C,pop
+set pc,pop
+.realloc_down
+set push,A
+sub [A+1],B
+add A,[A+1]
+set [A],[currently_running]
+set [A+1],B
+jsr free
+set A,pop
+set B,pop
+set C,pop
 set pc,pop
