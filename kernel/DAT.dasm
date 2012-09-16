@@ -1,4 +1,6 @@
-:end set pc,end
+:end set pc,end ;boucle de bug
+
+:attente set pc,attente ;la boucle d'attente
 
 :KER_SP dat 0x0
 :clock_int dat 0x0

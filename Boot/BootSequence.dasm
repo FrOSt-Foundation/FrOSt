@@ -11,6 +11,7 @@ jsr malloc
 ife Z,0xFFFF
 	set pc,end
 add Z,0x30
+set [KER_SP],SP
 set SP,Z
 ;SP bien positionne
 set A,Console

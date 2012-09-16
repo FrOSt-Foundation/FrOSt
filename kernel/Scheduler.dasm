@@ -2,12 +2,12 @@
 ;4 process en meme temps
 ;4 files differentes : une normale, une pour le clavier, une pour le "sleep" X tick, une pour l'acess diquette
 
-:nb_procs dat 1 ;augmente a chaque nouveau programme, OS compte pour 1
+:nb_procs dat 1 ;augmente a chaque nouveau programme, OS compte pour 1 (ID)
 
 :procs dat 0,0,0,0 ;le tableau de structures procs. Liste des programmes en execution normale
 :key_procs dat 0,0,0,0 ;le tableau de structs procs en attente d'une touche.
 
-:proc_run dat 0 ;addresse de la structure proc du programme courant
+:proc_run dat 0 ;addresse de la structure proc du programme courant. Si proc_run==0, alors pas de programme lance
 
 ;adresse du programme charge en memoire et le MMU est passe en A.
 ;SP est deja bien positionne
@@ -53,6 +53,7 @@ jsr set_vram
 set B,pop
 set Z,pop
 set A,pop
+set [currently_running],[proc_run]
 iaq 0
 set pc,A
 :Sched_add_end
@@ -65,5 +66,42 @@ set pc,end
 rfi 0
 
 :Sched_keyBlock
-
+;On deplace le programme dans la liste speciale. On passe ensuite a un autre programme, sinon a la boucle d'attente.
+;on sav tout
+jsr push_regs
+set A,[proc_run]
+set [A+2],SP
+set SP,key_procs
+.keyB_boucle1
+ifn 0,pop
+	set pc,keyB_boucle1
+set A,SP
+set [A],[proc_run] ;programme sav
+set SP,procs
+.keyB_boucle2
+ifn [proc_run],pop
+	set pc,keyB_boucle2
+set A,SP
+set [A],0 ;on l'enleve des programmes en cours
+;on passe au suivant
+set A,procs
+.keyB_boucle3
+add A,1
+ifn A,key_procs
+	ife [A],0
+		set pc,keyB_boucle3
+set [proc_run],[A]
+ife [proc_run],0
+	set pc,Sched_keyB
+set A,[proc_run]
+set SP,[A+2]
+set B,[A+3]
+jsr set_vram
+set [currently_running],[A]
+jsr pop_regs
 rfi 0
+.Sched_keyB
+set [currently_running],0
+set SP,[KER_SP]
+iaq 0
+set pc,attente
