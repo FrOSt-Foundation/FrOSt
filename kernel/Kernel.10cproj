@@ -4,7 +4,6 @@
   <files>
     <file path="DAT.dasm" />
     <file path="InterruptHandler.dasm" />
-    <file path="Launcher.dasm" />
     <file path="Loader.dasm" />
     <file path="Memoire.dasm" />
     <file path="MMU.dasm" />

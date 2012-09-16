@@ -31,15 +31,15 @@ set pc,[B]
 :l_help
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_help
-JSR printf
-JSR scroll_ecran
+set B , message_help
+int 0x1000
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , pop
 set i , pop
 set b , pop
@@ -50,15 +50,15 @@ set pc , pop
 :l_version
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
 
-set A , message_version
-JSR printf
+set B , message_version
+int 0x1000
 
-JSR scroll_ecran
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -69,18 +69,18 @@ set pc , pop
 set push , I
 set push , j
 set push , x
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
 set x , [couleur]
 set B , 0x4000
-JSR change_couleur
-set A , message_inconnu
-JSR printf
+int 0x2000
+set B , message_inconnu
+int 0x1000
 set B , x
-JSR change_couleur
-JSR scroll_ecran
+int 0x2000
+int 0x2001
 set x , pop
 set j , pop
 set i , pop
@@ -92,11 +92,11 @@ set pc , pop
 :l_echo
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
-set A , 50
-JSR malloc
+int 0x2003
+set B , 50
+int 0
 ife Z , 0xFFFF
 	set pc , fin_launch_echo
 set A , Z
@@ -110,13 +110,14 @@ JSR coller_string
 set B , A
 set C , [parse_commande5]
 JSR coller_string
+set B,A
 JSR printf
 set i , 11
-JSR scroll_from
-set A,pop
-JSR free
+int 0x2003
+set B,pop
+int 1
 :fin_launch_echo
-JSR scroll_ecran
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -127,15 +128,15 @@ set pc , pop
 set push , Z
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set A, [parse_commande2]
 set B,16
 jsr ctoi
 set B,Z
-JSR change_couleur
-jsr scroll_ecran
+int 0x2000
+int 0x2001
 set J,pop
 set I,pop
 set Z,  pop
@@ -144,7 +145,7 @@ set A,pop
 set pc , pop
 
 :l_clear
-JSR clear
+int 0x2004
 set b , pop
 set a , pop
 set pc , pop
@@ -152,13 +153,13 @@ set pc , pop
 :l_load
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -168,13 +169,13 @@ set pc , pop
 :l_ls
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -184,13 +185,13 @@ set pc , pop
 :l_cd
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -200,13 +201,13 @@ set pc , pop
 :l_kill
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -221,18 +222,23 @@ jsr ctoi
 set B,0
 set A,Z
 set Z,[parse_commande2]
-ifn [Z],0
-	jsr loader
+ife [Z],0
+	set pc,l_run_error
+jsr loader
 set Z,pop
+set b , pop
+set a , pop
+set pc , pop
+.l_run_error
 set push,I
 set push,J
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_run
-JSR printf
-JSR scroll_ecran
+set B , message_run
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -242,9 +248,9 @@ set pc , pop
 :l_mem
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
 set A,[free_mem]
 set B,16
@@ -252,17 +258,17 @@ set push,C
 set C,mem_print
 jsr dump
 set C,pop
-set A , message_mem
-JSR printf
+set B , message_mem
+int 0x1000
 set J,pop
 set I,pop
 set push,I
 set push,J
 add J,15
 sub I,1
-set A,mem_print
-jsr printf
-JSR scroll_ecran
+set B,mem_print
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -272,13 +278,13 @@ set pc , pop
 :l_mkdir
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B, message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -288,13 +294,13 @@ set pc , pop
 :l_mv
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -304,13 +310,13 @@ set pc , pop
 :l_cp
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -320,13 +326,13 @@ set pc , pop
 :l_touch
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -336,13 +342,13 @@ set pc , pop
 :l_cat
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -350,8 +356,7 @@ set a , pop
 set pc , pop
 
 :l_startx
-iaq 0
-jsr frostGUI_start
+;jsr frostGUI_start
 set b , pop
 set a , pop
 set pc , pop
@@ -359,13 +364,13 @@ set pc , pop
 :l_man
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop
@@ -375,13 +380,13 @@ set pc , pop
 :l_ps
 set push , I
 set push , j
-JSR scroll_ecran
+int 0x2001
 set I , 11
-JSR scroll_from
+int 0x2003
 set j , 0
-set A , message_TODO
-JSR printf
-JSR scroll_ecran
+set B , message_TODO
+int 0x1000
+int 0x2001
 set j , pop
 set i , pop
 set b , pop

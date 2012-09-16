@@ -14,11 +14,11 @@ set pc , pop
 ;--------------------------------------------------------
 ;INTERRUPT HANDLER
 ;FAILS IN SILENCE IF ERROR
-;msg 0x5000 is for the clock
-;msg 0x6000 is for the keyboard
-;msg 0x7000 -> lecteur de disquette
+;msg 0x6000 is for the clock
+;msg 0x7000 is for the keyboard
+;msg 0x8000 -> lecteur de disquette
 
-;msg 0x0000 malloc B blocs
+;msg 0x0000 malloc B blocs return in Z
 ;msg 0x0001 free the b bloc
 
 ;msg 0x1000 printf B-> string I-> line J-> colonne
@@ -28,15 +28,18 @@ set pc , pop
 
 ;msg 0x1001 printc carac dans C, ligne dans I, colone dans J
 
-;msg 0x2002 efface ligne I (abandonne)
-;msg 0x2003 scroll from, ligne dans I (abandonne)
+;msg 0x2002 efface ligne I
+;msg 0x2003 scroll from, ligne dans I
 ;msg 0x2004 clear ecran
 
 ;msg 0x0002 efface memoire
 
-;msg 0x3000 launch
+;msg 0x3000 launch a program
 
-;msg 0x4000 stop the execution of a program, return msg in B
+;msg 0x4000 ask for the keyboard (blocked) return caracter in C
+;msg 0x4001 ask for the keyboard (non blocked) return caracter in C (non implemented yet)
+
+;msg 0x5000 stop the execution of a program, return msg in B
 ;--------------------------------------------------------
 :interrupt_handler
 set push,A
@@ -48,6 +51,14 @@ set A,pop
 set pc,[A]
 :ih_bug
 set A,pop
+rfi 1
+
+:ih_ask_k
+and A,0x000F
+ife A,0
+	set pc,ih_ask_bk
+ife A,1
+	set pc,ih_ask_nk
 rfi 1
 
 :ih_mem
@@ -82,6 +93,10 @@ ife A,1
 	set pc,ih_scroll_ecran
 ife A,4
 	set pc,ih_clear_screen
+ife A,2
+	jsr efface_ligne
+ife A,3
+	jsr scroll_from
 set [ecran_actif],pop
 rfi 1
 
@@ -146,7 +161,10 @@ set [disk_int],1
 set pc,Scheduler
 rfi 0
 
-:ih_ask_clavier
+:ih_ask_bk
+rfi 0
+
+:ih_ask_nk
 rfi 0
 
 :ih_ask_disk

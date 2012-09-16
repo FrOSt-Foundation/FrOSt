@@ -9,16 +9,19 @@
 
 
 ;---------------------------------------------
-;INITIALISATION DE LA CONSOLE
-;ON EFFACE L'ECRAN ET ON AFFICHE L'INVITE
+;PROGRAMME CONSOLE
 ;---------------------------------------------
-:init_console
-int 0xF ;clear screen
+:Console
+dat "Console",0
+int 0x2004 ;clear screen
 set B , 0x2000
-int 0x4 ;change color
+int 0x2000 ;change color
 JSR affiche_invite
 JSR affiche_curseur
-set pc , pop
+.bouclePrinc
+int 0x4000
+jsr console_traiter_caractere
+set pc,bouclePrinc
 
 :affiche_invite
 set push , B
@@ -27,7 +30,7 @@ set push , J
 set B , invite_FrSH
 set i , 12
 set j , 1
-int 0x3 ;printf
+int 0x1000 ;printf
 set J , pop
 set I , pop
 set B , pop
@@ -41,7 +44,7 @@ set C , [curseur_FrSH]
 set i , 12
 set j , [pos_curseur]
 MOD j , 32
-int 0x6 ;printc
+int 0x1001 ;printc
 set J , pop
 set I , pop
 set B , pop
@@ -67,7 +70,7 @@ ife [pos_curseur] , 31
 	set pc , fin_affiche_caractere
 set i , 12
 set j , [pos_curseur]
-int 0x6 ;printc
+int 0x1001 ;printc
 add [pos_curseur] , 1
 JSR affiche_curseur
 set pc , fin_affiche_caractere
@@ -86,7 +89,7 @@ set j , [pos_curseur]
 set C , 0
 set push,[couleur]
 set [couleur],0
-int 0x6 ;printc
+int 0x1001 ;printc
 set [couleur],pop
 sub [pos_curseur] , 1
 JSR affiche_curseur
@@ -101,15 +104,11 @@ set pc , pop
 set push , I
 set I , 12
 JSR interprete_commande
-int 0x10 ;scroll from
-int 0x7 ;efface ligne
+int 0x2003 ;scroll from
+int 0x2002 ;efface ligne
 JSR affiche_invite
 set [pos_curseur] , 6
 JSR affiche_curseur
 JSR vider_parse
 set i , pop
-set pc , pop
-
-:touche_echap
-int 0xB ;rotate screens
 set pc , pop

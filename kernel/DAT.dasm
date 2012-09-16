@@ -9,7 +9,7 @@
 :currently_running dat 0
 :mem_print dat 0x0,0x0,0x0,0x0,0x0
 :free_mem dat 0x0
-:start_mem dat 0x1500
+:start_mem dat 0x1000
 :end_mem dat 0xFDFF
 :tmpV dat 0x0
 
@@ -18,14 +18,15 @@
 
 :nb_claviers dat 0x0
 :id_clavier dat 0x0
-:msg_clavier dat 0xbcbc
+:msg_clavier dat 0x7000
 
 :id_clock dat 0x0
 :div_clock dat 60
-:msg_clock dat 0xabab
+:msg_clock dat 0x6000
 
 :nb_disquette dat 0
 :id_disquette dat 0x0
+:msg_disquette dat 0x8000
 
 :ecran_taille dat 384
 :ecran_actif dat 0x0
@@ -33,7 +34,7 @@
 
 ;tableau de pointeurs pour l'interrupthandler
 :nombre_ptr dat 0
-:int_ptr dat ih_mem,ih_print,ih_screen,ih_launch,ih_stop,ih_clock,ih_clavier,ih_disquette
+:int_ptr dat ih_mem,ih_print,ih_screen,ih_launch,ih_ask_k,ih_stop,ih_clock,ih_clavier,ih_disquette
 
 ;Tableaux de pointeurs pour la console
 :nombre_commandes dat 0
