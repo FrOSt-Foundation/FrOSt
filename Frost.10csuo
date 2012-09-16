@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<solution name="Frost" path="C:\Documents and Settings\Admin\Mes documents\0x10c Devkit\Frost\Frost.10csln" currentFile="Hardware\Ecran\DriverEcran.dasm">
+  <openFiles>
+    <file path="Kernel\InterruptHandler.dasm" />
+    <file path="Hardware\Ecran\DriverEcran.dasm" />
+    <file path="Kernel\DAT.dasm" />
+  </openFiles>
+</solution>

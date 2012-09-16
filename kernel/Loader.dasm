@@ -11,15 +11,14 @@ ife B,0
 	jsr size
 set push,C
 set push,Z
-;pour la pile on ajoute 0x200
+;pour la pile on ajoute 0x30
 set C,B
-add B,0xFF
+add B,0x30
 set push,A
 set A,B
-set [currently_running],[Sched_number]
-add [currently_running],1
+set [currently_running],[nb_procs]
 jsr malloc
-ife Z,0xFFF
+ife Z,0xFFFF
 	set PC,Loader_end
 ;copier le programme en [B]
 set B,pop
@@ -40,32 +39,7 @@ add SP,[A]
 sub SP,2
 set push,A
 add A,1
-;on enregistre le programme dans le sched
-set B,Sched_table_prog
-sub B,1
-add B,1
-ifn [B],0
-	sub PC,3
-set [B],A
-sub B,Sched_table_prog
-set [Sched_current],B
-add B,Sched_table_prio
-;on met le mot de prio
-set [B],[A]
-add A,1
-add [Sched_number],1
-;IL faut modifier les dats présents en fonction des priorités.
-;on passe la main au prog
-set B,[B]
-and B,0x00F0
-ife B,0x30
-	jsr ecran_bascule_ecran
-set [FOCUS_CLAVIER],2
-set push,A
-set push,0
-ife [Sched_number],1
-	set pc,sched_init
-rfi 0
+set pc,Sched_AddProc
 :Loader_end
 set Z,pop
 set A,pop

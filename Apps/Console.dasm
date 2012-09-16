@@ -13,9 +13,9 @@
 ;ON EFFACE L'ECRAN ET ON AFFICHE L'INVITE
 ;---------------------------------------------
 :init_console
-int 0xF
+int 0xF ;clear screen
 set B , 0x2000
-int 0x4
+int 0x4 ;change color
 JSR affiche_invite
 JSR affiche_curseur
 set pc , pop
@@ -27,7 +27,7 @@ set push , J
 set B , invite_FrSH
 set i , 12
 set j , 1
-int 0x3
+int 0x3 ;printf
 set J , pop
 set I , pop
 set B , pop
@@ -41,7 +41,7 @@ set C , [curseur_FrSH]
 set i , 12
 set j , [pos_curseur]
 MOD j , 32
-int 0x6
+int 0x6 ;printc
 set J , pop
 set I , pop
 set B , pop
@@ -67,7 +67,7 @@ ife [pos_curseur] , 31
 	set pc , fin_affiche_caractere
 set i , 12
 set j , [pos_curseur]
-int 0x6
+int 0x6 ;printc
 add [pos_curseur] , 1
 JSR affiche_curseur
 set pc , fin_affiche_caractere
@@ -86,7 +86,7 @@ set j , [pos_curseur]
 set C , 0
 set push,[couleur]
 set [couleur],0
-int 0x6
+int 0x6 ;printc
 set [couleur],pop
 sub [pos_curseur] , 1
 JSR affiche_curseur
@@ -101,8 +101,8 @@ set pc , pop
 set push , I
 set I , 12
 JSR interprete_commande
-int 0x10
-int 0x7
+int 0x10 ;scroll from
+int 0x7 ;efface ligne
 JSR affiche_invite
 set [pos_curseur] , 6
 JSR affiche_curseur
@@ -111,5 +111,5 @@ set i , pop
 set pc , pop
 
 :touche_echap
-int 0xB
+int 0xB ;rotate screens
 set pc , pop

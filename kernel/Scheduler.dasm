@@ -1,110 +1,62 @@
-;16 programs can work at the same time
-:Sched_number dat 0
-:Sched_time dat 1
+;Struct process : ID,char* nom,SP,*screen
+;4 process en meme temps
+;4 files differentes : une normale, une pour le clavier, une pour le "sleep" X tick, une pour l'acess diquette
 
-:Sched_table_prog dat 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the adr of PC when stopped
-;prio : 0x msg msg hw prio   hw=1->key   hw=2->disk
-:Sched_table_prio dat 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the word of prio
-:Sched_table_sp dat   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;the adr of SP when stopped
-:Sched_current dat 0
+:nb_procs dat 1 ;augmente a chaque nouveau programme, OS compte pour 1
 
-:Sched_tmp dat 0
+:proc dat 0,0,0,0 ;le tableau de structures procs
+
+:proc_run dat 0 ;addresse de la structure proc du programme courant
+
+;adresse du programme charge en memoire et le MMU est passe en A.
+;SP est deja bien positionne
+;Adresse du nom en B
+;args en C,X,Y,I,J,Z
+:Sched_AddProc
+ifn [proc+3],0
+	set pc,end
+iaq 1
+set push,A
+set push,Z
+set A,4
+jsr malloc
+ife Z,0xFFFF
+	set pc,end
+set [Z],[nb_procs]
+add [nb_procs],1
+set [Z+1],B
+set push,Z
+set A,384
+jsr malloc
+ife Z,0xFFFF
+	set pc,end
+set A,Z
+set Z,pop
+set [Z+3],A
+set A,proc
+sub A,1
+set push,B
+set B,proc
+add B,4
+.Sched_add_boucle
+add A,1
+ifn A,B
+	ifn [A],0
+		set pc,Sched_add_boucle
+ife A,B
+	set pc,Sched_add_end
+set [A],Z
+set [proc_run],Z
+set B,pop
+set Z,pop
+set A,pop
+iaq 0
+set pc,A
+:Sched_add_end
+set B,pop
+set Z,pop
+set A,pop
+set pc,end
 
 :Scheduler
-ifl [Sched_number],2
-	rfi 0
-:sched_init
-set A,pop
-set [Sched_tmp],pop
-set push,Ex
-set push,I
-set push,J
-set push,X
-set push,Y
-set push,Z
-set push,C
-set push,B
-set push,A
-set A,[Sched_current]
-add A,Sched_table_prog
-set [A],[Sched_tmp]
-set A,[Sched_current]
-add A,Sched_table_sp
-set [A],SP
-;save of current program finished (frozen)
-ife [clock_int],1
-	set PC,Sched_clock
-ife [key_int],1
-	set PC,Sched_key
-ife [disk_int],1
-	set PC,Sched_disk
-;error, we come back to the current program
-:Sched_back
-set [currently_running],[Sched_current]
-add [currently_running],1
-set A,[Sched_current]
-add A,Sched_table_SP
-set SP,[A]
-set A,[Sched_current]
-add A,Sched_table_prog
-set [Sched_tmp],[A]
-set A,pop
-set B,pop
-set C,pop
-set Z,pop
-set Y,pop
-set X,pop
-set J,pop
-set I,pop
-set Ex,pop
-set push,[Sched_tmp]
-set push,A
 rfi 0
-
-:Sched_clock ;pour l'instant un tourniquet
-set [clock_int],0
-sub [Sched_time],1
-ifn [Sched_time],0
-	set PC,Sched_back
-add [Sched_current],1 ;on passe au programme suivant
-ifg [Sched_current],[Sched_number]
-	set [Sched_current],0
-ife [Sched_current],[Sched_number]
-	set [Sched_current],0
-set [Sched_time],[div_clock] ;on récupère la rapidité de l'horloge
-div [Sched_time],[Sched_number] ;on divise par le nombre de programmes en cours
-set PC,Sched_back
-
-:Sched_key ;reveille le programme qui attend le clavier
-set [key_int],0
-set A,Sched_table_prio
-sub A,1
-:Sched_key_boucle
-ife A,Sched_table_sp
-	set pc,Sched_back
-add A,1
-set B,[A]
-and B,0x000F
-ifn B,1
-	set pc,Sched_key_boucle
-sub [A],1
-sub A,Sched_table_prio
-set [Sched_current],A
-set PC,Sched_back
-
-:Sched_disk ;reveille le programme qui attend le lecteur de disquette
-set [disk_int],0
-set A,Sched_table_prio
-sub A,1
-:Sched_disk_boucle
-ife A,Sched_table_sp
-	set pc,Sched_back
-add A,1
-set B,[A]
-and B,0x000F
-ifn B,2
-	set pc,Sched_disk_boucle
-sub [A],2
-sub A,Sched_table_prio
-set [Sched_current],A
-set PC,Sched_back

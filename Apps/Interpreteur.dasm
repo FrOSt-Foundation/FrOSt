@@ -44,9 +44,9 @@ set push , [parse_commande2]
 set push , [parse_commande3]
 set push , [parse_commande4]
 set push , [parse_commande5]
-set b , [VRAM1]
+set b , [ecran_actif]
 add b , 357
-set i , [VRAM1]
+set i , [ecran_actif]
 add i , 383
 set x , 1
 set c , 0x0020

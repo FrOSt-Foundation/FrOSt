@@ -233,9 +233,6 @@ set pc,realloc_boucle
 .realloc_found
 add SP,1
 set push,B
-add B,2
-ife B,[A+1]
-	set pc,realloc_return
 ifl B,[A+1]
 	set pc,realloc_down
 ife [C],0xFFFF
@@ -263,7 +260,6 @@ set push,A
 set A,B
 jsr free
 set A,pop
-add A,2
 set B,pop
 set C,pop
 set pc,pop
@@ -284,7 +280,7 @@ jsr malloc
 set Z,pop
 set A,pop
 add [A+1],B
-add A,2
+add [A+1],2
 set B,pop
 set C,pop
 set pc,pop
@@ -296,12 +292,6 @@ set [A],[currently_running]
 set [A+1],B
 jsr free
 set A,pop
-add A,2
-set B,pop
-set C,pop
-set pc,pop
-.realloc_return
-add A,2
 set B,pop
 set C,pop
 set pc,pop

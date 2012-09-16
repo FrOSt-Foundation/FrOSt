@@ -3,23 +3,8 @@
 ife [nb_ecrans],1
 	set pc,pop
 add [nb_ecrans],1
-set push,A
-set push,Z
 set [id_ecran],J
-set a,[ecran_taille]
-jsr malloc
-ife Z,0xFFFF
-	set pc,end
-set [VRAM1],z
-set [ecran_actif],z
-jsr malloc
-ife Z,0xFFFF
-	set pc,end
-set [VRAM2],Z
-set Z,pop
-set A,pop
-set pc,update_vram
-
+set pc,pop
 
 ;b=pointeur font,0=default
 :change_font
@@ -83,10 +68,8 @@ set pc , pop
 	set z,[ecran_actif]
 	set pc,pop
 
-;pointeur en b, 0=default
+;pointeur en b
 :set_vram
-	ife b,0
-		set b,[VRAM1]
 	set [ecran_actif],b
 	set pc,update_vram
 
@@ -345,32 +328,6 @@ set [i] , c
 set C,pop
 set J,pop
 set I,pop
-set pc , pop
-
-;-------------------------
-;Bascule de l'ecran
-;Console <-> Appli
-;-------------------------
-:ecran_bascule_ecran
-ife [ecran_actif], [VRAM1]
-	set pc , ecran_bascule_ecran_2
-ife [ecran_actif],[VRAM2]
-	set pc , ecran_bascule_ecran_1
-:ecran_bascule_ecran_1
-set [FOCUS_CLAVIER] , 0x1
-set [ecran_actif] , [VRAM1]
-set pc , fin_ecran_bascule_ecran
-:ecran_bascule_ecran_2
-set [FOCUS_CLAVIER] , 0x2
-set [ecran_actif] , [VRAM2]
-:fin_ecran_bascule_ecran
-set push , A
-set push , B
-set A , 0
-set B , [ecran_actif]
-hwi [id_ecran]
-set b , pop
-set a , pop
 set pc , pop
 
 

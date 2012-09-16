@@ -2,7 +2,6 @@
 
 JSR init_memoire
 JSR init_hardware
-set [FOCUS_CLAVIER] , 0x1
 JSR init_interrupthandler
 JSR init_interpreteur
 JSR init_launcher

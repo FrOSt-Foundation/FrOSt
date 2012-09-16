@@ -61,7 +61,7 @@ set A,pop
 set pc , end
 
 :program1
-dat 0x30
+dat "programme 1",0
 set I,0
 set C,0
 set A,SP
@@ -79,7 +79,7 @@ dat 0xDA1A,0xDA1A,0xDA1A
 dat "programme 1",0
 
 :program2
-dat 0x30
+dat "programme 2",0
 set I,0
 set C,0
 set A,SP
