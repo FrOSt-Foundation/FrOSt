@@ -62,8 +62,61 @@ set Z,pop
 set A,pop
 set pc,end
 
-:Scheduler
+:Scheduler ;on verifie quel type d'int l'a appele
+ife [key_int],1
+	ifn [key_procs],0
+		set pc,Sched_key
+set [key_int],0
+set A,0
+hwi [id_clavier]
 rfi 0
+
+:Sched_key ;le clavier a declenche un int, on rend la main a tous les programmes en attente
+jsr push_regs
+set [key_int],0
+set A,key_procs
+sub A,1
+set B,procs
+sub B,1
+set C,0
+.keyS_boucle1
+.keyS_boucle2
+add A,1
+ifn A,proc_run
+	ife [A],0
+		set pc,keyS_boucle2
+.keyS_boucle3
+add B,1
+ifn B,key_procs
+	ifn [B],0
+		set pc,keyS_boucle3
+ife A,proc_run
+	set pc,keyS_Fboucle1
+ife B,key_procs
+	set pc,keyS_Fboucle1
+ife C,0
+	set C,B
+set [B],[A]
+set [A],0
+set pc,keyS_boucle1
+.keyS_Fboucle1
+ife [currently_running],0
+	set pc,Sched_keyS
+;on sav le programme en cours
+set A,[proc_run]
+set [A+2],SP
+.Sched_keyS_next
+set [proc_run],[C]
+set A,[proc_run]
+set SP,[A+2]
+set [currently_running],[A]
+jsr pop_regs
+set A,1
+hwi [id_clavier]
+rfi 0
+.Sched_keyS
+set [KER_SP],SP
+set pc,Sched_keyS_next
 
 :Sched_keyBlock
 ;On deplace le programme dans la liste speciale. On passe ensuite a un autre programme, sinon a la boucle d'attente.
@@ -76,23 +129,28 @@ set SP,key_procs
 ifn 0,pop
 	set pc,keyB_boucle1
 set A,SP
+sub A,1
 set [A],[proc_run] ;programme sav
 set SP,procs
 .keyB_boucle2
 ifn [proc_run],pop
 	set pc,keyB_boucle2
 set A,SP
+sub A,1
 set [A],0 ;on l'enleve des programmes en cours
 ;on passe au suivant
 set A,procs
+sub A,1
 .keyB_boucle3
 add A,1
 ifn A,key_procs
 	ife [A],0
 		set pc,keyB_boucle3
-set [proc_run],[A]
-ife [proc_run],0
+ife A,key_procs
 	set pc,Sched_keyB
+ife [A],0
+	set pc,Sched_keyB
+set [proc_run],[A]
 set A,[proc_run]
 set SP,[A+2]
 set B,[A+3]
