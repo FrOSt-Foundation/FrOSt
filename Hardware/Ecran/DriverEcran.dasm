@@ -214,7 +214,6 @@ ifg J,32
 	set J,32
 sub I,1
 sub J,1
-set I,I
 mul I,32
 add I,J
 add I,[ecran_actif]

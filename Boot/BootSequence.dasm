@@ -5,14 +5,18 @@ JSR init_hardware
 JSR init_interrupthandler
 JSR init_interpreteur
 JSR init_launcher
-set push , I
-set push , J
-set A , message_bienvenue
-set I , 1
-set J , 1
-JSR printf
-set J , pop
-set i , pop
+;on charge le processus 1 : la console
+set A,0x30
+jsr malloc
+ife Z,0xFFFF
+	set pc,end
+add Z,0x30
+set SP,Z
+;SP bien positionne
+set A,Console
+set B,Console
+add A,8
+set pc,Sched_addProc
 ;test du chargement des programmes
 ;sera enleve apres
 set pc,test

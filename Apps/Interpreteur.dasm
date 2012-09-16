@@ -8,8 +8,8 @@
 :init_interpreteur
 set push,B
 set push,Z
-set B , 135
-int 0x1
+set A , 135
+jsr malloc
 ife Z , 0xFFFF
 ;error
 	sub pc,1

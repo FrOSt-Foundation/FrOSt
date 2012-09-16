@@ -16,6 +16,10 @@ dat "Console",0
 int 0x2004 ;clear screen
 set B , 0x2000
 int 0x2000 ;change color
+set B , message_bienvenue
+set I , 1
+set J , 1
+int 0x1000
 JSR affiche_invite
 JSR affiche_curseur
 .bouclePrinc

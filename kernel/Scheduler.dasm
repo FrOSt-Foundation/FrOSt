@@ -47,6 +47,8 @@ ife A,B
 	set pc,Sched_add_end
 set [A],Z
 set [proc_run],Z
+set B,[Z+3]
+jsr set_vram
 set B,pop
 set Z,pop
 set A,pop

@@ -47,13 +47,13 @@ shr A,12
 ifg A,[nombre_ptr]
 	set pc,ih_bug
 add A,int_ptr
-set A,pop
 set pc,[A]
 :ih_bug
 set A,pop
 rfi 1
 
 :ih_ask_k
+set A,pop
 and A,0x000F
 ife A,0
 	set pc,ih_ask_bk
@@ -62,8 +62,10 @@ ife A,1
 rfi 1
 
 :ih_mem
+set A,[proc_run]
+set [currently_running],[A]
+set A,pop
 and A,0x000F
-set [currently_running],[[proc_run]]
 ife A,0
 	set pc,ih_malloc
 ife A,1
@@ -73,9 +75,14 @@ ife A,2
 rfi 1
 
 :ih_print
-and A,0x000F
+set A,pop
 set push,[ecran_actif]
-set [ecran_actif],[[proc_run+3]]
+set push,A
+set A,[proc_run]
+add A,3
+set [ecran_actif],[A]
+set A,pop
+and A,0x000F
 ife A,0
 	set pc,ih_printf
 ife A,1
@@ -84,9 +91,14 @@ set [ecran_actif],pop
 rfi 1
 
 :ih_screen
-and A,0x000F
+set A,pop
 set push,[ecran_actif]
-set [ecran_actif],[[proc_run+3]]
+set push,A
+set A,[proc_run]
+add A,3
+set [ecran_actif],[A]
+set A,pop
+and A,0x000F
 ife A,0
 	set pc,ih_couleur
 ife A,1
@@ -101,6 +113,7 @@ set [ecran_actif],pop
 rfi 1
 
 :ih_clavier
+set A,pop
 set [key_int],1
 set pc,Scheduler
 rfi 0
@@ -148,15 +161,18 @@ JSR efface_memoire
 rfi 0
 
 :ih_clock
+set A,pop
 set [clock_int],1
 set pc,Scheduler
 rfi 0
 
 :ih_launch
+set A,pop
 JSR launch
 rfi 0
 
 :ih_disquette
+set A,pop
 set [disk_int],1
 set pc,Scheduler
 rfi 0
@@ -171,4 +187,5 @@ rfi 0
 rfi 0
 
 :ih_stop
+set A,pop
 set pc,Finisher
