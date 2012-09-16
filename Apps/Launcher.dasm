@@ -57,7 +57,7 @@ set j , 0
 
 set B , message_version
 int 0x1000
-
+set I,11
 int 0x2001
 set j , pop
 set i , pop
@@ -264,7 +264,7 @@ set J,pop
 set I,pop
 set push,I
 set push,J
-add J,15
+add J,18
 sub I,1
 set B,mem_print
 int 0x1000

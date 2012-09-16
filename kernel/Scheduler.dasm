@@ -4,7 +4,8 @@
 
 :nb_procs dat 1 ;augmente a chaque nouveau programme, OS compte pour 1
 
-:proc dat 0,0,0,0 ;le tableau de structures procs
+:procs dat 0,0,0,0 ;le tableau de structures procs. Liste des programmes en execution normale
+:key_procs dat 0,0,0,0 ;le tableau de structs procs en attente d'une touche.
 
 :proc_run dat 0 ;addresse de la structure proc du programme courant
 
@@ -13,7 +14,7 @@
 ;Adresse du nom en B
 ;args en C,X,Y,I,J,Z
 :Sched_AddProc
-ifn [proc+3],0
+ifn [procs+3],0
 	set pc,end
 iaq 1
 set push,A
@@ -33,10 +34,10 @@ ife Z,0xFFFF
 set A,Z
 set Z,pop
 set [Z+3],A
-set A,proc
+set A,procs
 sub A,1
 set push,B
-set B,proc
+set B,procs
 add B,4
 .Sched_add_boucle
 add A,1
@@ -61,4 +62,8 @@ set A,pop
 set pc,end
 
 :Scheduler
+rfi 0
+
+:Sched_keyBlock
+
 rfi 0

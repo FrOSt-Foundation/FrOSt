@@ -28,10 +28,9 @@ set B,pop
 set pc,pop
 
 :interprete_commande
-set pc,parseur_commande
-;set pc,pop
-
-
+jsr parseur_commande
+jsr launch
+set pc,pop
 
 :parseur_commande
 set push , a

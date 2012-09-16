@@ -102,7 +102,7 @@ and A,0x000F
 ife A,0
 	set pc,ih_couleur
 ife A,1
-	set pc,ih_scroll_ecran
+	jsr scroll_ecran
 ife A,4
 	set pc,ih_clear_screen
 ife A,2
@@ -139,12 +139,6 @@ JSR change_couleur
 set [ecran_actif],pop
 rfi 0
 
-:ih_scroll_ecran
-set I,B
-JSR scroll
-set [ecran_actif],pop
-rfi 0
-
 :ih_printc
 JSR printc
 set [ecran_actif],pop
@@ -178,9 +172,12 @@ set pc,Scheduler
 rfi 0
 
 :ih_ask_bk
+set pc,Sched_keyBlock
 rfi 0
 
 :ih_ask_nk
+set A,1
+hwi [id_clavier]
 rfi 0
 
 :ih_ask_disk
