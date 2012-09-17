@@ -24,12 +24,12 @@ set pc , pop
 ;msg 0x1000 printf B-> string I-> line J-> colonne
 
 ;msg 0x2000 changer de couleur, couleur dans B
+;msg 0x2003 recuperer la couleur actuelle dans B
 ;msg 0x2001 scroll ecran d'une ligne
 
 ;msg 0x1001 printc carac dans C, ligne dans I, colone dans J
 
 ;msg 0x2002 efface ligne I
-;msg 0x2003 scroll from, ligne dans I
 ;msg 0x2004 clear ecran
 
 ;msg 0x0002 efface memoire
@@ -108,7 +108,7 @@ ife A,4
 ife A,2
 	jsr efface_ligne
 ife A,3
-	jsr scroll_from
+	set pc,ih_getC
 set [ecran_actif],pop
 rfi 1
 
@@ -136,6 +136,11 @@ rfi 0
 
 :ih_couleur
 JSR change_couleur
+set [ecran_actif],pop
+rfi 0
+
+:ih_getC
+set B,[couleur]
 set [ecran_actif],pop
 rfi 0
 

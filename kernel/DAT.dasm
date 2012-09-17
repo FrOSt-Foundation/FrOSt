@@ -31,6 +31,8 @@
 :msg_disquette dat 0x8000
 
 :ecran_taille dat 384
+:ecran_w dat 32
+:ecran_h dat 12
 :ecran_actif dat 0x0
 :couleur dat 0xF000
 

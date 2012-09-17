@@ -93,10 +93,10 @@ set pc , pop
 :efface_ligne
 set push , i
 set push , j
-ifg i , 12
-	set i , 12
+ifg i , [ecran_h]
+	set i , [ecran_h]
 sub i , 1
-mul i , 32
+mul i , [ecran_w]
 add i , [ecran_actif]
 set j , 0
 .boucle_efface_ligne
@@ -108,51 +108,8 @@ sti [I],0
 sti [I],0
 sti [I],0
 sti [I],0
-ifn J,32
+ifn J,[ecran_w]
 	set pc,boucle_efface_ligne
-set j , pop
-set i , pop
-set pc , pop
-
-
-
-;-------------------------------------------
-;SCROLL D'UNE LIGNE VERS LE HAUT
-;LA LIGNE EST STOCKEE DANS I
-;SI I > 12 , I = 12
-;SI I = 1 , rien à faire
-;-------------------------------------------
-
-:scroll
-set push , i
-set push , j
-set push , x
-set push , y
-ife i , 1
-	set pc , fin_scroll
-ifg i , 12
-	set i , 12
-sub i , 1
-set j , i
-sub j , 1
-mul i , 32
-mul j , 32
-add i , [ecran_actif]
-add j , [ecran_actif]
-set x , 0
-set y , 0x9F
-BOR y , [couleur]
-	:boucle_scroll
-	ife x , 32
-		set pc , fin_scroll
-	ife [i] , y
-		set pc , fin_scroll
-	sti [j] , [i]
-	add x , 1
-	set pc , boucle_scroll
-:fin_scroll
-set y , pop
-set x , pop
 set j , pop
 set i , pop
 set pc , pop
@@ -163,35 +120,34 @@ set pc , pop
 ;ET EFFACE DERNIERE LIGNE (12)
 ;---------------------------------
 :scroll_ecran
-set push , I
-set I , 12
-JSR scroll_from
-set I , pop
+set push,A
+set push,B
+set push,C
+set push,Z
+set push,I
+set A,[ecran_actif]
+jsr size
+set Z,B
+add Z,[ecran_actif]
+sub Z,[ecran_w]
+set B,A
+add B,[ecran_w]
+set C,[ecran_w]
+.scroll_boucle1
+jsr memcpy
+add A,[ecran_w]
+add B,[ecran_w]
+ifn A,Z
+	set pc,scroll_boucle1
+sub A,[ecran_w]
+set I,12
+jsr efface_ligne
+set I,pop
+set Z,pop
+set C,pop
+set B,pop
+set A,pop
 set pc , pop
-
-
-;-------------------------------
-;Scroll du haut jusqu'a la ligne scpécifiee
-;Ligne dans I
-;-------------------------------
-
-:scroll_from
-set push , i
-set push , j
-set j , I
-set i , 2
-:boucle_scroll_from
-ifg i , j
-	set pc , fin_scroll_from
-JSR scroll
-add i , 1
-set pc , boucle_scroll_from
-:fin_scroll_from
-set I , J
-JSR efface_ligne
-set j , pop
-set i , pop
-set pc , POP
 
 ;--------------------------------
 ;Afficher une phrase à l'écran
@@ -206,15 +162,15 @@ set push,J
 set push,X
 ifl i,1
 	set I,1
-ifg I,12
-	set I,12
+ifg I,[ecran_h]
+	set I,[ecran_h]
 ifl J,1
 	set J,1
-ifg J,32
-	set J,32
+ifg J,[ecran_w]
+	set J,[ecran_w]
 sub I,1
 sub J,1
-mul I,32
+mul I,[ecran_w]
 add I,J
 add I,[ecran_actif]
 set J,A
@@ -242,7 +198,7 @@ set pc,pop
 
 :scroll_printf
 JSR scroll_ecran
-sub I,32
+sub I,[ecran_w]
 set pc , pop
 
 ;------------------------------
@@ -253,8 +209,8 @@ set pc , pop
 :p_return
 set X,I
 sub X,[ecran_actif]
-mod X,32
-add I,32
+mod X,[ecran_w]
+add I,[ecran_w]
 sub I,X
 add J,1
 set pc,boucle_printf
@@ -267,18 +223,16 @@ set pc,boucle_printf
 :p_tab
 set X,I
 sub X,[ecran_actif]
-mod X,32
+mod X,[ecran_w]
 ifg X,29
 	set pc , ptab1
 set [I],0
-add I,1
-set [I],0
-add I,1
-set [I],0
-add I,1
+set [I+1],0
+set [I+2],0
+add I,3
 set pc,fin_ptab
 :ptab1
-ife X,32
+ife X,[ecran_w]
 	set pc,fin_ptab
 add X,1
 set [I],0
@@ -311,15 +265,15 @@ set push,J
 set push,C
 ifl i , 1
 	set i , 1
-ifg i , 12
-	set i , 12
+ifg i , [ecran_h]
+	set i , [ecran_h]
 ifl j , 1
 	set j , 1
-ifg j , 32
-	set j , 32
+ifg j , [ecran_w]
+	set j , [ecran_w]
 sub i , 1
 sub j , 1
-mul i , 32
+mul i , [ecran_w]
 add i , j
 add i , [ecran_actif]
 BOR c , [couleur]

@@ -6,9 +6,8 @@ set pc ,pop
 
 
 :launch
-set push,A
-set push,B
-set push,C
+set I,[ecran_h]
+set J,0
 set C,commandes_txt
 set A,[parse_commande1]
 .launch_boucle
@@ -23,56 +22,25 @@ ife Z,0
 set B,C
 sub B,1
 add B,[nombre_commandes]
-set C,pop
 set pc,[B]
 
 
 
 :l_help
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_help
 int 0x1000
-int 0x2001
-set I , 11
-int 0x2003
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 
 :l_version
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
-
 set B , message_version
 int 0x1000
-set I,11
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_inconnu
-set push , I
-set push , j
-set push , x
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set x , [couleur]
 set B , 0x4000
 int 0x2000
@@ -80,25 +48,14 @@ set B , message_inconnu
 int 0x1000
 set B , x
 int 0x2000
-int 0x2001
-set x , pop
-set j , pop
-set i , pop
-set C,pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_echo
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
 set B , 50
 int 0
 ife Z , 0xFFFF
-	set pc , fin_launch_echo
+	set pc ,pop
 set A , Z
 set push,A
 set B , [parse_commande2]
@@ -111,113 +68,51 @@ set B , A
 set C , [parse_commande5]
 JSR coller_string
 set B,A
-JSR printf
-set i , 11
-int 0x2003
+int 0x1000
 set B,pop
 int 1
-:fin_launch_echo
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_couleur
-set push , Z
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
 set A, [parse_commande2]
 set B,16
 jsr ctoi
 set B,Z
 int 0x2000
-int 0x2001
-set J,pop
-set I,pop
-set Z,  pop
-set B,pop
-set A,pop
 set pc , pop
 
 :l_clear
 int 0x2004
-set b , pop
-set a , pop
 set pc , pop
 
 :l_load
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_ls
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_cd
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_kill
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_run ;on recupere le programme a charger et on le charge
 set A,[parse_commande2]
 set B,16
-set push,Z
 jsr ctoi
 set B,0
 set A,Z
@@ -225,170 +120,70 @@ set Z,[parse_commande2]
 ife [Z],0
 	set pc,l_run_error
 jsr loader
-set Z,pop
-set b , pop
-set a , pop
 set pc , pop
 .l_run_error
-set push,I
-set push,J
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_run
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_mem
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set A,[free_mem]
 set B,16
-set push,C
 set C,mem_print
 jsr dump
-set C,pop
 set B , message_mem
 int 0x1000
-set J,pop
-set I,pop
-set push,I
-set push,J
-add J,18
-sub I,1
+add J,19
 set B,mem_print
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_mkdir
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B, message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_mv
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_cp
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_touch
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_cat
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_startx
-;jsr frostGUI_start
-set b , pop
-set a , pop
+int 0x2001
+set B , message_TODO
+int 0x1000
 set pc , pop
 
 :l_man
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop
 
 :l_ps
-set push , I
-set push , j
 int 0x2001
-set I , 11
-int 0x2003
-set j , 0
 set B , message_TODO
 int 0x1000
-int 0x2001
-set j , pop
-set i , pop
-set b , pop
-set a , pop
 set pc , pop

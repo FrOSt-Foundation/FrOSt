@@ -28,91 +28,81 @@ jsr console_traiter_caractere
 set pc,bouclePrinc
 
 :affiche_invite
-set push , B
-set push , I
-set push , J
 set B , invite_FrSH
-set i , 12
+set i , [ecran_h]
 set j , 1
 int 0x1000 ;printf
-set J , pop
-set I , pop
-set B , pop
 set pc , pop
 
 :affiche_curseur
-set push , B
-set push , I
-set push , J
 set C , [curseur_FrSH]
-set i , 12
+set i , [ecran_h]
 set j , [pos_curseur]
-MOD j , 32
+MOD j , [ecran_w]
 int 0x1001 ;printc
-set J , pop
-set I , pop
-set B , pop
+set pc , pop
+
+:efface_curseur
+set C , 0
+int 0x2003
+set A,B
+set B,0
+int 0x2000
+set i , [ecran_h]
+set j , [pos_curseur]
+MOD j , [ecran_w]
+int 0x1001 ;printc
+set B,A
+int 0x2000
 set pc , pop
 
 
 
 :console_traiter_caractere
+ifl C,0x80
+	ifg C,0x19
+		set pc,affiche_caractere
 ife C , 0x10
 	set pc,efface_caractere
 ife C , 0x11
 	set pc,valide_commande
-ifl C,0x80
-	ifg C,0x19
-		set pc,affiche_caractere
 set pc,pop
 
 
 :affiche_caractere
-set push , I
-set push , J
 ife [pos_curseur] , 31
-	set pc , fin_affiche_caractere
+	set pc , pop
 set i , 12
 set j , [pos_curseur]
 int 0x1001 ;printc
 add [pos_curseur] , 1
 JSR affiche_curseur
-set pc , fin_affiche_caractere
-:fin_affiche_caractere
-set j , pop
-set i , pop
 set pc , pop
 
 :efface_caractere
-set push , i
-set push , j
 ife [pos_curseur] , 6
-	set pc , fin_efface_caractere
-set i , 12
+	set pc , pop
+set i , [ecran_h]
 set j , [pos_curseur]
-set C , 0
-set push,[couleur]
-set [couleur],0
+set C,0
+int 0x2003
+set A,B
+set B,0
+int 0x2000
 int 0x1001 ;printc
-set [couleur],pop
+set B,A
+int 0x2000
 sub [pos_curseur] , 1
 JSR affiche_curseur
-set pc , fin_efface_caractere
-:fin_efface_caractere
-set j , pop
-set i , pop
 set pc , pop
 
 
 :valide_commande
-set push , I
-set I , 12
+jsr efface_curseur
 JSR interprete_commande
-int 0x2003 ;scroll from
-int 0x2002 ;efface ligne
+int 0x2001
 JSR affiche_invite
 set [pos_curseur] , 6
 JSR affiche_curseur
 JSR vider_parse
-set i , pop
 set pc , pop
