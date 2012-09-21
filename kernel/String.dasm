@@ -4,15 +4,18 @@
 ;Retour dans Z
 ;---------------------------------------------
 :strlen
+set push,A
 set push,B
 set B,SP
 set SP,A
+set A,strlen_boucle
 :strlen_boucle
 ifn 0,[pop]
-	set PC,strlen_boucle
+	set PC,A ;plus rapide que set PC,strlen_boucle
 set Z,SP
 set SP,B
 set B,pop
+set A,pop
 sub Z,A
 set PC,pop
 
@@ -25,15 +28,17 @@ set push,B
 set Z,0
 sub A,1
 sub B,1
+set push,sc
 :sc
 add A,1
 add B,1
 ifn [A],0
 	ifn [B],0
 		ife [A],[B]
-			set PC,sc
+			set PC,peek ;plus rapide que set PC,sc
 ife [A],[B]
 	set Z,1
+set B,pop
 set B,pop
 set A,pop
 set PC,pop
@@ -69,13 +74,15 @@ set push,A
 set push,B
 sub A,1
 set Z,0
+set push,sh
 :sh
 add A,1
 ifn [A],0
 	ifn [A],B
-		set PC,sh
+		set PC,peek ;plus rapide que set PC,sh
 ife [A],B
 	set Z,A
+set B,pop
 set B,pop
 set A,pop
 set PC,pop
