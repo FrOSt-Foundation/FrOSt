@@ -149,49 +149,20 @@ set pc,pop
 :memcpy
 set push,I
 set push,J
-set push,C
-set push,C
+set push,A
 set I,A
 set J,B
-add C,B
-ifl peek,8
-	set pc,memcpy_boucle2
-mod peek,8
-ifn peek,0
-	set pc,memcpy_boucle3
-.memcpy_boucle
+add A,C
+set push,memcpy_boucle
+:memcpy_boucle
 sti [I],[J]
-sti [I],[J]
-sti [I],[J]
-sti [I],[J]
-sti [I],[J]
-sti [I],[J]
-sti [I],[J]
-sti [I],[J]
-ifn C,J
-	set pc, memcpy_boucle
-set C,pop
-set C,pop
+ifn I,A
+	set pc,peek
+set A,pop
+set A,pop
 set J,pop
 set I,pop
-set pc,pop
-.memcpy_boucle2
-sti [I],[J]
-ifn C,J
-	set pc,memcpy_boucle
-set C,pop
-set C,pop
-set C,pop
-set C,pop
-set J,pop
-set I,pop
-set pc,pop
-.memcpy_boucle3
-sti [I],[J]
-sub peek,1
-ifn peek,0
-	set pc,memcpy_boucle3
-set pc,memcpy_boucle
+set PC,pop
 
 ;--------------------------------------
 ;size renvoie la taille dans B de l'adresse A
