@@ -1,13 +1,7 @@
 :init_clock ;J=id clock
 	set push,A
 	set push,B
-	
 	set [id_clock],J
-	
-	set a,0
-	set b,[div_clock]
-	hwi [id_clock]
-	
 	set a,2
 	set b,[msg_clock]
 	hwi [id_clock]
@@ -17,20 +11,14 @@
 
 :set_clock_tick ;60/b ticks, 0=off
 	set push,A
-	set push,B
-
 	set a,0
 	hwi [id_clock]
-	set B,pop
 	set A,pop
 	set pc,pop
 
 :set_clock_int ;b=message des int, 0=off
 	set push,A
-	set push,B
-
 	set a,2
 	hwi [id_clock]
-	set B,pop
 	set A,pop
 	set pc,pop

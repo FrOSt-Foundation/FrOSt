@@ -41,7 +41,8 @@ set pc , pop
 
 :l_inconnu
 int 0x2001
-set x , [couleur]
+int 0x2003
+set X,B
 set B , 0x4000
 int 0x2000
 set B , message_inconnu
@@ -74,7 +75,6 @@ int 1
 set pc , pop
 
 :l_couleur
-int 0x2001
 set A, [parse_commande2]
 set B,16
 jsr ctoi

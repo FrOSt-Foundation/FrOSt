@@ -37,7 +37,7 @@ set pc , pop
 ;msg 0x3000 launch a program
 
 ;msg 0x4000 ask for the keyboard (blocked) return caracter in C
-;msg 0x4001 ask for the keyboard (non blocked) return caracter in C (non implemented yet)
+;msg 0x4001 ask for the keyboard (non blocked) return caracter in C
 
 ;msg 0x5000 stop the execution of a program, return msg in B
 ;--------------------------------------------------------
