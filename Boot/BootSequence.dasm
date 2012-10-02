@@ -18,6 +18,3 @@ set A,Console
 set B,Console
 add A,8
 set pc,Sched_addProc
-;test du chargement des programmes
-;sera enleve apres
-set pc,test

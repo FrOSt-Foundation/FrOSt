@@ -1,6 +1,7 @@
-;Struct process : ID,char* nom,SP,*screen
+;Struct process : ID,char* nom,SP,*screen,prio
 ;4 process en meme temps
-;4 files differentes : une normale, une pour le clavier, une pour le "sleep" X tick, une pour l'acess diquette
+;3 files differentes : une normale, une pour le clavier, une pour l'acess diquette
+;prio : 1-10, 10 le plus prioritaire, automatique
 
 :nb_procs dat 1 ;augmente a chaque nouveau programme, OS compte pour 1 (ID)
 
@@ -13,6 +14,7 @@
 ;SP est deja bien positionne
 ;Adresse du nom en B
 ;args en C,X,Y,I,J,Z
+;met une prio de 3
 :Sched_AddProc
 ifn [procs+3],0
 	set pc,end
@@ -36,21 +38,18 @@ set Z,pop
 set [Z+3],A
 set A,procs
 sub A,1
-set push,B
-set B,procs
-add B,4
 .Sched_add_boucle
 add A,1
-ifn A,B
+ifn A,key_procs
 	ifn [A],0
 		set pc,Sched_add_boucle
-ife A,B
+ife A,key_procs
 	set pc,Sched_add_end
 set [A],Z
 set [proc_run],Z
-set B,[Z+3]
-jsr set_vram
-set B,pop
+set A,[proc_run]
+set [Z+4],3
+jsr SetProcScreen
 set Z,pop
 set A,pop
 set [currently_running],[proc_run]
@@ -63,56 +62,54 @@ set A,pop
 set pc,end
 
 :Scheduler ;on verifie quel type d'int l'a appele
+set push,C
+set A,1
+hwi [id_clavier]
+ife C,0x12
+	set pc,TurnScreen
+set [tmpSched],C
+set C,pop
 ife [key_int],1
 	ifn [key_procs],0
 		set pc,Sched_key
+.Sched_fin
 set [key_int],0
 set A,0
 hwi [id_clavier]
 rfi 0
 
-:Sched_key ;le clavier a declenche un int, on rend la main a tous les programmes en attente
-jsr push_regs
-set [key_int],0
+:Sched_key ;le clavier a declenche un int, on verifie si le programme a l ecran a demande
 set A,key_procs
 sub A,1
-set B,procs
-sub B,1
-set C,0
 .keyS_boucle1
-.keyS_boucle2
 add A,1
 ifn A,proc_run
-	ife [A],0
-		set pc,keyS_boucle2
-.keyS_boucle3
+	ifn [A],[proc_ecran]
+		set pc,keyS_boucle1
+ife A,proc_run
+	set pc,Sched_fin
+jsr push_regs
+set B,procs
+sub B,1
+.keyS_boucle2
 add B,1
 ifn B,key_procs
 	ifn [B],0
-		set pc,keyS_boucle3
-ife A,proc_run
-	set pc,keyS_Fboucle1
-ife B,key_procs
-	set pc,keyS_Fboucle1
-ife C,0
-	set C,B
+		set pc,keyS_boucle2
 set [B],[A]
 set [A],0
-set pc,keyS_boucle1
-.keyS_Fboucle1
 ife [currently_running],0
 	set pc,Sched_keyS
 ;on sav le programme en cours
 set A,[proc_run]
 set [A+2],SP
 .Sched_keyS_next
-set [proc_run],[C]
+set [proc_run],[B]
 set A,[proc_run]
 set SP,[A+2]
 set [currently_running],[A]
 jsr pop_regs
-set A,1
-hwi [id_clavier]
+set C,[tmpSched]
 rfi 0
 .Sched_keyS
 set [KER_SP],SP
@@ -153,8 +150,7 @@ ife [A],0
 set [proc_run],[A]
 set A,[proc_run]
 set SP,[A+2]
-set B,[A+3]
-jsr set_vram
+jsr SetProcScreen
 set [currently_running],[A]
 jsr pop_regs
 rfi 0

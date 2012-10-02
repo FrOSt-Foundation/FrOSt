@@ -1,5 +1,4 @@
 :test
-;JSR frostGUI_start
 set push,A
 set push,Z
 set push,B
@@ -58,7 +57,7 @@ set C,pop
 set B,pop
 set Z,pop
 set A,pop
-set pc , end
+set pc,pop
 
 :program1
 dat "programme 1",0
@@ -69,7 +68,7 @@ set SP,0xABCD
 set B,SP
 set SP,A
 set J,0
-int 0x3
+int 0x1000
 add C,1
 set I,C
 ife C,12
@@ -87,7 +86,7 @@ set SP,0xABCD
 set B,SP
 set SP,A
 set J,0
-int 0x3
+int 0x1000
 add C,1
 set I,C
 ife C,12

@@ -62,6 +62,8 @@ set push,[A]
 add A,1
 ifn [A],0
 	set pc,ctoi_avance
+set push,0
+add SP,1
 set I,SP
 set SP,X
 .ctoi_boucle

@@ -87,9 +87,10 @@ int 0x2004
 set pc , pop
 
 :l_load
-int 0x2001
-set B , message_TODO
-int 0x1000
+jsr test
+;int 0x2001
+;set B , message_TODO
+;int 0x1000
 set pc , pop
 
 :l_ls
@@ -165,18 +166,6 @@ int 0x1000
 set pc , pop
 
 :l_cat
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
-
-:l_startx
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
-
-:l_man
 int 0x2001
 set B , message_TODO
 int 0x1000

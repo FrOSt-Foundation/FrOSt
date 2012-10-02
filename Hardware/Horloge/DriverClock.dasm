@@ -5,6 +5,9 @@
 	set a,2
 	set b,[msg_clock]
 	hwi [id_clock]
+	set A,0
+	set B,0
+	hwi [id_clock]
 	set B,pop
 	set A,pop
 	set pc,pop

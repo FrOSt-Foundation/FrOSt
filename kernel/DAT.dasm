@@ -14,6 +14,7 @@
 :start_mem dat 0x1000
 :end_mem dat 0xFDFF
 :tmpV dat 0x0
+:tmpSched dat 0
 
 :nb_ecrans dat 0x0
 :id_ecran dat 0x0
@@ -36,14 +37,17 @@
 :ecran_actif dat 0x0
 :couleur dat 0xF000
 
+;gestionnaire d'ecran
+:proc_ecran dat 0x0
+
 ;tableau de pointeurs pour l'interrupthandler
 :nombre_ptr dat 0
 :int_ptr dat ih_mem,ih_print,ih_screen,ih_launch,ih_ask_k,ih_stop,ih_clock,ih_clavier,ih_disquette
 
 ;Tableaux de pointeurs pour la console
 :nombre_commandes dat 0
-:commandes_txt dat c_help,c_version,c_echo,c_couleur,c_clear,c_load,c_ls,c_cd,c_kill,c_mem,c_run,c_mkdir,c_mv,c_cp,c_touch,c_startx,c_cat,c_man,c_ps
-:commandes_ptr dat l_help,l_version,l_echo,l_couleur,l_clear,l_load,l_ls,c_cd,l_kill,l_mem,l_run,l_mkdir,l_mv,l_cp,l_touch,l_startx,l_cat,l_man,l_ps
+:commandes_txt dat c_help,c_version,c_echo,c_couleur,c_clear,c_load,c_ls,c_cd,c_kill,c_mem,c_run,c_mkdir,c_mv,c_cp,c_touch,c_cat,c_ps
+:commandes_ptr dat l_help,l_version,l_echo,l_couleur,l_clear,l_load,l_ls,l_cd,l_kill,l_mem,l_run,l_mkdir,l_mv,l_cp,l_touch,l_cat,l_ps
 ;Commandes de la console
 :c_help dat "help",0
 :c_version dat "version",0
@@ -60,13 +64,11 @@
 :c_mv dat "mv",0
 :c_cp dat "cp",0
 :c_touch dat "touch",0
-:c_startx dat "startx",0
 :c_cat dat "cat",0
-:c_man dat "man",0
 :c_ps dat "ps",0
 :message_oui dat "Oui",0
 :message_non dat "Non",0
-:message_help dat "Liste des commandes :",0x11,0x1F,"- help ",0x1f,"- version",0x11,0x1F,"- man",0x1F,"- echo ",0x1F,0x11,"- couleur",0x1F,"- clear",0x11,0x1F,"- load",0x1F,"- ls   ",0x11,0x1F,"- cd",0x1F,"- kill ",0x11,0x1F,"- mem",0x1F,"- run  ",0x11,0x1F,"- mkdir",0x1f,"- mv   ",0x11,0x1F,"- cp",0x1F,"- touch",0x11,0x1F,"- cat",0x1F,"- startx",0x11,0x1F,"- ps",0
+:message_help dat "Liste des commandes :",0x11,0x1F,"- help ",0x1f,"- version",0x11,0x1F,"- echo ",0x1F,"- couleur",0x11,0x1F,"- clear",0x1F,"- load",0x11,0x1F,"- ls   ",0x1F,"- cd",0x11,0x1F,"- kill ",0x1F,"- mem",0x11,0x1F,"- run  ",0x1F,"- mkdir",0x11,0x1f,"- mv   ",0x1F,"- cp",0x11,0x1F,"- touch",0x1F,"- cat",0x11,0x1F,"- ps",0
 :message_version dat "Version 1.0",0
 :message_inconnu dat "Commande inconnue",0
 :message_run dat "Usage : run [adresse] [media=RAM]",0
