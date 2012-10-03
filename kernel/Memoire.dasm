@@ -1,4 +1,4 @@
-;memoire
+﻿;memoire
 ;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
 
 ;malloc
@@ -149,20 +149,49 @@ set pc,pop
 :memcpy
 set push,I
 set push,J
-set push,A
+set push,C
+set push,C
 set I,A
 set J,B
-add A,C
-set push,memcpy_boucle
-:memcpy_boucle
+add C,B
+ifl peek,8
+	set pc,memcpy_boucle2
+mod peek,8
+ifn peek,0
+	set pc,memcpy_boucle3
+.memcpy_boucle
 sti [I],[J]
-ifn I,A
-	set pc,peek
-set A,pop
-set A,pop
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+sti [I],[J]
+ifn C,J
+	set pc, memcpy_boucle
+set C,pop
+set C,pop
 set J,pop
 set I,pop
-set PC,pop
+set pc,pop
+.memcpy_boucle2
+sti [I],[J]
+ifn C,J
+	set pc,memcpy_boucle
+set C,pop
+set C,pop
+set C,pop
+set C,pop
+set J,pop
+set I,pop
+set pc,pop
+.memcpy_boucle3
+sti [I],[J]
+sub peek,1
+ifn peek,0
+	set pc,memcpy_boucle3
+set pc,memcpy_boucle
 
 ;--------------------------------------
 ;size renvoie la taille dans B de l'adresse A
