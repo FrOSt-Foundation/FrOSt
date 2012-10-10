@@ -53,8 +53,9 @@ jsr SetProcScreen
 set Z,pop
 set A,pop
 set [currently_running],[proc_run]
+jsr sched_clock
 iaq 0
-set pc,A
+ife set pc,A
 :Sched_add_end
 set B,pop
 set Z,pop
@@ -159,3 +160,8 @@ set [currently_running],0
 set SP,[KER_SP]
 iaq 0
 set pc,attente
+
+;----------------------------------
+;change l horloge
+;----------------------------------
+:sched_clock
