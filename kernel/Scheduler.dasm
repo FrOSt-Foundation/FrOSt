@@ -55,7 +55,7 @@ set A,pop
 set [currently_running],[proc_run]
 jsr sched_clock
 iaq 0
-ife set pc,A
+set pc,A
 :Sched_add_end
 set B,pop
 set Z,pop
@@ -163,5 +163,38 @@ set pc,attente
 
 ;----------------------------------
 ;change l horloge
+;surement ameliorable
 ;----------------------------------
 :sched_clock
+set push,A
+set push,X
+set push,B
+set push,C
+set push,Z
+set Z,[proc_run]
+set C,0
+set X,SP
+set A,0
+set SP,procs
+.sched_clock_boucle
+set B,pop
+ife SP,proc_run
+	set pc,sched_clock_end
+ife B,0
+	set pc,sched_clock_boucle
+add C,[B+4]
+set pc,sched_clock_boucle
+.sched_clock_end
+set B,[Z+4]
+div B,C
+set B,Ex
+mul B,60
+set [div_clock],B ;ne sert a rien pour l'instant
+hwi [id_clock]
+set SP,X
+set Z,pop
+set C,pop
+set B,pop
+set X,pop
+set A,pop
+set pc,pop
