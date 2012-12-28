@@ -18,3 +18,21 @@ set A,Console
 set B,Console
 add A,8
 set pc,Sched_addProc
+
+
+;---------------------------------------------
+;INIT MEMORY HANDLER
+;the memory begin at [start_mem] and end at [end_mem]
+;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
+;---------------------------------------------
+:init_memoire ;initialisation de la memoire
+set push,A
+set [start_mem],FrOSt_end
+set A,[start_mem]
+set [A],0xFFFF ;libre
+set [A+1],[end_mem]
+sub [A+1],[start_mem] ;memoire totale
+set [free_mem],[A+1]
+set A,pop
+set pc,pop
+;fin de l'initialisation
