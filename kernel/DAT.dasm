@@ -81,3 +81,8 @@
 :message_disquette_erreur_copy dat "Chargement impossible : erreur de copie",0
 :message_mem dat "Memoire libre : 0x     mots",0
 :message_todo dat "TODO",0
+
+
+
+
+:FrOSt_end

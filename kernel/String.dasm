@@ -184,11 +184,4 @@ set pc , boucle_collerC
 :fin_coller
 set i , pop
 set a , pop
-<<<<<<< HEAD
 set pc , pop
-
-;END OF FrOSt /!\
-:FrOSt_end
-=======
-set pc , pop
->>>>>>> Gestion bureaux + chargement progs externes
