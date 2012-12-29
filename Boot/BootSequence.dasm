@@ -5,20 +5,12 @@ JSR init_hardware
 JSR init_interrupthandler
 JSR init_interpreteur
 JSR init_launcher
-;on charge le processus 1 : la console
-set A,0x30
-jsr malloc
-ife Z,0xFFFF
-	set pc,end
-add Z,0x30
-set [KER_SP],SP
-set SP,Z
-;SP bien positionne
 set A,Console
-set B,Console
+set B,A
 add A,8
-set pc,Sched_addProc
-
+set C,1
+jsr Sched_AddProc
+set pc,end
 
 ;---------------------------------------------
 ;INIT MEMORY HANDLER

@@ -51,9 +51,9 @@ set A,peek
 set [Z+0x2F],[SP+1]
 add Z,0x26
 set [A+3],Z
-set A,[ecran_taille]
 ife C,0
 	set pc,Sched_AddProc_noScreen
+set A,[ecran_taille]
 jsr malloc
 ife Z,0xFFFF
 	set pc,end
@@ -77,6 +77,7 @@ set Z,pop
 set pc,pop
 
 .Sched_AddProc_noScreen
+set [A+4],0
 set A,pop
 set A,pop
 set [currently_running],pop
