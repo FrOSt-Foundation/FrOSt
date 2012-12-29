@@ -126,20 +126,11 @@ set push,C
 set push,Z
 set push,I
 set A,[ecran_actif]
-jsr size
-set Z,B
-add Z,[ecran_actif]
-sub Z,[ecran_w]
 set B,A
 add B,[ecran_w]
-set C,[ecran_w]
-.scroll_boucle1
+set C,[ecran_taille]
+sub C,[ecran_w]
 jsr memcpy
-add A,[ecran_w]
-add B,[ecran_w]
-ifn A,Z
-	set pc,scroll_boucle1
-sub A,[ecran_w]
 set I,12
 jsr efface_ligne
 set I,pop
@@ -160,6 +151,9 @@ set push,B
 set push,I
 set push,J
 set push,X
+set push,Y
+ife [A],0
+	set pc,fin_printf
 ifl i,1
 	set I,1
 ifg I,[ecran_h]
@@ -174,27 +168,32 @@ mul I,[ecran_w]
 add I,J
 add I,[ecran_actif]
 set J,A
-add [ecran_taille],[ecran_actif]
+set Y,[ecran_taille]
+add Y,[ecran_actif]
 :boucle_printf
 set B,[J]
-ife B,0
-	set pc,fin_printf
-ife I,[ecran_taille]
-	JSR scroll_printf
-ife B,0x11
-	set pc,p_return
-ife B,0x1F
-	set pc,p_tab	
+ife I,Y
+	jsr scroll_printf
+ifl B,0x20
+	set pc,choix_printf
 BOR B,[COULEUR]
 sti [I],B
-set pc , boucle_printf
+ifn [J],0
+	set pc , boucle_printf
 :fin_printf
-sub [ecran_taille],[ecran_actif]
+set Y,pop
 set X,pop
 set J,pop
 set I,pop
 set B,pop
 set pc,pop
+.choix_printf
+ife B,0x11
+	set pc,p_return
+ife B,0x1F
+	set pc,p_tab
+add J,1
+set pc,boucle_printf
 
 :scroll_printf
 JSR scroll_ecran
@@ -213,33 +212,26 @@ mod X,[ecran_w]
 add I,[ecran_w]
 sub I,X
 add J,1
+ifl I,Y
+	ifn I,Y
+		set pc,boucle_printf
+jsr scroll_ecran
+sub I,[ecran_w]
 set pc,boucle_printf
 
 
 
 ;--------------------------------------
-;AJOUT DE 3 BLANCS OU RETOUR A LA LIGNE
+;un tab (sans ajout de blanc)
 ;--------------------------------------
 :p_tab
-set X,I
-sub X,[ecran_actif]
-mod X,[ecran_w]
-ifg X,29
-	set pc , ptab1
-set [I],0
-set [I+1],0
-set [I+2],0
 add I,3
-set pc,fin_ptab
-:ptab1
-ife X,[ecran_w]
-	set pc,fin_ptab
-add X,1
-set [I],0
-add I,1
-set pc,ptab1
-:fin_ptab
 add J,1
+ifl I,Y
+	ifn I,Y
+		set pc,boucle_printf
+jsr scroll_ecran
+sub I,[ecran_w]
 set PC,boucle_printf
 
 ;-------------------------------------

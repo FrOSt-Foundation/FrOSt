@@ -3,11 +3,8 @@
 :attente set pc,attente ;la boucle d'attente
 
 :KER_SP dat 0x0
-:clock_int dat 0x0
-:key_int dat 0
-:disk_int dat 0
 
-;ID du programme en cours d'execution, 0 -> OS
+;adresse de la structure processus du programme en cours d'execution, 0 -> OS
 :currently_running dat 0
 :mem_print dat 0x0,0x0,0x0,0x0,0x0
 :free_mem dat 0x0
@@ -24,7 +21,7 @@
 :msg_clavier dat 0x7000
 
 :id_clock dat 0x0
-:div_clock dat 60
+;:div_clock dat 60 ;ne sert pas pour l'instant
 :msg_clock dat 0x6000
 
 :nb_disquette dat 0
@@ -81,8 +78,3 @@
 :message_disquette_erreur_copy dat "Chargement impossible : erreur de copie",0
 :message_mem dat "Memoire libre : 0x     mots",0
 :message_todo dat "TODO",0
-
-
-
-
-:FrOSt_end

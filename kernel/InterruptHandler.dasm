@@ -21,7 +21,7 @@ set pc , pop
 ;msg 0x0000 malloc B blocs return in Z
 ;msg 0x0001 free the b bloc
 
-;msg 0x1000 printf B-> string I-> line J-> colonne
+;msg 0x1000 printf B-> string, I-> line, J-> colonne
 
 ;msg 0x2000 changer de couleur, couleur dans B
 ;msg 0x2003 recuperer la couleur actuelle dans B
@@ -62,8 +62,6 @@ ife A,1
 rfi 1
 
 :ih_mem
-set A,[proc_run]
-set [currently_running],[A]
 set A,pop
 and A,0x000F
 ife A,0
@@ -78,9 +76,8 @@ rfi 1
 set A,pop
 set push,[ecran_actif]
 set push,A
-set A,[proc_run]
-add A,3
-set [ecran_actif],[A]
+set A,[currently_running]
+set [ecran_actif],[A+4]
 set A,pop
 and A,0x000F
 ife A,0
@@ -94,9 +91,8 @@ rfi 1
 set A,pop
 set push,[ecran_actif]
 set push,A
-set A,[proc_run]
-add A,3
-set [ecran_actif],[A]
+set A,[currently_running]
+set [ecran_actif],[A+4]
 set A,pop
 and A,0x000F
 ife A,0
@@ -114,8 +110,7 @@ rfi 1
 
 :ih_clavier
 set A,pop
-set [key_int],1
-set pc,Scheduler
+;set pc,Scheduler
 rfi 0
 
 :ih_malloc
@@ -161,8 +156,7 @@ rfi 0
 
 :ih_clock
 set A,pop
-set [clock_int],1
-set pc,Scheduler
+set pc,Sched_changer
 rfi 0
 
 :ih_launch
@@ -172,12 +166,11 @@ rfi 0
 
 :ih_disquette
 set A,pop
-set [disk_int],1
-set pc,Scheduler
+;set pc,Scheduler
 rfi 0
 
 :ih_ask_bk
-set pc,Sched_keyBlock
+;set pc,Sched_keyBlock
 rfi 0
 
 :ih_ask_nk

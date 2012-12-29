@@ -5,50 +5,7 @@
 ;---------------------------------------------
 :Loader
 ;recuperer la taille du programme dans C
-ife B,0
-;programme dans la RAM
-	jsr size
-jsr strlen
-set push,C
-set push,Z
-;pour la pile on ajoute 0x30
-set C,B
-add B,0x30
-;on enleve le nom du programme
-sub B,Z
-set push,A
-set A,B
-set [currently_running],[nb_procs]
-jsr malloc
-ife Z,0xFFFF
-	set PC,Loader_end
-;copier le programme en [B]
-set B,pop
-add B,peek
-set A,Z
-jsr memcpy
-;programme copie, on deplace les offsets
-set B,C
-set C,A
-jsr MMU
-set Z,pop
-set C,pop
-;on a deplace les offsets
-set push,A
-set A,[proc_run]
-set [A+2],SP
-add [A+2],1
-set A,pop
-set SP,A
-sub A,1
-add SP,[A]
-sub SP,2
-add A,1
-set pc,Sched_AddProc
-:Loader_end
-set Z,pop
-set A,pop
-set PC,pop
+
 
 
 ;---------------------------------------------

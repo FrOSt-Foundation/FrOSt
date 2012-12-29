@@ -1,200 +1,151 @@
-;Struct process : ID,char* nom,SP,*screen,prio
-;4 process en meme temps
-;3 files differentes : une normale, une pour le clavier, une pour l'acess diquette
-;prio : 1-10, 10 le plus prioritaire, automatique
+;struct process : int id, int priority, char* name, int* SP,  int* screen -> 5 words
+;the pc register is saved on the stack, then A,B,C,X,Y,Z,I,J,Ex in this order
+;if screen=0, then there is no need for a screen so the program is never displayed
+;priority : 1-10 automatic
 
-:nb_procs dat 1 ;augmente a chaque nouveau programme, OS compte pour 1 (ID)
+;max 8 process at a time
 
-:procs dat 0,0,0,0 ;le tableau de structures procs. Liste des programmes en execution normale
-:key_procs dat 0,0,0,0 ;le tableau de structs procs en attente d'une touche.
+:process dat 0,0,0,0,0,0,0,0
+:counter dat 0
+:running_process dat 0 ;how many are running currently
+:total_prio dat 0
 
-:proc_run dat 0 ;addresse de la structure proc du programme courant. Si proc_run==0, alors pas de programme lance
-
-;adresse du programme charge en memoire et le MMU est passe en A.
-;SP est deja bien positionne
-;Adresse du nom en B
-;args en C,X,Y,I,J,Z
-;met une prio de 3
+;-----------------------------------
+;add a proc, adress in A, name in B
+;if a screen is needed, then C is 1 otherwise it is 0
+;-----------------------------------
 :Sched_AddProc
-ifn [procs+3],0
+ife [running_process],8
 	set pc,end
-iaq 1
+add [running_process],1
+set push,Z
+set push,[currently_running]
 set push,A
-set push,Z
-set A,4
+set A,5
 jsr malloc
 ife Z,0xFFFF
 	set pc,end
-set [Z],[nb_procs]
-add [nb_procs],1
-set [Z+1],B
-set push,Z
-set A,384
-jsr malloc
-ife Z,0xFFFF
-	set pc,end
-set A,Z
-set Z,pop
-set [Z+3],A
-set A,procs
+set A,process
 sub A,1
-.Sched_add_boucle
+.loop1
 add A,1
-ifn A,key_procs
-	ifn [A],0
-		set pc,Sched_add_boucle
-ife A,key_procs
-	set pc,Sched_add_end
+ifn [A],0
+	ifn A,counter
+		set pc,loop1
+ife A,counter
+	set pc,Sched_AddProc_error
 set [A],Z
-set [proc_run],Z
-set A,[proc_run]
-set [Z+4],3
-jsr SetProcScreen
-set Z,pop
-set A,pop
-set [currently_running],[proc_run]
-jsr sched_clock
-iaq 0
-set pc,A
-:Sched_add_end
-set B,pop
-set Z,pop
-set A,pop
-set pc,end
-
-:Scheduler ;on verifie quel type d'int l'a appele
-set push,C
-set A,1
-hwi [id_clavier]
-ife C,0x12
-	set pc,TurnScreen
-set [tmpSched],C
-set C,pop
-ife [key_int],1
-	ifn [key_procs],0
-		set pc,Sched_key
-.Sched_fin
-set [key_int],0
-set A,0
-hwi [id_clavier]
-rfi 0
-
-:Sched_key ;le clavier a declenche un int, on verifie si le programme a l ecran a demande
-set A,key_procs
-sub A,1
-.keyS_boucle1
-add A,1
-ifn A,proc_run
-	ifn [A],[proc_ecran]
-		set pc,keyS_boucle1
-ife A,proc_run
-	set pc,Sched_fin
-jsr push_regs
-set B,procs
-sub B,1
-.keyS_boucle2
-add B,1
-ifn B,key_procs
-	ifn [B],0
-		set pc,keyS_boucle2
-set [B],[A]
-set [A],0
-ife [currently_running],0
-	set pc,Sched_keyS
-;on sav le programme en cours
-set A,[proc_run]
-set [A+2],SP
-.Sched_keyS_next
-set [proc_run],[B]
-set A,[proc_run]
-set SP,[A+2]
-set [currently_running],[A]
-jsr pop_regs
-set C,[tmpSched]
-rfi 0
-.Sched_keyS
-set [KER_SP],SP
-set pc,Sched_keyS_next
-
-:Sched_keyBlock
-;On deplace le programme dans la liste speciale. On passe ensuite a un autre programme, sinon a la boucle d'attente.
-;on sav tout
-jsr push_regs
-set A,[proc_run]
-set [A+2],SP
-set SP,key_procs
-.keyB_boucle1
-ifn 0,pop
-	set pc,keyB_boucle1
-set A,SP
-sub A,1
-set [A],[proc_run] ;programme sav
-set SP,procs
-.keyB_boucle2
-ifn [proc_run],pop
-	set pc,keyB_boucle2
-set A,SP
-sub A,1
-set [A],0 ;on l'enleve des programmes en cours
-;on passe au suivant
-set A,procs
-sub A,1
-.keyB_boucle3
-add A,1
-ifn A,key_procs
-	ife [A],0
-		set pc,keyB_boucle3
-ife A,key_procs
-	set pc,Sched_keyB
-ife [A],0
-	set pc,Sched_keyB
-set [proc_run],[A]
-set A,[proc_run]
-set SP,[A+2]
-jsr SetProcScreen
-set [currently_running],[A]
-jsr pop_regs
-rfi 0
-.Sched_keyB
-set [currently_running],0
-set SP,[KER_SP]
-iaq 0
-set pc,attente
-
-;----------------------------------
-;change l horloge
-;surement ameliorable
-;----------------------------------
-:sched_clock
+set A,Z
+set [A],[counter]
+add [counter],1
+set [currently_running],A
+set [A+1],10 ;max prio pour lui passer la main
+add [total_prio],10
+set [A+2],B
 set push,A
-set push,X
+set A,0x30
+jsr malloc
+ife Z,0xFFFF
+	set pc,end
+set A,peek
+set [Z+0x2F],[SP+1]
+add Z,0x26
+set [A+3],Z
+set A,[ecran_taille]
+ife C,0
+	set pc,Sched_AddProc_noScreen
+jsr malloc
+ife Z,0xFFFF
+	set pc,end
+set push,B
+set B,Z
+jsr set_vram
+set B,pop
+set A,pop
+set [A+4],Z
+set A,pop
+set [currently_running],pop
+set Z,pop
+set pc,Sched_changer
+
+.Sched_AddProc_error
+set A,Z
+jsr free
+set A,pop
+set Z,pop
+set Z,pop
+set pc,pop
+
+.Sched_AddProc_noScreen
+set A,pop
+set A,pop
+set [currently_running],pop
+set Z,pop
+set pc,Sched_changer
+
+;----------------------------------------
+;change the program currently running to the next one (NO PRIORITY FOR NOW)
+;assume the current stack has already pc then A
+;reset the clock
+;/!\ does a rfi 0 to return to the program /!\
+;you have to jump to this routine directly
+;----------------------------------------
+:Sched_changer
+set A,process
+sub A,1
+;looking for the current process in the list
+.loop1
+add A,1
+ifn A,counter
+	ifn [A],[currently_running]
+		set pc,loop1
+ife A,counter
+	set pc,Sched_Changer_error
+;looking for the next process to execute
+.loop2
+add A,1
+ife A,counter
+	set A,process
+ife [A],0
+	set pc,loop2
+;saving the current process
 set push,B
 set push,C
+set push,X
+set push,Y
 set push,Z
-set Z,[proc_run]
-set C,0
-set X,SP
-set A,0
-set SP,procs
-.sched_clock_boucle
-set B,pop
-ife SP,proc_run
-	set pc,sched_clock_end
-ife B,0
-	set pc,sched_clock_boucle
-add C,[B+4]
-set pc,sched_clock_boucle
-.sched_clock_end
-set B,[Z+4]
-div B,C
+set push,I
+set push,J
+set push,Ex
+set B,[A]
+set A,[currently_running]
+ifn A,0
+	set [A+3],SP
+ife A,0
+	set [KER_SP],SP
+set SP,[B+3]
+set [currently_running],B
+;set the clock to tick once the time to the current program is elapsed
+set B,[B+1]
+set A,[total_prio]
+sub A,1
+div B,A
 set B,Ex
 mul B,60
-set [div_clock],B ;ne sert a rien pour l'instant
+ife B,0
+	set B,60
+set A,0
 hwi [id_clock]
-set SP,X
+;restore the program
+set Ex,pop
+set J,pop
+set I,pop
 set Z,pop
+set Y,pop
+set X,pop
 set C,pop
 set B,pop
-set X,pop
-set A,pop
-set pc,pop
+rfi 0
+
+.Sched_changer_error
+set pc,end

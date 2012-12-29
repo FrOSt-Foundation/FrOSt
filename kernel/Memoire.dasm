@@ -1,4 +1,4 @@
-﻿;memoire
+;memoire
 ;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
 
 ;malloc
