@@ -11,6 +11,5 @@
     <file path="Registres.dasm" />
     <file path="Scheduler.dasm" />
     <file path="String.dasm" />
-    <file path="GestionnaireEcran.10c" />
   </files>
 </project>

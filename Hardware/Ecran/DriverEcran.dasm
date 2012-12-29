@@ -123,7 +123,6 @@ set pc , pop
 set push,A
 set push,B
 set push,C
-set push,Z
 set push,I
 set A,[ecran_actif]
 set B,A
@@ -134,7 +133,6 @@ jsr memcpy
 set I,12
 jsr efface_ligne
 set I,pop
-set Z,pop
 set C,pop
 set B,pop
 set A,pop
@@ -201,8 +199,7 @@ sub I,[ecran_w]
 set pc , pop
 
 ;------------------------------
-;AJOUT DE BLANC TANT QU'ON EST
-;PAS EN DEBUT DE LIGNE (plus vraiment maintenant... :p)
+;un \n sans ajout de blanc
 ;------------------------------
 
 :p_return
@@ -222,7 +219,7 @@ set pc,boucle_printf
 
 
 ;--------------------------------------
-;un tab (sans ajout de blanc)
+;un \t (sans ajout de blanc)
 ;--------------------------------------
 :p_tab
 add I,3
@@ -274,6 +271,3 @@ set C,pop
 set J,pop
 set I,pop
 set pc , pop
-
-
-
