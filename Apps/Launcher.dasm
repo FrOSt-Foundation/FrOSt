@@ -87,10 +87,9 @@ int 0x2004
 set pc , pop
 
 :l_load
-jsr test
-;int 0x2001
-;set B , message_TODO
-;int 0x1000
+int 0x2001
+set B , message_TODO
+int 0x1000
 set pc , pop
 
 :l_ls
@@ -106,21 +105,19 @@ int 0x1000
 set pc , pop
 
 :l_kill
-int 0x2001
-set B , message_TODO
-int 0x1000
+set A,[parse_commande2]
+set B,10
+jsr ctoi
+ife [A],0
+	set pc,pop
+set A,Z
+;on a en A l'ID du programme a killer
 set pc , pop
 
 :l_run ;on recupere le programme a charger et on le charge
-set A,[parse_commande2]
-set B,16
-jsr ctoi
-set B,0
-set A,Z
 set Z,[parse_commande2]
 ife [Z],0
 	set pc,l_run_error
-jsr loader
 set pc , pop
 .l_run_error
 int 0x2001
@@ -172,7 +169,40 @@ int 0x1000
 set pc , pop
 
 :l_ps
+set Z,process
+ife 0,[Z]
+	set pc,pop
+set push,I
+set push,J
+set I,mem_print
+set J,0
+.loop2
+sti [I],0
+ifn 4,J
+	set pc,loop2
+set J,pop
+set I,pop
+set B,10
+.loop1
 int 0x2001
-set B , message_TODO
+set C,mem_print
+set X,[Z]
+set A,[X]
+jsr dump
+set B,mem_print
 int 0x1000
-set pc , pop
+set B,10
+add J,7
+set A,[X+1]
+set C,mem_print
+jsr dump
+set B,mem_print
+int 0x1000
+set B,[X+2]
+add J,7
+int 0x1000
+add Z,1
+ifn Z,counter
+	ifn	[Z],0
+		set pc,loop1
+set pc,pop

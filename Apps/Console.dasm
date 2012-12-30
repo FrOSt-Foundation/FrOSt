@@ -12,7 +12,8 @@
 ;PROGRAMME CONSOLE
 ;---------------------------------------------
 :Console
-dat "Console",0
+dat "Console",0 ;titre
+dat 1 ;besoin de l'ecran (0 si pas besoin)
 int 0x2004 ;clear screen
 set B , 0x2000
 int 0x2000 ;change color
@@ -23,7 +24,7 @@ int 0x1000
 JSR affiche_invite
 JSR affiche_curseur
 .bouclePrinc
-int 0x4001
+int 0x4000
 jsr console_traiter_caractere
 set pc,bouclePrinc
 

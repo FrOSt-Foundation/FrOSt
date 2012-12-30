@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project>
+<project version="1.7.6" type="code">
   <name>Hardware</name>
+  <properties />
+  <references>
+    <project>Kernel</project>
+  </references>
   <files>
     <file path="GestionPeripheriques.dasm" />
     <file path="Clavier\DriverClavier.dasm" />

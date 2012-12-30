@@ -3,19 +3,25 @@
 ;if screen=0, then there is no need for a screen so the program is never displayed
 ;priority : 1-10 automatic
 
-;max 8 process at a time
+;max 4 process at a time
 
-:process dat 0,0,0,0,0,0,0,0
+:key_need dat 0,0,0,0
+:disk_need dat 0,0,0,0
+:clock_need dat 0,0,0,0
+:process dat 0,0,0,0
 :counter dat 0
 :running_process dat 0 ;how many are running currently
+:current_process dat 0 ;the index in the process tab
+:screen_process dat 0 ;the process with the screen printed
 :total_prio dat 0
 
 ;-----------------------------------
 ;add a proc, adress in A, name in B
 ;if a screen is needed, then C is 1 otherwise it is 0
+;if there's a screen, the screen changes
 ;-----------------------------------
 :Sched_AddProc
-ife [running_process],8
+ife [running_process],4
 	set pc,end
 add [running_process],1
 set push,Z
@@ -64,7 +70,9 @@ set B,pop
 set A,pop
 set [A+4],Z
 set A,pop
+set A,[currently_running]
 set [currently_running],pop
+set [screen_process],A
 set Z,pop
 set pc,Sched_changer
 
@@ -80,35 +88,20 @@ set pc,pop
 set [A+4],0
 set A,pop
 set A,pop
+set A,[currently_running]
 set [currently_running],pop
 set Z,pop
 set pc,Sched_changer
 
 ;----------------------------------------
-;change the program currently running to the next one (NO PRIORITY FOR NOW)
-;assume the current stack has already pc then A
+;changes the program currently running to the one in A
+;assumes the current stack has already pc then A
+;if A==0 then it's the OS that's running.
 ;reset the clock
 ;/!\ does a rfi 0 to return to the program /!\
 ;you have to jump to this routine directly
 ;----------------------------------------
 :Sched_changer
-set A,process
-sub A,1
-;looking for the current process in the list
-.loop1
-add A,1
-ifn A,counter
-	ifn [A],[currently_running]
-		set pc,loop1
-ife A,counter
-	set pc,Sched_Changer_error
-;looking for the next process to execute
-.loop2
-add A,1
-ife A,counter
-	set A,process
-ife [A],0
-	set pc,loop2
 ;saving the current process
 set push,B
 set push,C
@@ -118,23 +111,29 @@ set push,Z
 set push,I
 set push,J
 set push,Ex
-set B,[A]
+set B,A
 set A,[currently_running]
 ifn A,0
 	set [A+3],SP
 ife A,0
 	set [KER_SP],SP
-set SP,[B+3]
+ifn B,0
+	set SP,[B+3]
+ife B,0
+	set SP,[KER_SP]
 set [currently_running],B
 ;set the clock to tick once the time to the current program is elapsed
-set B,[B+1]
+ifn B,0
+	set B,[B+1]
 set A,[total_prio]
-sub A,1
+add A,1
 div B,A
 set B,Ex
 mul B,60
+set B,Ex
 ife B,0
-	set B,60
+	ifn 0,[currently_running]
+		set B,62
 set A,0
 hwi [id_clock]
 ;restore the program
@@ -148,5 +147,76 @@ set C,pop
 set B,pop
 rfi 0
 
-.Sched_changer_error
-set pc,end
+;----------------------------------
+;freezes the current program until the keyboard triggers an int
+;----------------------------------
+:Sched_keyBlock
+set push,B
+set A,SP
+set SP,key_need
+.loop1
+ifn 0,pop
+	set pc,loop1
+set B,SP
+set SP,A
+sub B,1
+set [B],[currently_running]
+set B,[B]
+sub [total_prio],[B+1]
+set A,process
+add A,[current_process]
+set [A],0
+add A,1
+ife A,counter
+	set A,process
+set [current_process],A
+sub [current_process],process
+set A,[A]
+set B,pop
+set pc,Sched_changer
+
+;------------------------------------
+;resumes the program with the screen waiting for a key
+;------------------------------------
+:Sched_key
+set A,key_need
+sub A,1
+.loop1
+add A,1
+ifn [A],[screen_process]
+	ifn A,disk_need
+		set pc,loop1
+ife A,disk_need ;il n'est pas dans la liste d'attente, on retourne
+	rfi 0
+set push,B
+set push,[A]
+set [A],0
+set B,SP
+set SP,process
+.loop2
+ifn 0,pop
+	set pc,loop2
+set A,SP
+sub A,1
+set SP,B
+set [A],pop
+set [current_process],A
+sub [current_process],process
+set A,[A]
+add [total_prio],[A+1]
+set push,C
+set push,A
+set A,1
+hwi [id_clavier]
+set A,peek
+set A,[A+3]
+set [A+6],C
+set A,pop
+set C,pop
+set B,pop
+set pc,Sched_changer
+
+;------------------------------------
+;kill a program which ID is in A (it's the same as terminate, but much shorter to write :p )
+;------------------------------------
+:Sched_kill

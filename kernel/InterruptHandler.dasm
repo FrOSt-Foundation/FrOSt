@@ -14,6 +14,7 @@ set pc , pop
 ;--------------------------------------------------------
 ;INTERRUPT HANDLER
 ;FAILS IN SILENCE IF ERROR
+;/!\ ASSUMES SP IS CORRECTLY POSITIONNED /!\
 ;msg 0x6000 is for the clock
 ;msg 0x7000 is for the keyboard
 ;msg 0x8000 -> lecteur de disquette
@@ -24,8 +25,8 @@ set pc , pop
 ;msg 0x1000 printf B-> string, I-> line, J-> colonne
 
 ;msg 0x2000 changer de couleur, couleur dans B
-;msg 0x2003 recuperer la couleur actuelle dans B
 ;msg 0x2001 scroll ecran d'une ligne
+;msg 0x2003 recuperer la couleur actuelle dans B
 
 ;msg 0x1001 printc carac dans C, ligne dans I, colone dans J
 
@@ -110,7 +111,7 @@ rfi 1
 
 :ih_clavier
 set A,pop
-;set pc,Scheduler
+set pc,Sched_key
 rfi 0
 
 :ih_malloc
@@ -156,8 +157,22 @@ rfi 0
 
 :ih_clock
 set A,pop
+set A,process
+add A,[current_process]
+ife 0,[currently_running]
+	set A,0
+ife A,0
+	set pc,Sched_changer
+.loop1
+add A,1
+ife A,counter
+	set A,process
+ife [A],0
+	set pc,loop1
+set [current_process],A
+sub [current_process],process
+set A,[A]
 set pc,Sched_changer
-rfi 0
 
 :ih_launch
 set A,pop
@@ -170,8 +185,7 @@ set A,pop
 rfi 0
 
 :ih_ask_bk
-;set pc,Sched_keyBlock
-rfi 0
+set pc,Sched_keyBlock
 
 :ih_ask_nk
 set A,1

@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project>
+<project version="1.7.6" type="code">
   <name>Boot</name>
+  <properties />
+  <references>
+    <project>Hardware</project>
+  </references>
   <files>
     <file path="BootSequence.dasm" />
   </files>
