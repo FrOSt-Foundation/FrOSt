@@ -3,6 +3,10 @@
 ;Adresse de la string dans A
 ;Retour dans Z
 ;---------------------------------------------
+;;;FONCTION strlen
+;;;DESCRIPTION longeur d'un string
+;;;ARG A adresse du string
+;;;ARG Z valeur de retour
 :strlen
 set push,A
 set push,B
@@ -22,6 +26,11 @@ set PC,pop
 ;---------------------------------------------
 ;STRCMP return 0 in Z if the strings at A and at B are different
 ;---------------------------------------------
+;;;FONCTION strcmp
+;;;DESCRIPTION Compare deux string
+;;;ARG A string 1
+;;;ARG B string 2
+;;;ARG Z vaut 0 si les deux string sont identiques
 :strcmp
 set push,A
 set push,B
@@ -185,7 +194,3 @@ set pc , boucle_collerC
 set i , pop
 set a , pop
 set pc , pop
-
-
-;end of FrOSt
-:FrOSt_end
