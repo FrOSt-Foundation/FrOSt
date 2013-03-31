@@ -41,6 +41,12 @@ Nous utilisons actuellement
 * Supprimer le dossier téléchargé
 
 
+### Recommandations de codage
+
+* git gère les LF/CRLF, pas de soucis à se faire de ce côté là.
+* Documentez votre code ! Il sera plus facile à maintenir et comprendre par la suite.
+
+
 ### Branches disponibles :
 
 * master : c'est la branche principale, elle n'est modifiée que pour
