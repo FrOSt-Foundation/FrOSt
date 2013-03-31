@@ -1,4 +1,2 @@
-*.dasm text=auto
-*.10csln text=auto
-*.10csuo text=auto
-*.10cproj text=auto
+*.dasm text
+.project text
