@@ -22,20 +22,39 @@ OS libre français pour le jeu 0x10c de Notch
 Le wiki du projet contient toutes les informations utiles à ce sujet
 
 
-## Trois branches sont disponibles :
+## Comment contribuer
 
-* une Dev-kit v1.7.3 ready, vous avez juste à télécharger et à ouvrir
-  le projet dans Dev-kit. Il fonctionnera directement.
-* une projet only, qui ne contient que les sources de FrOSt.
-* une totalement en développement, qui ne devrait être utilisée que
+### IDE
+
+Nous utilisons git comme gestionnaire de version (voir plus bas pour
+un tuto).
+
+Nous utilisons actuellement
+[DevCPU](http://0x10c.fr/index.php?threads/nouvel-%C3%A9mulateur-ide-devcpu.989/#post-34568). Marche
+à suivre pour ajouter le projet :
+
+* Cloner le projet sur votre ordi
+* Créer un projet dans DevCPU (clic droit > new > project)
+* Importer le projet (clic droit > import > existing project into
+  workspace, puis sélectionner le dossier FrOSt et cocher "copy into
+  workspace")
+* Supprimer le dossier téléchargé
+
+
+### Branches disponibles :
+
+* master : c'est la branche principale, elle n'est modifiée que pour
+  des releases du projet.
+* indev : c'est une branche de développement, qui ne devrait être utilisée que
   par ceux qui connaissent.  /!\ Peut ne pas fonctionner, et sera de
   toute façon plus ou moins bugguée.
 
 
 ## Liens utiles
 
-Lien vers les
-[dernières spécifications du DCPU-16 et du hardware](http://dcpu.com/)
+[Dernières spécifications du DCPU-16 et du hardware](http://dcpu.com/)
+
+[Tuto git](http://git-scm.com/book/fr)
 
 
 ## Credits :
