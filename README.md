@@ -17,6 +17,12 @@ FrOSt est un projet communautaire français ayant pour but de créer un
 OS libre français pour le jeu 0x10c de Notch
 
 
+## Comment lancer FrOSt ?
+
+Il faut compiler le fichier FrOSt/FrOSt.dasm, de préférence avec
+DevCPU.
+
+
 ## Comment puis-je développer un logiciel pour cet OS ?
 
 Le wiki du projet contient toutes les informations utiles à ce sujet
