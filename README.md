@@ -40,11 +40,8 @@ Nous utilisons actuellement
 à suivre pour ajouter le projet :
 
 * Cloner le projet sur votre ordi
-* Créer un projet dans DevCPU (clic droit > new > project)
 * Importer le projet (clic droit > import > existing project into
-  workspace, puis sélectionner le dossier FrOSt et cocher "copy into
-  workspace")
-* Supprimer le dossier téléchargé
+  workspace, puis sélectionner le dossier FrOSt)
 
 
 ### Recommandations de codage
