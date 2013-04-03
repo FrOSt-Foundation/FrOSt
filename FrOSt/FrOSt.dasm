@@ -1,3 +1,8 @@
+.include ../Boot/includes.dasm
+.include ../Hardware/includes.dasm
+.include ../kernel/includes.dasm
+.include ../lib/includes.dasm
+
 set pc, BootSequence
 
 set pc , end
