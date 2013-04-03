@@ -23,7 +23,7 @@ set J , 1
 int 0x1000
 JSR affiche_invite
 JSR affiche_curseur
-.bouclePrinc
+:bouclePrinc
 int 0x4000
 jsr console_traiter_caractere
 set pc,bouclePrinc

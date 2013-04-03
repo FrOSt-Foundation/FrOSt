@@ -33,11 +33,11 @@ ife Z,0xFFFF
 	set pc,end
 set A,process
 sub A,1
-.loop1
+:Sched_AddProc_loop1
 add A,1
 ifn [A],0
 	ifn A,counter
-		set pc,loop1
+		set pc,Sched_AddProc_loop1
 ife A,counter
 	set pc,Sched_AddProc_error
 set [A],Z
@@ -76,7 +76,7 @@ set [screen_process],A
 set Z,pop
 set pc,Sched_changer
 
-.Sched_AddProc_error
+:Sched_AddProc_error
 set A,Z
 jsr free
 set A,pop
@@ -84,7 +84,7 @@ set Z,pop
 set Z,pop
 set pc,pop
 
-.Sched_AddProc_noScreen
+:Sched_AddProc_noScreen
 set [A+4],0
 set A,pop
 set A,pop
@@ -154,9 +154,9 @@ rfi 0
 set push,B
 set A,SP
 set SP,key_need
-.loop1
+:Sched_keyBlock_loop1
 ifn 0,pop
-	set pc,loop1
+	set pc,Sched_keyBlock_loop1
 set B,SP
 set SP,A
 sub B,1
@@ -181,11 +181,11 @@ set pc,Sched_changer
 :Sched_key
 set A,key_need
 sub A,1
-.loop1
+:Sched_key_loop1
 add A,1
 ifn [A],[screen_process]
 	ifn A,disk_need
-		set pc,loop1
+		set pc,Sched_key_loop1
 ife A,disk_need ;il n'est pas dans la liste d'attente, on retourne
 	rfi 0
 set push,B
@@ -193,9 +193,9 @@ set push,[A]
 set [A],0
 set B,SP
 set SP,process
-.loop2
+:Sched_key_loop2
 ifn 0,pop
-	set pc,loop2
+	set pc,Sched_key_loop2
 set A,SP
 sub A,1
 set SP,B

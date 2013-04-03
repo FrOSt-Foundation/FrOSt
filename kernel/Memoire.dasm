@@ -17,19 +17,19 @@ sub [free_mem],A
 ;on parcours la mémoire pour savoir s'il y a un bloc assez grand
 set push,I
 set I,[start_mem]
-.malloc_boucle
+:malloc_boucle
 ife [I],0xFFFF
 	set pc,malloc_bloc_libre	
-.malloc_continue
+:malloc_continue
 add I,[I+1]
 ifn I,[end_mem]
 	set pc,malloc_boucle
-.malloc_error
+:malloc_error
 set I,pop
 set A,pop
 set pc,pop
 ;un bloc est libre, verification de la taille
-.malloc_bloc_libre
+:malloc_bloc_libre
 ifg [I+1],A
 		set pc,malloc_new_bloc
 ife [I+1],A
@@ -37,7 +37,7 @@ ife [I+1],A
 set pc,malloc_continue
 ;on a une taille trop grande
 ;on decoupe
-.malloc_new_bloc
+:malloc_new_bloc
 set push,[I+1]
 set [I+1],A
 add I,A
@@ -46,7 +46,7 @@ sub peek,A
 set [I+1],pop
 sub I,A
 ;on retourne le pointeur apres avoir update l'header
-.malloc_return
+:malloc_return
 set Z,I
 set [Z],[currently_running]
 add Z,2
@@ -61,14 +61,14 @@ set push,B
 set push,A
 set A,[start_mem]
 set B,[start_mem]
-.free_boucle
+:free_boucle
 ifg B,peek
 	set pc,free_found
 set A,B
 add B,[B+1]
 set pc,free_boucle
 ;bloc memoire a free trouve, on libere
-.free_found
+:free_found
 set [A],0xFFFF
 add [free_mem],[A+1]
 ;recollage a droite
@@ -78,24 +78,24 @@ add A,1
 add [A],[B+1]
 sub A,1
 ;recollage a gauche
-.free_gauche
+:free_gauche
 set B,[start_mem]
 set push,C
 set C,[start_mem]
 ;on recupere l'adresse du bloc a gauche
-.free_gauche_boucle
+:free_gauche_boucle
 add C,[C+1]
 ife A,C
 	set pc,free_gauche_end
 add B,[B+1]
 set pc,free_gauche_boucle
 ;on concatene si besoin est
-.free_gauche_end
+:free_gauche_end
 ifn [B],0xFFFF
 	set pc,free_end
 add B,1
 add [B],[A+1]
-.free_end
+:free_end
 set C,pop
 set A,pop
 set B,pop
@@ -105,7 +105,7 @@ set pc,pop
 :free_program
 set push,A
 set A,[start_mem]
-.boucle_recherche
+:boucle_recherche
 ife [A],peek
 	jsr free
 add A,[A+1]
@@ -121,19 +121,19 @@ set push,B
 set push,A
 set A,[start_mem]
 set B,[start_mem]
-.eff_boucle
+:eff_boucle
 ifg B,peek
 	set pc,eff_found
 set A,B
 add B,[B+1]
 set pc,eff_boucle
 ;bloc memoire a effacer trouve, on efface
-.eff_found
+:eff_found
 set B,SP
 set SP,A
 add SP,[A+1]
 add A,2
-.eff_eff
+:eff_eff
 set push,0
 ifn A,SP
 	set pc,eff_eff
@@ -159,7 +159,7 @@ ifl peek,8
 mod peek,8
 ifn peek,0
 	set pc,memcpy_boucle3
-.memcpy_boucle
+:memcpy_boucle
 sti [I],[J]
 sti [I],[J]
 sti [I],[J]
@@ -175,7 +175,7 @@ set C,pop
 set J,pop
 set I,pop
 set pc,pop
-.memcpy_boucle2
+:memcpy_boucle2
 sti [I],[J]
 ifn C,J
 	set pc,memcpy_boucle
@@ -186,7 +186,7 @@ set C,pop
 set J,pop
 set I,pop
 set pc,pop
-.memcpy_boucle3
+:memcpy_boucle3
 sti [I],[J]
 sub peek,1
 ifn peek,0
@@ -201,14 +201,14 @@ set pc,memcpy_boucle
 set push,A
 set A,[start_mem]
 set B,[start_mem]
-.size_boucle
+:size_boucle
 ifg B,peek
 	set pc,size_found
 set A,B
 add B,[B+1]
 set pc,size_boucle
 ;bloc memoire trouve, on efface
-.size_found
+:size_found
 set B,[A+1]
 sub B,2
 set A,pop
@@ -224,27 +224,27 @@ set push,C
 set push,A
 set A,[start_mem]
 set C,[start_mem]
-.realloc_boucle
+:realloc_boucle
 ifg C,peek
 	set pc,realloc_found
 set A,C
 add C,[C+1]
 set pc,realloc_boucle
-.realloc_found
+:realloc_found
 add SP,1
 set push,B
 ifl B,[A+1]
 	set pc,realloc_down
 ife [C],0xFFFF
 	set pc,realloc_up
-.realloc_malloc
+:realloc_malloc
 set push,A
 set push,Z
 set A,B
 jsr malloc
 ife Z,0xFFFF
 	set pc,realloc_error
-.realloc_fin
+:realloc_fin
 set C,pick 1
 set C,[C+1]
 sub C,2
@@ -263,12 +263,12 @@ set A,pop
 set B,pop
 set C,pop
 set pc,pop
-.realloc_error
+:realloc_error
 set B,pop
 set C,pop
 set A,0xFFFF
 set pc,pop
-.realloc_up
+:realloc_up
 ifl [C+1],B
 	set pc,realloc_malloc
 sub B,[A+1]
@@ -284,7 +284,7 @@ add [A+1],2
 set B,pop
 set C,pop
 set pc,pop
-.realloc_down
+:realloc_down
 set push,A
 sub [A+1],B
 add A,[A+1]

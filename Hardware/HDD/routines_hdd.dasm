@@ -7,7 +7,7 @@
  
 :GetAdresseLecteur
 jsr push_regs
-.Getaddr
+:Getaddr
 ife [nb_disquette],1
 	set pc,pop
 add [id_disquette],1

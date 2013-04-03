@@ -99,7 +99,7 @@ sub i , 1
 mul i , [ecran_w]
 add i , [ecran_actif]
 set j , 0
-.boucle_efface_ligne
+:boucle_efface_ligne
 sti [I],0
 sti [I],0
 sti [I],0
@@ -185,7 +185,7 @@ set J,pop
 set I,pop
 set B,pop
 set pc,pop
-.choix_printf
+:choix_printf
 ife B,0x11
 	set pc,p_return
 ife B,0x1F

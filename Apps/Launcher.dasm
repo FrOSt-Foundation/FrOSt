@@ -10,7 +10,7 @@ set I,[ecran_h]
 set J,0
 set C,commandes_txt
 set A,[parse_commande1]
-.launch_boucle
+:launch_boucle
 set B,[C]
 add C,1
 jsr strcmp
@@ -119,7 +119,7 @@ set Z,[parse_commande2]
 ife [Z],0
 	set pc,l_run_error
 set pc , pop
-.l_run_error
+:l_run_error
 int 0x2001
 set B , message_run
 int 0x1000
@@ -176,14 +176,14 @@ set push,I
 set push,J
 set I,mem_print
 set J,0
-.loop2
+:l_loop2
 sti [I],0
 ifn 4,J
-	set pc,loop2
+	set pc,l_loop2
 set J,pop
 set I,pop
 set B,10
-.loop1
+:l_loop1
 int 0x2001
 set C,mem_print
 set X,[Z]
@@ -204,5 +204,5 @@ int 0x1000
 add Z,1
 ifn Z,counter
 	ifn	[Z],0
-		set pc,loop1
+		set pc,l_loop1
 set pc,pop

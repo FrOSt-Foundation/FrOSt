@@ -163,12 +163,12 @@ ife 0,[currently_running]
 	set A,0
 ife A,0
 	set pc,Sched_changer
-.loop1
+:ih_clock_loop1
 add A,1
 ife A,counter
 	set A,process
 ife [A],0
-	set pc,loop1
+	set pc,ih_clock_loop1
 set [current_process],A
 sub [current_process],process
 set A,[A]

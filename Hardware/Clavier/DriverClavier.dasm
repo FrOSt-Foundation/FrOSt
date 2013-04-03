@@ -13,7 +13,7 @@
 	set a,3
 	set b,[msg_clavier]
 	hwi [id_clavier]
-.init_clavier_end
+:init_clavier_end
 	set B,pop
 	set A,pop
 	set pc,pop

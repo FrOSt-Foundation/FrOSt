@@ -55,7 +55,7 @@ ifn A,I
 ife A,I
 	set pc,MMU_end
 set pc,MMU_loop
-.MMU_end
+:MMU_end
 set I,pop
 set B,pop
 set A,pop
