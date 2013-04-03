@@ -14,8 +14,10 @@ set B,SP
 set SP,A
 set A,strlen_boucle
 :strlen_boucle
-ifn 0,[pop]
-	set PC,A ;plus rapide que set PC,strlen_boucle
+;/!\ [pop] n'existe pas !!!!!!!!!
+;je désactive tmp vu que c'est un raccourci
+;ifn 0,[pop]
+;	set PC,A ;plus rapide que set PC,strlen_boucle
 set Z,SP
 set SP,B
 set B,pop
