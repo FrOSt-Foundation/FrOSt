@@ -1,0 +1,7 @@
+.include GestionPeriph.dasm
+.include GestionPeripheriques.dasm
+
+.include Clavier/includes.dasm
+.include Ecran/includes.dasm
+.include HDD/includes.dasm
+.include Horloge/includes.dasm
