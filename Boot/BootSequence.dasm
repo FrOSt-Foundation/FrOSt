@@ -1,7 +1,7 @@
 :BootSequence
 
 JSR init_memoire
-JSR init_hardware
+JSR detection_and_init_periphs
 JSR init_interrupthandler
 JSR init_interpreteur
 JSR init_launcher

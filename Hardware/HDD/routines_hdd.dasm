@@ -2,6 +2,13 @@
 ;                          GetDisqueUtilisable
 ;                          et si il y a un disue ,les autres.
  
+ 
+:init_disquette
+;
+;  TODO
+;
+
+
 ;---------------------------------------------
 ; GetAdresseLecteur  : enregistre l'adresse du lecteur. Ne retourne rien
  

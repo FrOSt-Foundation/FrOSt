@@ -10,7 +10,6 @@
 :free_mem dat 0x0
 :start_mem dat 0x1000
 :end_mem dat 0xFEFF
-:tmpV dat 0x0
 :tmpSched dat 0
 
 :nb_ecrans dat 0x0
