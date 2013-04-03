@@ -6,7 +6,7 @@
 ;Sauvegarde de tous les registres
 ;---------------------------------------------
 
-:detection_periph
+:detection_and_init_periphs
 JSR push_regs
 hwn I
 set J , 0
@@ -26,7 +26,8 @@ set J , 0
 	set PC , boucle_periph
 
 :fin_boucle_periph
-JSR pop_regs
+jsr init_periph
+jsr pop_regs
 set PC , POP
 
 ;----------------PRIVATE-------------------	
@@ -76,7 +77,7 @@ ifg [nb_disquette] , 1
 	set PC , boucle_periph
 add [nb_disquette] , 1
 ife [nb_disquette] , 1
-	set [id_disquette1] , j
+	set [id_disquette] , j
 add J , 1
 set pc , boucle_periph
 
@@ -95,11 +96,11 @@ set pc , boucle_periph
 ifg [nb_ecran] , 0
 	JSR init_ecran
 ifg [nb_keyboard] , 0
-	JSR init_keyboard1
+	JSR init_clavier
 ifg [nb_clock] , 0
-	JSR init_clock1
+	JSR init_clock
 ifg [nb_disquette] , 0
-	JSR init_disquette1
+	JSR init_disquette
 set PC , POP
 
 

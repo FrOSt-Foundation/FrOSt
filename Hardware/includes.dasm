@@ -1,5 +1,4 @@
 .include GestionPeriph.dasm
-.include GestionPeripheriques.dasm
 
 .include Clavier/includes.dasm
 .include Ecran/includes.dasm
