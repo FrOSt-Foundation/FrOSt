@@ -1,0 +1,25 @@
+; *************************
+; Project: FrOSt
+; File: defines.dasm
+; *************************
+
+; ******* Id du matériel *******
+; Les id sont optenus avec hw_ID_A + (hw_ID_B << 16)
+; avec hw_ID_A et hw_ID_B dans A et B avec HWQ
+.define CLOCK_ID_A 0xB402
+.define CLOCK_ID_B 0x12D0
+
+.define FLOPPY_DRIVE_ID_A 0x24C5
+.define FLOPPY_DRIVE_ID_B 0x4FD5
+
+.define KEYBOARD_ID_A 0x7406
+.define KEYBOARD_ID_B 0x30CF
+
+.define MONITOR_ID_A 0xF615
+.define MONITOR_ID_B 0x7349
+
+.define SLEEP_CHAMBER_ID_A 0x1D9D
+.define SLEEP_CHAMBER_ID_B 0x40E4
+
+.define 3D_VECTOR_DISPLAY_ID_A 0xBF3C
+.define 3D_VECTOR_DISPLAY_ID_B 0x42BA
