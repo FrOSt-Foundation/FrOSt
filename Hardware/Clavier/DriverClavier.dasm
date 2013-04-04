@@ -33,3 +33,13 @@
 	set C,pop
 	set B,pop
 	set C,pop
+
+:waitKey ;Attend qu'une touche soit pressée, une fois que c'est le cas on retourne au programme.
+	SET PUSH, C ;Sauvegarde du registre B qui va être overwrite par le keyboard
+	SET A, 1
+	:waitKey_loop
+		HWI [id_clavier]
+		IFE C, 0
+			SET PC, waitKey_loop
+	SET C, POP
+	SET PC, POP

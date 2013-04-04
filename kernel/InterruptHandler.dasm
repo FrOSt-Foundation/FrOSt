@@ -190,8 +190,7 @@
 	set pc,Sched_keyBlock
 
 :ih_ask_nk
-	set A,1
-	hwi [id_clavier]
+	JSR waitKey
 	rfi 0
 
 :ih_ask_disk
