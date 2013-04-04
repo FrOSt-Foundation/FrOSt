@@ -14,9 +14,9 @@
 		ife I , J
 			set PC , fin_boucle_periph
 		hwq J
-		ife B , 0x7349
+		ife B , 0xf615
 			set PC , sauvegarde_screen
-		ife B , 0x30cf
+		ife B , 0x7406
 			set PC , sauvegarde_keyboard
 		ife B , 0x12d0
 			set PC , sauvegarde_clock
