@@ -9,4 +9,3 @@ set pc, BootSequence
 .include ../Apps/includes.dasm
 
 set pc , end
-:FrOSt_end
