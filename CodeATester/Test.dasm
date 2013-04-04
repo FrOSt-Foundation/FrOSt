@@ -1,97 +1,97 @@
 :test
-set push,A
-set push,Z
-set push,B
-set push,C
-set push,I
-set push,J
-set A,program2
-sub A,program1
-jsr malloc
-set C,A
-set B,program1
-set A,Z
-jsr memcpy
-set push,A
-.tmp_loop
-add A,1
-ife [A],0xABCD
-	set [A],0x13
-ife [A],0xBCDE
-	set [A],0x8
-ifn [A],0xDA1A
-	set pc, tmp_loop
-set A,pop
-set C,mem_print
-set B,16
-jsr dump
-set A,mem_print
-set I,5
-jsr printf
-set A,end_program2
-sub A,program2
-jsr malloc
-set C,A
-set B,program2
-set A,Z
-jsr memcpy
-set push,A
-.tmp_loop2
-add A,1
-ife [A],0xABCD
-	set [A],0x13
-ife [A],0xBCDE
-	set [A],0x8
-ifn [A],0xDA1A
-	set pc,tmp_loop2
-set A,pop
-set C,mem_print
-set B,16
-jsr dump
-set A,mem_print
-set I,6
-jsr printf
-set J,pop
-set I,pop
-set C,pop
-set B,pop
-set Z,pop
-set A,pop
-set pc,pop
-
+	set push,A
+	set push,Z
+	set push,B
+	set push,C
+	set push,I
+	set push,J
+	set A,program2
+	sub A,program1
+	jsr malloc
+	set C,A
+	set B,program1
+	set A,Z
+	jsr memcpy
+	set push,A
+	.tmp_loop
+	add A,1
+	ife [A],0xABCD
+		set [A],0x13
+	ife [A],0xBCDE
+		set [A],0x8
+	ifn [A],0xDA1A
+		set pc, tmp_loop
+	set A,pop
+	set C,mem_print
+	set B,16
+	jsr dump
+	set A,mem_print
+	set I,5
+	jsr printf
+	set A,end_program2
+	sub A,program2
+	jsr malloc
+	set C,A
+	set B,program2
+	set A,Z
+	jsr memcpy
+	set push,A
+	.tmp_loop2
+	add A,1
+	ife [A],0xABCD
+		set [A],0x13
+	ife [A],0xBCDE
+		set [A],0x8
+	ifn [A],0xDA1A
+		set pc,tmp_loop2
+	set A,pop
+	set C,mem_print
+	set B,16
+	jsr dump
+	set A,mem_print
+	set I,6
+	jsr printf
+	set J,pop
+	set I,pop
+	set C,pop
+	set B,pop
+	set Z,pop
+	set A,pop
+	set pc,pop
+	
 :program1
-dat "programme 1",0
-set I,0
-set C,0
-set A,SP
-set SP,0xABCD
-set B,SP
-set SP,A
-set J,0
-int 0x1000
-add C,1
-set I,C
-ife C,12
+	dat "programme 1",0
+	set I,0
 	set C,0
-set pc,0xBCDE
-dat 0xDA1A,0xDA1A,0xDA1A
-dat "programme 1",0
+	set A,SP
+	set SP,0xABCD
+	set B,SP
+	set SP,A
+	set J,0
+	int 0x1000
+	add C,1
+	set I,C
+	ife C,12
+		set C,0
+	set pc,0xBCDE
+	dat 0xDA1A,0xDA1A,0xDA1A
+	dat "programme 1",0
 
 :program2
-dat "programme 2",0
-set I,0
-set C,0
-set A,SP
-set SP,0xABCD
-set B,SP
-set SP,A
-set J,0
-int 0x1000
-add C,1
-set I,C
-ife C,12
+	dat "programme 2",0
+	set I,0
 	set C,0
-set pc,0xBCDE
-dat 0xDA1A,0xDA1A,0xDA1A
-dat "programme 2",0
-:end_program2
+	set A,SP
+	set SP,0xABCD
+	set B,SP
+	set SP,A
+	set J,0
+	int 0x1000
+	add C,1
+	set I,C
+	ife C,12
+		set C,0
+	set pc,0xBCDE
+	dat 0xDA1A,0xDA1A,0xDA1A
+	dat "programme 2",0
+	:end_program2

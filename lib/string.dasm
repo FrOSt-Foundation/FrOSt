@@ -8,20 +8,20 @@
 ;;;ARG A adresse du string
 ;;;ARG Z valeur de retour
 :strlen
-set push,A
-set push,B
-set B,SP
-set SP,A
-set A,strlen_boucle
-:strlen_boucle
-ifn 0,pop
-	set PC,A ;plus rapide que set PC,strlen_boucle
-set Z,SP
-set SP,B
-set B,pop
-set A,pop
-sub Z,A
-set PC,pop
+	set push,A
+	set push,B
+	set B,SP
+	set SP,A
+	set A,strlen_boucle
+	:strlen_boucle
+		ifn 0,pop
+			set PC,A ;plus rapide que set PC,strlen_boucle
+		set Z,SP
+		set SP,B
+		set B,pop
+		set A,pop
+		sub Z,A
+		set PC,pop
 
 ;---------------------------------------------
 ;STRCMP return 0 in Z if the strings at A and at B are different
@@ -32,69 +32,72 @@ set PC,pop
 ;;;ARG B string 2
 ;;;ARG Z vaut 0 si les deux string sont identiques
 :strcmp
-set push,A
-set push,B
-set Z,0
-sub A,1
-sub B,1
-set push,sc
-:sc
-add A,1
-add B,1
-ifn [A],0
-	ifn [B],0
-		ife [A],[B]
-			set PC,peek ;plus rapide que set PC,sc
-ife [A],[B]
-	set Z,1
-set B,pop
-set B,pop
-set A,pop
-set PC,pop
+	set push,A
+	set push,B
+	set Z,0
+	sub A,1
+	sub B,1
+	set push,sc
+	:sc
+		add A,1
+		add B,1
+		ifn [A],0
+			ifn [B],0
+				ife [A],[B]
+					set PC,peek ;plus rapide que set PC,sc
+	ife [A],[B]
+		set Z,1
+	set B,pop
+	set B,pop
+	set A,pop
+	
+	set PC,pop
 
 ;----------------------------------------------
 ;STRCAT add the string B after A
 ;By Yamakaky
 ;----------------------------------------------
 :strcat
-set push,Z
-set push,A
-set push,B
-jsr strlen
-add A,Z
-set B,A
-set A,peek
-jsr strlen
-set push,C
-set C,Z
-jsr memcpy
-set C,pop
-set B,pop
-set A,pop
-set Z,pop
-set PC,pop
+	set push,Z
+	set push,A
+	set push,B
+	jsr strlen
+	add A,Z
+	set B,A
+	set A,peek
+	jsr strlen
+	set push,C
+	set C,Z
+	jsr memcpy
+	set C,pop
+	set B,pop
+	set A,pop
+	set Z,pop
+	
+	set PC,pop
 
 ;----------------------------------------------
 ;STRCHR search char B in string A, return adress in Z, 0 otherwise
 ;By Yamakaky
 ;----------------------------------------------
 :strchr
-set push,A
-set push,B
-sub A,1
-set Z,0
-set push,sh
-:sh
-add A,1
-ifn [A],0
-	ifn [A],B
-		set PC,peek ;plus rapide que set PC,sh
-ife [A],B
-	set Z,A
-set B,pop
-set B,pop
-set A,pop
-set PC,pop
+	set push,A
+	set push,B
+	sub A,1
+	set Z,0
+	set push,sh
+	:sh
+	add A,1
+	ifn [A],0
+		ifn [A],B
+			set PC,peek ;plus rapide que set PC,sh
+	ife [A],B
+		set Z,A
+	set B,pop
+	set B,pop
+	set A,pop
+	
+	set PC,pop
 
 ;-----------------------------------------------
 ;STRPBRK search in the string A the first occurence
@@ -106,91 +109,93 @@ set PC,pop
 :strpbrk_c_save dat 0
 :strpbrk_a_save dat 0
 ;-----------------------------------------------
-:strpbrk
-set [strpbrk_pc],pop
-set [strpbrk_c_save],c
-set c,b
-add c,1
-:strpbrk_loop
-sub c,1
-ife c,0
-    set pc,strpbrk_end
-set b,pop
-jsr strchr
-ife z,0
-    set pc,strpbrk_loop
-:strpbrk_end
-set B,C
-set [strpbrk_a_save],A
-set A,B
-set C,pop
-sub A,1
-ifn A,0
-	sub PC,3
-set A,[strpbrk_a_save]
-set c,[strpbrk_c_save]
-set pc,[strpbrk_pc]
+:strpbrk	
+	set [strpbrk_pc],pop
+	set [strpbrk_c_save],c
+	set c,b
+	add c,1
+	:strpbrk_loop
+		sub c,1
+		ife c,0
+ 		   set pc,strpbrk_end
+		set b,pop
+		jsr strchr
+		ife z,0
+		    set pc,strpbrk_loop
+	:strpbrk_end
+		set B,C
+		set [strpbrk_a_save],A
+		set A,B
+		set C,pop
+		sub A,1
+		ifn A,0
+			sub PC,3
+		set A,[strpbrk_a_save]
+		set c,[strpbrk_c_save]
+		set pc,[strpbrk_pc]
 
 ;-----------------------------------------------
 ;STRSTR find a string B in a string A return 0 in Z if not found
 ;return the adress of the second string in Z otherwise
 ;-----------------------------------------------
 :strstr
-set push,B
-set push,I
-set push,A
-jsr strlen
-set I,Z
-set A,B
-jsr strlen
-ifg Z,I
-    set PC,strstr_error
-set A,peek
-jsr strchr
-ife Z,0
-    set PC,strstr_end
-add A,Z
-set push,Z
-jsr strcmp
-ifn Z,0
-    set PC,strstr_ok
-:strstr_error
-set Z,0
-set PC,strstr_end
-:strstr_ok
-set Z,pop
-add Z,peek
-:strstr_end
-set A,pop
-set I,pop
-set B,pop
-set PC,pop
+	set push,B
+	set push,I
+	set push,A
+	jsr strlen
+	set I,Z
+	set A,B
+	jsr strlen
+	ifg Z,I
+	    set PC,strstr_error
+	set A,peek
+	jsr strchr
+	ife Z,0
+	    set PC,strstr_end
+	add A,Z
+	set push,Z
+	jsr strcmp
+	ifn Z,0
+	    set PC,strstr_ok
+	:strstr_error
+		set Z,0
+		set PC,strstr_end
+	:strstr_ok
+		set Z,pop
+		add Z,peek
+	:strstr_end
+		set A,pop
+		set I,pop
+		set B,pop
+		
+		set PC,pop
 
 
 :coller_string
-set push , A
-set push , I
-set I , B
+	set push , A
+	set push , I
+	set I , B
 
 :boucle_collerB
-ife [I] , 0
-	set pc , coller_C
-set [A] , [I]
-add i , 1
-add A , 1
-set pc , boucle_collerB
+	ife [I] , 0
+		set pc , coller_C
+	set [A] , [I]
+	add i , 1
+	add A , 1
+	set pc , boucle_collerB
+
 :coller_C
-set [A] , 0x20
-add a , 1
-set I , C
-:boucle_collerC
-ife [I] , 0
-	set pc , fin_coller
-set [A] , [I]
-add i , 1
-add A , 1
-set pc , boucle_collerC
+	set [A] , 0x20
+	add a , 1
+	set I , C
+	:boucle_collerC
+		ife [I] , 0
+			set pc , fin_coller
+		set [A] , [I]
+		add i , 1
+		add A , 1
+		set pc , boucle_collerC
 :fin_coller
-set i , pop
-set a , pop
-set pc , pop
+	set i , pop
+	set a , pop
+	set pc , pop

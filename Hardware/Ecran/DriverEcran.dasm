@@ -1,10 +1,10 @@
 ;J=id ecran
 :init_ecran
-ife [nb_ecrans],1
+	ife [nb_ecrans],1
+		set pc,pop
+	add [nb_ecrans],1
+	set [id_ecran],J
 	set pc,pop
-add [nb_ecrans],1
-set [id_ecran],J
-set pc,pop
 
 ;b=pointeur font,0=default
 :change_font
@@ -16,8 +16,8 @@ set pc,pop
 
 ;b=couleur, aucun controle sur b
 :change_couleur
-set [couleur] , B
-set pc , pop
+	set [couleur] , B
+	set pc , pop
 
 ;b=pointeur palette,0=default
 :change_palette
@@ -91,28 +91,28 @@ set pc , pop
 ;Si I > 12, I = 12
 ;-----------------------------------------
 :efface_ligne
-set push , i
-set push , j
-ifg i , [ecran_h]
-	set i , [ecran_h]
-sub i , 1
-mul i , [ecran_w]
-add i , [ecran_actif]
-set j , 0
-:boucle_efface_ligne
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-sti [I],0
-ifn J,[ecran_w]
-	set pc,boucle_efface_ligne
-set j , pop
-set i , pop
-set pc , pop
+	set push , i
+	set push , j
+	ifg i , [ecran_h]
+		set i , [ecran_h]
+	sub i , 1
+	mul i , [ecran_w]
+	add i , [ecran_actif]
+	set j , 0
+	:boucle_efface_ligne
+		sti [I],0
+		sti [I],0
+		sti [I],0
+		sti [I],0
+		sti [I],0
+		sti [I],0
+		sti [I],0
+		sti [I],0
+		ifn J,[ecran_w]
+			set pc,boucle_efface_ligne
+		set j , pop
+		set i , pop
+		set pc , pop
 
 ;---------------------------------
 ;SCROLL ECRAN
@@ -120,24 +120,24 @@ set pc , pop
 ;ET EFFACE DERNIERE LIGNE (12)
 ;---------------------------------
 :scroll_ecran
-set push,A
-set push,B
-set push,C
-set push,I
-set A,[ecran_actif]
-set B,A
-add B,[ecran_w]
-set C,[ecran_taille]
-sub C,[ecran_w]
-jsr memcpy
-set I,12
-jsr efface_ligne
-set I,pop
-set C,pop
-set B,pop
-set A,pop
-set pc , pop
-
+	set push,A
+	set push,B
+	set push,C
+	set push,I
+	set A,[ecran_actif]
+	set B,A
+	add B,[ecran_w]
+	set C,[ecran_taille]
+	sub C,[ecran_w]
+	jsr memcpy
+	set I,12
+	jsr efface_ligne
+	set I,pop
+	set C,pop
+	set B,pop
+	set A,pop
+	set pc , pop
+	
 ;--------------------------------
 ;Afficher une phrase à l'écran
 ;Ligne dans I , 1 < I < 12
@@ -145,53 +145,53 @@ set pc , pop
 ;Adresse de du texte dans A
 ;--------------------------------
 :printf
-set push,B
-set push,I
-set push,J
-set push,X
-set push,Y
-ife [A],0
-	set pc,fin_printf
-ifl i,1
-	set I,1
-ifg I,[ecran_h]
-	set I,[ecran_h]
-ifl J,1
-	set J,1
-ifg J,[ecran_w]
-	set J,[ecran_w]
-sub I,1
-sub J,1
-mul I,[ecran_w]
-add I,J
-add I,[ecran_actif]
-set J,A
-set Y,[ecran_taille]
-add Y,[ecran_actif]
-:boucle_printf
-set B,[J]
-ife I,Y
-	jsr scroll_printf
-ifl B,0x20
-	set pc,choix_printf
-BOR B,[COULEUR]
-sti [I],B
-ifn [J],0
-	set pc , boucle_printf
-:fin_printf
-set Y,pop
-set X,pop
-set J,pop
-set I,pop
-set B,pop
-set pc,pop
-:choix_printf
-ife B,0x11
-	set pc,p_return
-ife B,0x1F
-	set pc,p_tab
-add J,1
-set pc,boucle_printf
+	set push,B
+	set push,I
+	set push,J
+	set push,X
+	set push,Y
+	ife [A],0
+		set pc,fin_printf
+	ifl i,1
+		set I,1
+	ifg I,[ecran_h]
+		set I,[ecran_h]
+	ifl J,1
+		set J,1
+	ifg J,[ecran_w]
+		set J,[ecran_w]
+	sub I,1
+	sub J,1
+	mul I,[ecran_w]
+	add I,J
+	add I,[ecran_actif]
+	set J,A
+	set Y,[ecran_taille]
+	add Y,[ecran_actif]
+	:boucle_printf
+		set B,[J]
+		ife I,Y
+			jsr scroll_printf
+		ifl B,0x20
+			set pc,choix_printf
+		BOR B,[COULEUR]
+		sti [I],B
+		ifn [J],0
+			set pc , boucle_printf
+	:fin_printf
+		set Y,pop
+		set X,pop
+		set J,pop
+		set I,pop
+		set B,pop
+		set pc,pop
+	:choix_printf
+		ife B,0x11
+		set pc,p_return
+		ife B,0x1F
+		set pc,p_tab
+		add J,1
+		set pc,boucle_printf
 
 :scroll_printf
 JSR scroll_ecran

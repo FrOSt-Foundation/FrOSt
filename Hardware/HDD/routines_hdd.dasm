@@ -13,38 +13,38 @@
 ; GetAdresseLecteur  : enregistre l'adresse du lecteur. Ne retourne rien
  
 :GetAdresseLecteur
-jsr push_regs
-:Getaddr
-ife [nb_disquette],1
-	set pc,pop
-add [id_disquette],1
-hwq [id_disquette]
-ifn a,0x4cae
-  set PC,GetAddr
-add [nb_disquette],1
-set B,[msg_disquette]
-jsr SetMessageInterupt
-jsr pop_regs
-set PC,POP
+	jsr push_regs
+	:Getaddr
+		ife [nb_disquette],1
+			set pc,pop
+		add [id_disquette],1
+		hwq [id_disquette]
+		ifn a,0x4cae
+ 		 set PC,GetAddr
+		add [nb_disquette],1
+		set B,[msg_disquette]
+		jsr SetMessageInterupt
+		jsr pop_regs
+		set PC,POP
  
 ;---------------------------------------------
 ;GetDisqueUtilisable : teste si un disque est utilisable dans le lecteur. Retourne B=1 si il y a un disque.
 ;                                                                        Sinon 0.
  
 :GetDisqueUtilisable
-jsr GetDisqueQualite
-ife a,0x0000
-ife b,0x7FFF
-  jsr GetDisqueUtilisable2
-set pc,pop
+	jsr GetDisqueQualite
+	ife a,0x0000
+	ife b,0x7FFF
+ 		jsr GetDisqueUtilisable2
+	set pc,pop
 :GetDisqueUtilisable2
-set a,0x0000
-hwi [id_disquette]
-set pc,pop
+	set a,0x0000
+	hwi [id_disquette]
+	set pc,pop
 :GetDisqueQualite
-set a,0xFFFF
-hwi [id_disquette]
-set PC,pop
+	set a,0xFFFF
+	hwi [id_disquette]
+	set PC,pop
  
  
 ;---------------------------------------------
@@ -55,27 +55,27 @@ set PC,pop
 ;                                                            X= 1 si ont ne peut pas ecrire sur le disque, 0 sinon.
  
 :GetDisqueProperties
-set a,0x0001
-hwi [id_disquette]
-set pc,pop
+	set a,0x0001
+	hwi [id_disquette]
+	set pc,pop
  
 ;---------------------------------------------
 ;GetDisqueFlag : indique si le dique est en mode non-bloquant ou Media-interupt. retourne B= 0 si non-bloquant
 ;                                                                                            1 si media-interupt
  
 :GetDisqueFlag
-set a,0x0002
-hwi [id_disquette]
-set pc,pop
+	set a,0x0002
+	hwi [id_disquette]
+	set pc,pop
  
 ;---------------------------------------------
 ;SetDisqueFlag : change en mode non-bloquant ou Media-interupt. prend comme paramettre :B= 0 mode non-bloquant
 ;                                                                                      B= 1 mode media-interupt
  
 :SetDisqueFlag
-set a,0x0003
-hwi [id_disquette]
-set pc,pop
+	set a,0x0003
+	hwi [id_disquette]
+	set pc,pop
  
 ;---------------------------------------------
 ;GetDisqueInterupt : indique les interuptions du Media-interupt. retourne B= 0x0000 si il n'y a aucune interuptions
@@ -84,32 +84,32 @@ set pc,pop
 ;                                                                        B= 0x0003 si l'operations d'ecriture est finis
  
 :GetDisqueInterupt
-set a,0x0004
-hwi [id_disquette]
-set pc,pop
+	set a,0x0004
+	hwi [id_disquette]
+	set pc,pop
  
 ;---------------------------------------------
 ;SetMessageInterupt : change le message d'interuptions par la valeur de B.par defaut le message est 0xFFFF.
  
 :SetMessageInterupt
-set a,0x0005
-hwi [id_disquette]
-set pc,pop
+	set a,0x0005
+	hwi [id_disquette]
+	set pc,pop
  
 ;---------------------------------------------
 ;ReadDisque : lit le disque.prend 3 paramettres : B= le secteur initiale de lecture
 ;                                                C= Nombre de secteur a lire
 ;                                                X= la premiere adresse d'enregistrement de ces donnes
 :ReadDisque
-set a,0x0010
-hwi [id_disquette]
-set pc,pop
+	set a,0x0010
+	hwi [id_disquette]
+	set pc,pop
  
 ;---------------------------------------------
 ;WriteDisque : ecrit sur le disque.prend 3 paramettres :B= le secteur initiale d'ecriture(sur le disque)
 ;                                                      C= le nombre de secteur a ecrire
 ;                                                      X= l'adresses des donnes a ecrire(sur la ram)
 :WriteDisque
-set a,0x0011
-hwi [id_disquette]
-set pc,pop
+	set a,0x0011
+	hwi [id_disquette]
+	set pc,pop

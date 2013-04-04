@@ -7,84 +7,28 @@
 ;---------------------------------------------
 
 :detection_and_init_periphs
-JSR push_regs
-hwn I
-set J , 0
+	JSR push_regs
+	hwn I
+	set J , 0
 	:boucle_periph
-	ife I , J
-		set PC , fin_boucle_periph
-	hwq J
-	ife B , 0x7349
-		set PC , sauvegarde_screen
-	ife B , 0x30cf
-		set PC , sauvegarde_keyboard
-	ife B , 0x12d0
-		set PC , sauvegarde_clock
-	ife B , 0x74fa
-		set pc , sauvegarde_disquette
-	add J , 1
-	set PC , boucle_periph
+		ife I , J
+			set PC , fin_boucle_periph
+		hwq J
+		ife B , 0x7349
+			set PC , sauvegarde_screen
+		ife B , 0x30cf
+			set PC , sauvegarde_keyboard
+		ife B , 0x12d0
+			set PC , sauvegarde_clock
+		ife B , 0x74fa
+			set pc , sauvegarde_disquette
+		add J , 1
+		set PC , boucle_periph
 
-:fin_boucle_periph
-jsr init_periph
-jsr pop_regs
-set PC , POP
-
-;----------------PRIVATE-------------------	
-:sauvegarde_screen
-ifg [nb_ecran],2
-	add J , 1
-ifg [nb_ecran] , 2
-	set PC , boucle_periph
-add [nb_ecran] , 1
-	ife [nb_ecran] , 1
-		set [id_ecran1] , j
-	ife [nb_ecran] , 2
-		set [id_ecran2] , j
-add J , 1
-set PC , boucle_periph
-
-;----------------PRIVATE-------------------
-:sauvegarde_keyboard
-ifg [nb_keyboard],1
-	add J , 1
-ifg [nb_keyboard] , 1
-	set PC , boucle_periph
-add [nb_keyboard] , 1
-	ife [nb_keyboard] , 1
-		set [id_keyboard1] , j
-add J , 1
-set PC , boucle_periph
-
-;----------------PRIVATE-------------------
-:sauvegarde_clock
-ifg [nb_clock],1
-	add J , 1
-ifg [nb_clock], 1
-	set PC , boucle_periph
-add [nb_clock] , 1
-	ife [nb_clock] , 1
-		set [id_clock1] , j
-add J , 1
-set PC , boucle_periph
-
-
-
-:sauvegarde_disquette
-ifg [nb_disquette],1
-	add J , 1
-ifg [nb_disquette] , 1
-	set PC , boucle_periph
-add [nb_disquette] , 1
-ife [nb_disquette] , 1
-	set [id_disquette] , j
-add J , 1
-set pc , boucle_periph
-
-
-
-
-
+	:fin_boucle_periph
+		jsr init_periph
+		jsr pop_regs
+		set PC , POP
 
 ;----------------------------------------
 ;Initialisation des peripheriques détectés
@@ -93,17 +37,74 @@ set pc , boucle_periph
 ;----------------------------------------
 
 :init_periph
-ifg [nb_ecran] , 0
-	JSR init_ecran
-ifg [nb_keyboard] , 0
-	JSR init_clavier
-ifg [nb_clock] , 0
-	JSR init_clock
-ifg [nb_disquette] , 0
-	JSR init_disquette
-set PC , POP
+	ifg [nb_ecran] , 0
+		JSR init_ecran
+	ifg [nb_keyboard] , 0
+		JSR init_clavier
+	ifg [nb_clock] , 0
+		JSR init_clock
+	ifg [nb_disquette] , 0
+		JSR init_disquette
+	set PC , POP
 
 
+;--------------------------------
+;	Fonctions locales privées
+;	Ne pas appeller ailleurs
+;--------------------------------
+:sauvegarde_screen
+	ifg [nb_ecran],2
+		add J , 1
+	ifg [nb_ecran] , 2
+		set PC , boucle_periph
+	add [nb_ecran] , 1
+		ife [nb_ecran] , 1
+			set [id_ecran1] , j
+		ife [nb_ecran] , 2
+			set [id_ecran2] , j
+	add J , 1
+	set PC , boucle_periph
+
+
+:sauvegarde_keyboard
+	ifg [nb_keyboard],1
+		add J , 1
+	ifg [nb_keyboard] , 1
+		set PC , boucle_periph
+	add [nb_keyboard] , 1
+		ife [nb_keyboard] , 1
+			set [id_keyboard1] , j
+	add J , 1
+	set PC , boucle_periph
+
+
+:sauvegarde_clock
+	ifg [nb_clock],1
+		add J , 1
+	ifg [nb_clock], 1
+		set PC , boucle_periph
+	add [nb_clock] , 1
+		ife [nb_clock] , 1
+			set [id_clock1] , j
+	add J , 1
+	set PC , boucle_periph
+
+
+
+:sauvegarde_disquette
+	ifg [nb_disquette],1
+		add J , 1
+	ifg [nb_disquette] , 1
+		set PC , boucle_periph
+	add [nb_disquette] , 1
+	ife [nb_disquette] , 1
+		set [id_disquette] , j
+	add J , 1
+	set pc , boucle_periph
+
+; ----------------------------
+; DATA
+; ----------------------------
 
 :nb_periph dat 0x0
 :tmpV dat 0x0

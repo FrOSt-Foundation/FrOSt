@@ -4,7 +4,7 @@
 ;call this with jsr
 ;---------------------------------------------
 :Loader
-;recuperer la taille du programme dans C
+	;recuperer la taille du programme dans C
 
 
 
@@ -14,8 +14,8 @@
 ;return to the console
 ;---------------------------------------------
 :Finisher
-set A,pop
-set B,pop
-set push,end
-set push,A
-rfi 0
+	set A,pop
+	set B,pop
+	set push,end
+	set push,A
+	rfi 0
