@@ -14,13 +14,13 @@
 		ife I , J
 			set PC , fin_boucle_periph
 		hwq J
-		ife B , 0xf615
+		ife A , 0xf615
 			set PC , sauvegarde_screen
-		ife B , 0x7406
+		ife A , 0x7406
 			set PC , sauvegarde_keyboard
-		ife B , 0x12d0
+		ife A , 0x12d0
 			set PC , sauvegarde_clock
-		ife B , 0x74fa
+		ife A , 0x74fa
 			set pc , sauvegarde_disquette
 		add J , 1
 		set PC , boucle_periph
