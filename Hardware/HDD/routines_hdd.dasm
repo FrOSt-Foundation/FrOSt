@@ -4,6 +4,7 @@
  
  
 :init_disquette
+set pc, pop
 ;
 ;  TODO
 ;
