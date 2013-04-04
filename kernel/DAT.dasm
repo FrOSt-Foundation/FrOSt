@@ -12,27 +12,6 @@
 :end_mem dat 0xFEFF
 :tmpSched dat 0
 
-:nb_ecrans dat 0x0
-:id_ecran dat 0x0
-
-:nb_claviers dat 0x0
-:id_clavier dat 0x0
-:msg_clavier dat 0x7000
-
-:id_clock dat 0x0
-;:div_clock dat 60 ;ne sert pas pour l'instant
-:msg_clock dat 0x6000
-
-:nb_disquette dat 0
-:id_disquette dat 0x0
-:msg_disquette dat 0x8000
-
-:ecran_taille dat 384
-:ecran_w dat 32
-:ecran_h dat 12
-:ecran_actif dat 0x0
-:couleur dat 0xF000
-
 
 ; ---------------------
 ; gestionnaire d'ecran
