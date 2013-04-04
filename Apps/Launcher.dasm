@@ -1,208 +1,225 @@
 :init_launcher
-set A,commandes_ptr
-sub A,commandes_txt
-set [nombre_commandes],A
-set pc ,pop
+	set A,commandes_ptr
+	sub A,commandes_txt
+	set [nombre_commandes],A
+	
+	set pc ,pop
 
 
 :launch
-set I,[ecran_h]
-set J,0
-set C,commandes_txt
-set A,[parse_commande1]
-:launch_boucle
-set B,[C]
-add C,1
-jsr strcmp
-ife C,commandes_ptr
-	ife Z,0
-		set pc,l_inconnu
-ife Z,0
-	set pc,launch_boucle
-set B,C
-sub B,1
-add B,[nombre_commandes]
-set pc,[B]
+	set I,[ecran_h]
+	set J,0
+	set C,commandes_txt
+	set A,[parse_commande1]
+	:launch_boucle
+		set B,[C]
+		add C,1
+		jsr strcmp
+		ife C,commandes_ptr
+			ife Z,0
+				set pc,launch_inconnu
+		ife Z,0
+			set pc,launch_boucle
+		set B,C
+		sub B,1
+		add B,[nombre_commandes]
+		set pc,[B]
 
 
 
-:l_help
-int 0x2001
-set B , message_help
-int 0x1000
-set pc , pop
+	:launch_help
+		int 0x2001
+		set B , message_help
+		int 0x1000
+		
+		set pc , pop
 
 
-:l_version
-int 0x2001
-set B , message_version
-int 0x1000
-set pc , pop
+	:launch_version
+		int 0x2001
+		set B , message_version
+		int 0x1000
+		
+		set pc , pop
 
-:l_inconnu
-int 0x2001
-int 0x2003
-set X,B
-set B , 0x4000
-int 0x2000
-set B , message_inconnu
-int 0x1000
-set B , x
-int 0x2000
-set pc , pop
+	:launch_inconnu
+		int 0x2001
+		int 0x2003
+		set X,B
+		set B , 0x4000
+		int 0x2000
+		set B , message_inconnu
+		int 0x1000
+		set B , x
+		int 0x2000
+		
+		set pc , pop
 
-:l_echo
-int 0x2001
-set B , 50
-int 0
-ife Z , 0xFFFF
-	set pc ,pop
-set A , Z
-set push,A
-set B , [parse_commande2]
-set C , [parse_commande3]
-JSR coller_string
-set B , A
-set C , [parse_commande4]
-JSR coller_string
-set B , A
-set C , [parse_commande5]
-JSR coller_string
-set B,A
-int 0x1000
-set B,pop
-int 1
-set pc , pop
+	:launch_echo
+		int 0x2001
+		set B , 50
+		int 0
+		ife Z , 0xFFFF
+			set pc ,pop
+		set A , Z
+		set push,A
+		set B , [parse_commande2]
+		set C , [parse_commande3]
+		JSR coller_string
+		set B , A
+		set C , [parse_commande4]
+		JSR coller_string
+		set B , A
+		set C , [parse_commande5]
+		JSR coller_string
+		set B,A
+		int 0x1000
+		set B,pop
+		int 1
+		
+		set pc , pop
 
-:l_couleur
-set A, [parse_commande2]
-set B,16
-jsr ctoi
-set B,Z
-int 0x2000
-set pc , pop
+	:launch_couleur
+		set A, [parse_commande2]
+		set B,16
+		jsr ctoi
+		set B,Z
+		int 0x2000
+		
+		set pc , pop
 
-:l_clear
-int 0x2004
-set pc , pop
+	:launch_clear
+		int 0x2004
+		
+		set pc , pop
 
-:l_load
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_load
+		int 0x2001
+		set B , message_TODO
+		int 0x1000
+		
+		set pc , pop
 
-:l_ls
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_ls
+		int 0x2001
+		set B , message_TODO
+				int 0x1000
+				
+		set pc , pop
 
-:l_cd
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_cd
+		int 0x2001
+		set B , message_TODO
+		int 0x1000
+		
+		set pc , pop
 
-:l_kill
-set A,[parse_commande2]
-set B,10
-jsr ctoi
-ife [A],0
-	set pc,pop
-set A,Z
-;on a en A l'ID du programme a killer
-set pc , pop
+	:launch_kill
+		set A,[parse_commande2]
+		set B,10
+		jsr ctoi
+		ife [A],0
+			set pc,pop
+		set A,Z
+		;on a en A l'ID du programme a killer
+		set pc , pop
 
-:l_run ;on recupere le programme a charger et on le charge
-set Z,[parse_commande2]
-ife [Z],0
-	set pc,l_run_error
-set pc , pop
-:l_run_error
-int 0x2001
-set B , message_run
-int 0x1000
-set pc , pop
+	:launch_run ;on recupere le programme a charger et on le charge
+		set Z,[parse_commande2]
+		ife [Z],0
+			set pc,launch_run_error
+			
+		set pc , pop
+		
+		:launch_run_error
+			int 0x2001
+			set B , message_run
+			int 0x1000
+			
+			set pc , pop
 
-:l_mem
-int 0x2001
-set A,[free_mem]
-set B,16
-set C,mem_print
-jsr dump
-set B , message_mem
-int 0x1000
-add J,19
-set B,mem_print
-int 0x1000
-set pc , pop
+	:launch_mem
+		int 0x2001
+		set A,[free_mem]
+		set B,16
+		set C,mem_print
+		jsr dump
+		set B , message_mem
+		int 0x1000
+		add J,19
+		set B,mem_print
+		int 0x1000
+		
+		set pc , pop
 
-:l_mkdir
-int 0x2001
-set B, message_TODO
-int 0x1000
-set pc , pop
+	:launch_mkdir
+		int 0x2001
+		set B, message_TODO
+		int 0x1000
+	
+		set pc , pop
 
-:l_mv
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_mv
+		int 0x2001
+		set B , message_TODO
+		int 0x1000
+		
+		set pc , pop
 
-:l_cp
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_cp
+		int 0x2001
+		set B , message_TODO
+		int 0x1000
+		set pc , pop
 
-:l_touch
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_touch
+		int 0x2001
+		set B , message_TODO
+		int 0x1000
+		set pc , pop
 
-:l_cat
-int 0x2001
-set B , message_TODO
-int 0x1000
-set pc , pop
+	:launch_cat
+		int 0x2001
+		set B , message_TODO
+		int 0x1000
+		set pc , pop
 
-:l_ps
-set Z,process
-ife 0,[Z]
-	set pc,pop
-set push,I
-set push,J
-set I,mem_print
-set J,0
-:l_loop2
-sti [I],0
-ifn 4,J
-	set pc,l_loop2
-set J,pop
-set I,pop
-set B,10
-:l_loop1
-int 0x2001
-set C,mem_print
-set X,[Z]
-set A,[X]
-jsr dump
-set B,mem_print
-int 0x1000
-set B,10
-add J,7
-set A,[X+1]
-set C,mem_print
-jsr dump
-set B,mem_print
-int 0x1000
-set B,[X+2]
-add J,7
-int 0x1000
-add Z,1
-ifn Z,counter
-	ifn	[Z],0
-		set pc,l_loop1
-set pc,pop
+	:launch_ps
+		set Z,process
+		ife 0,[Z]
+			set pc,pop
+		set push,I
+		set push,J
+		set I,mem_print
+		set J,0
+	:launch_loop2
+		sti [I],0
+		ifn 4,J
+			set pc,launch_loop2
+		set J,pop
+		set I,pop
+		set B,10
+	:launch_loop1
+		int 0x2001
+		set C,mem_print
+		set X,[Z]
+		set A,[X]
+		jsr dump
+		set B,mem_print
+		int 0x1000
+		set B,10
+		add J,7
+		set A,[X+1]
+		set C,mem_print
+		jsr dump
+		set B,mem_print
+		int 0x1000
+		set B,[X+2]
+		add J,7
+		int 0x1000
+		add Z,1
+		ifn Z,counter
+			ifn	[Z],0
+				set pc,launch_loop1
+				
+		set pc,pop

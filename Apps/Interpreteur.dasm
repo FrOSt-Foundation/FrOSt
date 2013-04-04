@@ -6,194 +6,196 @@
 :parse_commande5 dat 0x0
 
 :init_interpreteur
-set push,B
-set push,Z
-set A , 135
-jsr malloc
-ife Z , 0xFFFF
-;error
-	sub pc,1
-set [adr_interpreteur] , Z
-set [parse_commande1] , Z
-add Z , 27
-set [parse_commande2] , Z
-add Z , 27
-set [parse_commande3] , Z
-add Z , 27
-set [parse_commande4] , Z
-add Z , 27
-set [parse_commande5] , Z
-set Z,pop
-set B,pop
-set pc,pop
+	set push,B
+	set push,Z
+	set A , 135
+	jsr malloc
+	ife Z , 0xFFFF
+		;error
+		sub pc,1
+	set [adr_interpreteur] , Z
+	set [parse_commande1] , Z
+	add Z , 27
+	set [parse_commande2] , Z
+	add Z , 27
+	set [parse_commande3] , Z
+	add Z , 27
+	set [parse_commande4] , Z
+	add Z , 27
+	set [parse_commande5] , Z
+	set Z,pop
+	set B,pop
+	set pc,pop
 
 :interprete_commande
-jsr parseur_commande
-jsr launch
-set pc,pop
+	jsr parseurCommande
+	jsr launch
+	set pc,pop
 
-:parseur_commande
-set push , [parse_commande1]
-set push , [parse_commande2]
-set push , [parse_commande3]
-set push , [parse_commande4]
-set push , [parse_commande5]
-set b , [ecran_actif]
-add b , 357
-set i , [ecran_actif]
-add i , 383
-set x , 1
-set c , 0x0020
-BOR c , [couleur]
-set a , 0x009F
-BOR a , [couleur]
-:boucle_parseur
-ife b , i
-	set pc , fin_boucle_parseur
-ife [b] , C
-	set pc , saut_parseur
-ife [B],0
-	set pc,fin_boucle_parseur
-ife x , 6
-	set pc , fin_boucle_parseur
-ife [b] , a
-	set pc , fin_boucle_parseur
-JSR copie_parseur
-add b , 1
-set pc , boucle_parseur
-:fin_boucle_parseur
-set [parse_commande5] , pop
-set [parse_commande4] , pop
-set [parse_commande3] , pop
-set [parse_commande2] , pop
-set [parse_commande1] , pop
-set pc , pop
+:parseurCommande
+	set push , [parse_commande1]
+	set push , [parse_commande2]
+	set push , [parse_commande3]
+	set push , [parse_commande4]
+	set push , [parse_commande5]
+	set b , [ecran_actif]
+	add b , 357
+	set i , [ecran_actif]
+	add i , 383
+	set x , 1
+	set c , 0x0020
+	BOR c , [couleur]
+	set a , 0x009F
+	BOR a , [couleur]
+	:parseurCommande_loop
+		ife b , i
+			set pc , parseurCommande_endLoop
+		ife [b] , C
+			set pc , parseurCommande_saut
+		ife [B],0
+			set pc,parseurCommande_endLoop
+		ife x , 6
+				set pc , parseurCommande_endLoop
+		ife [b], a
+			set pc , parseurCommande_endLoop
+		JSR parseurCommande_copie
+		add b , 1
+		set pc , parseurCommande_loop
+	:parseurCommande_endLoop
+		set [parse_commande5] , pop
+		set [parse_commande4] , pop
+		set [parse_commande3] , pop
+		set [parse_commande2] , pop
+		set [parse_commande1] , pop
+		
+		set pc , pop
 
-:saut_parseur
-add x , 1
-add b , 1
-set pc , boucle_parseur
+	:parseurCommande_saut
+		add x , 1
+		add b , 1
+		set pc , parseurCommande_loop
 
 
-:copie_parseur
-ife x , 1
-set pc , copie1
-ife x , 2
-set pc , copie2
-ife x , 3
-set pc , copie3
-ife x , 4
-set pc , copie4
-ife x , 5
-set pc , copie5
+	:parseurCommande_copie
+		ife x , 1
+			set pc , parseurCommande_copie_1
+		ife x , 2
+			set pc , parseurCommande_copie_2
+		ife x , 3
+			set pc , parseurCommande_copie_3
+		ife x , 4
+			set pc , parseurCommande_copie_4
+		ife x , 5
+			set pc , parseurCommande_copie_5
 
-:copie1
-set push , a
-set push , C
-set a , [parse_commande1]
-set c , [B]
-XOR c , [couleur]
-set [a] , C
-add [parse_commande1] , 1
-set c , pop
-set a , pop
-set pc , pop
+	:parseurCommande_copie_1
+		set push , a
+		set push , C
+		set a , [parse_commande1]
+		set c , [B]
+		XOR c , [couleur]
+		set [a] , C
+		add [parse_commande1] , 1
+		set c , pop
+		set a , pop
+		set pc , pop
 
-:copie2
-set push , a
-set push , C
-set a , [parse_commande2]
-set c , [B]
-ifn C,0
-	XOR c , [couleur]
-set [a] , C
-add [parse_commande2] , 1
-set c , pop
-set a , pop
-set pc , pop
+	:parseurCommande_copie_2
+		set push , a
+		set push , C
+		set a , [parse_commande2]
+		set c , [B]
+		ifn C,0
+			XOR c , [couleur]
+		set [a] , C
+		add [parse_commande2] , 1
+		set c , pop
+		set a , pop
+		set pc , pop
 
-:copie3
-set push , a
-set push , C
-set a , [parse_commande3]
-set c , [B]
-XOR c , [couleur]
-set [a] , C
-add [parse_commande3] , 1
-set c , pop
-set a , pop
-set pc , pop
+	:parseurCommande_copie_3
+		set push , a
+		set push , C
+		set a , [parse_commande3]
+		set c , [B]
+		XOR c , [couleur]
+		set [a] , C
+		add [parse_commande3] , 1
+		set c , pop
+		set a , pop
+		set pc , pop
 
-:copie4
-set push , a
-set push , C
-set a , [parse_commande4]
-set c , [B]
-XOR c , [couleur]
-set [a] , C
-add [parse_commande4] , 1
-set c , pop
-set a , pop
-set pc , pop
+	:parseurCommande_copie_4
+		set push , a
+		set push , C
+		set a , [parse_commande4]
+		set c , [B]
+		XOR c , [couleur]
+		set [a] , C
+		add [parse_commande4] , 1
+		set c , pop
+		set a , pop
+		set pc , pop
 
-:copie5
-set push , a
-set push , C
-set a , [parse_commande5]
-set c , [B]
-XOR c , [couleur]
-set [a] , C
-add [parse_commande5] , 1
-set c , pop
-set a , pop
-set pc , pop
+	:parseurCommande_copie_5
+		set push , a
+		set push , C
+		set a , [parse_commande5]
+		set c , [B]
+		XOR c , [couleur]
+		set [a] , C
+		add [parse_commande5] , 1
+		set c , pop
+		set a , pop
+		set pc , pop
 
 
 :vider_parse
-set push , J
-set push , I
-:init_vide_parse1
-set J , [parse_commande1]
-set i , 0
-:vide_parse1
-ife i , 27
-set pc , init_vide_parse2
-sti [J] , 0
-set pc , vide_parse1
-:init_vide_parse2
-set J , [parse_commande2]
-set i , 0
-:vide_parse2
-ife i , 27
-set pc , init_vide_parse3
-sti [J] , 0
-set pc , vide_parse2
-:init_vide_parse3
-set a , [parse_commande3]
-set i , 0
-:vide_parse3
-ife i , 27
-set pc , init_vide_parse4
-sti [J] , 0
-set pc , vide_parse4
-:init_vide_parse4
-set a , [parse_commande4]
-set i , 0
-:vide_parse4
-ife i , 27
-set pc , init_vide_parse5
-sti [J] , 0
-set pc , vide_parse4
-:init_vide_parse5
-set a , [parse_commande5]
-set i , 0
-:vide_parse5
-ife i , 27
-set pc , fin_vide_parse
-sti [J] , 0
-set pc , vide_parse5
-:fin_vide_parse
-set i , pop
-set J , pop
-set pc , pop
+	set push , J
+	set push , I
+	:init_vide_parse1
+		set J , [parse_commande1]
+		set i , 0
+		:vide_parse1
+			ife i , 27
+			set pc , init_vide_parse2
+			sti [J] , 0
+			set pc , vide_parse1
+	:init_vide_parse2
+		set J , [parse_commande2]
+		set i , 0
+		:vide_parse2
+			ife i , 27
+			set pc , init_vide_parse3
+			sti [J] , 0
+			set pc , vide_parse2
+	:init_vide_parse3
+		set a , [parse_commande3]
+		set i , 0
+		:vide_parse3
+			ife i , 27
+			set pc , init_vide_parse4
+			sti [J] , 0
+			set pc , vide_parse4
+	:init_vide_parse4
+		set a , [parse_commande4]
+		set i , 0
+		:vide_parse4
+			ife i , 27
+			set pc , init_vide_parse5
+			sti [J] , 0
+			set pc , vide_parse4
+	:init_vide_parse5
+		set a , [parse_commande5]
+		set i , 0
+		:vide_parse5
+			ife i , 27
+			set pc , fin_vide_parse
+			sti [J] , 0
+			set pc , vide_parse5
+	:fin_vide_parse
+	set i , pop
+	set J , pop
+	
+	set pc , pop
 

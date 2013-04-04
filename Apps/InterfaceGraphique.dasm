@@ -4,23 +4,24 @@
 
 
 :frostGUI_start
-set push , i
-set push , J
-;JSR cls
-set I , 1
-set J , 0
-set B , frostGUI
-int 0x3
-set I , 2
-set J , 0
-set B , testGUI
-int 0x3
-set I , 4
-set J , 3
-set B , quitGUI
-int 0x3
-sub PC,1
-set J , pop
-set I , pop
-set pc , pop
+	set push , i
+	set push , J
+	;JSR cls
+	set I , 1
+	set J , 0
+	set B , frostGUI
+	int 0x3
+	set I , 2
+	set J , 0
+	set B , testGUI
+	int 0x3
+	set I , 4
+	set J , 3
+	set B , quitGUI
+	int 0x3
+	sub PC,1
+	set J , pop
+	set I , pop
+	
+	set pc , pop
 

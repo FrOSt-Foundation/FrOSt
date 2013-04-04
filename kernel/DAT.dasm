@@ -55,7 +55,7 @@
 
 :nombre_commandes dat 0
 :commandes_txt dat c_help,c_version,c_echo,c_couleur,c_clear,c_load,c_ls,c_cd,c_kill,c_mem,c_run,c_mkdir,c_mv,c_cp,c_touch,c_cat,c_ps
-:commandes_ptr dat l_help,l_version,l_echo,l_couleur,l_clear,l_load,l_ls,l_cd,l_kill,l_mem,l_run,l_mkdir,l_mv,l_cp,l_touch,l_cat,l_ps
+:commandes_ptr dat launch_help, launch_version, launch_echo, launch_couleur, launch_clear, launch_load, launch_ls, launch_cd, launch_kill, launch_mem, launch_run, launch_mkdir, launch_mv, launch_cp, launch_touch, launch_cat, launch_ps
 
 ; -------------------------
 ; Commandes de la console
