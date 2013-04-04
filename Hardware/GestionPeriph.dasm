@@ -107,7 +107,6 @@
 ; ----------------------------
 
 :nb_periph dat 0x0
-:tmpV dat 0x0
 :nb_ecran dat 0x0
 :id_ecran1 dat 0x0
 :id_ecran2 dat 0x0

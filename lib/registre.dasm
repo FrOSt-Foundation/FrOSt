@@ -30,3 +30,6 @@
 	set I,pop
 	set Ex,pop
 	set PC,[tmpV]
+	
+
+:tmpV dat 0x0
