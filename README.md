@@ -44,19 +44,46 @@ Nous utilisons actuellement
   workspace, puis sélectionner le dossier FrOSt)
 
 
-### Recommandations de codage
+### Normes de codage
+
+#### Règles générales
 
 * git gère les LF/CRLF, pas de soucis à se faire de ce côté là.
-* Documentez votre code ! Il sera plus facile à maintenir et comprendre par la suite.
+* __Documentez__ votre code ! Il sera plus facile à maintenir et
+  comprendre par la suite.
+* Faites des commits simples et clairs : une modification par
+  commit. Par exemple, 'Diverses modifications des drivers' peut
+  surement être découpé en plusieurs commits
+* N'hésitez pas à utiliser les branches pour toute modification
+  utilisant plus d'un commit (cf règle précédente). Cela permet aux
+  autres développeurs de mieux comprendre votre travail.
+* N'hésitez pas à relire et commenter les commits des autres. Le code
+  résultant n'en sera que meilleur.
+  
+
+#### Normes
+
+* Les instructions (set, add, mul…) sont en minuscule
+* Les registres + POP, PUSH, PEEK sont écrits an majuscule (pour les
+  différencier des labels
+* Les opérandes sont séparés par une virgule et une espace (cf
+  exemples)
+* Les labels sont écrits ainsi : routine_bouclePrincipale_sousBoucle
+
+Exemple :
+    set A, B
+	add PEEK, [id_processus]
+	jsr maRoutine_loop
 
 
 ### Branches disponibles :
 
 * master : c'est la branche principale, elle n'est modifiée que pour
   des releases du projet.
-* indev : c'est une branche de développement, qui ne devrait être utilisée que
-  par ceux qui connaissent.  /!\ Peut ne pas fonctionner, et sera de
-  toute façon plus ou moins bugguée.
+* indev : c'est une branche de développement, qui ne devrait être
+  utilisée que par ceux qui connaissent.  /!\ Peut ne pas fonctionner,
+  et sera de toute façon plus ou moins bugguée.
+* D'autres branches temporaires peuvent apparaitre
 
 
 ## Liens utiles
