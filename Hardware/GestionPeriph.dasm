@@ -18,7 +18,7 @@
 			set PC , sauvegarde_screen
 		ife A , 0x7406
 			set PC , sauvegarde_keyboard
-		ife A , 0x12d0
+		ife B , 0x12d0
 			set PC , sauvegarde_clock
 		ife A , 0x74fa
 			set pc , sauvegarde_disquette
