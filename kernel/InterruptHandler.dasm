@@ -113,7 +113,7 @@
 
 :ih_clavier
 	set A,pop
-	set pc,Sched_key
+	set pc,sched_resumeKey
 	rfi 0
 
 :ih_malloc
@@ -164,7 +164,7 @@
 	ife 0,[currently_running]
 		set A,0
 	ife A,0
-		set pc,Sched_changer
+		set pc,schedChanger
 	:ih_clock_loop1
 		add A,1
 		ife A,counter
@@ -174,7 +174,7 @@
 		set [current_process],A
 		sub [current_process],process
 		set A,[A]
-		set pc,Sched_changer
+		set pc,schedChanger
 	
 :ih_launch
 	set A,pop
@@ -187,7 +187,7 @@
 	rfi 0
 
 :ih_ask_bk
-	set pc,Sched_keyBlock
+	set pc,sched_blockKey
 
 :ih_ask_nk
 	JSR waitKey
