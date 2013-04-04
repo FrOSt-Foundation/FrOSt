@@ -23,8 +23,8 @@ set pc, pop
 		ifn a,0x4cae
  		 set PC,GetAddr
 		add [nb_disquette],1
-		set B,[msg_disquette]
-		jsr SetMessageInterupt
+		set X,[msg_disquette]
+		jsr SetDisqueInterrupt
 		jsr pop_regs
 		set PC,POP
  
@@ -70,7 +70,7 @@ set pc, pop
 ;SetDisqueInterrupt : Active ou désactive les interruptions.. prend comme paramettre : X = 0 -> Pas d'interruptions
 ;                                                                                        X != 0 -> Interruptions avec message X à chaque changement d'état ou erreur;
  
-:SetDisqueInterrrupt
+:SetDisqueInterrupt
 	set a,0x0001
 	hwi [id_disquette]
 	set pc,pop
