@@ -71,10 +71,12 @@ Nous utilisons actuellement
 * Les labels sont écrits ainsi : routine_bouclePrincipale_sousBoucle
 
 Exemple :
-    set A, B
+
+```dasm
+	set A, B
 	add PEEK, [id_processus]
 	jsr maRoutine_loop
-
+```
 
 ### Branches disponibles :
 
