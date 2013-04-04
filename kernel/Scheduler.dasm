@@ -45,57 +45,57 @@
 			ifn A, counter
 				set pc, sched_addProc_loop1
 		
-		ife A, counter
-			set pc, sched_addProc_error
+	ife A, counter
+		set pc, sched_addProc_error
+	
+	set [A], Z ;On enregistre à l'adresse du processus la mémoire précédemment allouée.
+	set A, Z ;On redirige l'adresse du processus vers cette mémoire allouée (???)
+	set [A], [counter]
+	add [counter], 1
+	
+	set [currently_running], A ;On dit que le processus actuel est celui que l'on vient de créer
+	
+	set [A + 1], 10 ;Le deuxième mot correspond à la priorité ; on la met au maximum.
+	add [total_prio], 10
+	set [A + 2], B ;Le deuxième mot correspond au pointeur vers le nom du processus, on y met donc le pointeur reçu en argument.
+	set PUSH, A
+	
+	;On tente d'allouer de la mémoire
+	set A, 0x30
+	jsr malloc
+	ife Z, 0xFFFF ;Si ce n'est pas possible, crash.
+		set pc, end
 		
-		set [A], Z ;On enregistre à l'adresse du processus la mémoire précédemment allouée.
-		set A, Z ;On redirige l'adresse du processus vers cette mémoire allouée (???)
-		set [A], [counter]
-		add [counter], 1
+	set A, PEEK ;Récupération de l'adresse du processus en cours de remplissage
+	set [Z + 0x2F], [SP + 1] ;À la fin de la mémoire allouée, on y met l'adresse du processus (PEEK lis A sans le retirer de la pile)
+	add Z, 0x26 ;Adresse de la pile
+	set [A + 3], Z ;On met le pointeur vers la pile dans le programme
+	
+	ife C, 0 ;Si on n'a pas besoin d'écran (C = 0) -> on ajoute un processus sans écran
+		set pc, sched_addProc_noScreen
 		
-		set [currently_running], A ;On dit que le processus actuel est celui que l'on vient de créer
-		
-		set [A + 1], 10 ;Le deuxième mot correspond à la priorité ; on la met au maximum.
-		add [total_prio], 10
-		set [A + 2], B ;Le deuxième mot correspond au pointeur vers le nom du processus, on y met donc le pointeur reçu en argument.
-		set PUSH, A
-		
-		;On tente d'allouer de la mémoire
-		set A, 0x30
-		jsr malloc
-		ife Z, 0xFFFF ;Si ce n'est pas possible, crash.
-			set pc, end
-			
-		set A, PEEK
-		set [Z + 0x2F], [SP + 1]
-		add Z, 0x26
-		set [A + 3], Z
-		
-		ife C, 0 ;Si on n'a pas besoin d'écran (C = 0) -> on ajoute un processus sans écran
-			set pc, sched_addProc_noScreen
-			
-		;Sinon on alloue de la mémoire pour l'écran
-		set A, [ecran_taille]
-		jsr malloc
-		ife Z, 0xFFFF ;Si on ne peut pas en allouer, on quitte
-			set pc, end
-		
-		set PUSH, B ;On sauvegarde B et on y met à la place l'adresse mémoire contenant l'écran
-		set B, Z
-		jsr set_vram ;On y mappe l'écran.
-		set B, POP
-		set A, POP
-		
-		set [A + 4], Z ;On met l'adresse de l'écran là où on alloué de la RAM.
-		set A, POP
-		
-		;On affiche l'écran
-		set A, [currently_running]
-		set [currently_running], POP
-		set [screen_process], A
-		set Z, POP
-		
-		set pc, schedChanger ;On change le programme
+	;Sinon on alloue de la mémoire pour l'écran
+	set A, [ecran_taille]
+	jsr malloc
+	ife Z, 0xFFFF ;Si on ne peut pas en allouer, on quitte
+		set pc, end
+	
+	set PUSH, B ;On sauvegarde B et on y met à la place l'adresse mémoire contenant l'écran
+	set B, Z
+	jsr set_vram ;On y mappe l'écran.
+	set B, POP
+	set A, POP
+	
+	set [A + 4], Z ;On met l'adresse de l'écran là où on alloué de la RAM.
+	set A, POP
+	
+	;On affiche l'écran
+	set A, [currently_running]
+	set [currently_running], POP
+	set [screen_process], A
+	set Z, POP
+	
+	set pc, schedChanger ;On change le programme
 
 	:sched_addProc_error
 		;Si il y a une erreur, on libère la mémoire précédemment allouée.
