@@ -33,34 +33,31 @@ set pc, pop
 ;                                                                        Sinon 0.
  
 :GetDisqueUtilisable
-	jsr GetDisqueQualite
-	ife a,0x0000
-	ife b,0x7FFF
- 		jsr GetDisqueUtilisable2
+	SET A, 0
+	HWI [id_disquette]
+	;Le lecteur retourne 1 si il y a un disque et 2 si il y a un disque protégé -> Si B = 2, on met B à 1
+	IFE B, 0x0002
+	SET B, 1
 	set pc,pop
-:GetDisqueUtilisable2
-	set a,0x0000
-	hwi [id_disquette]
-	set pc,pop
-:GetDisqueQualite
-	set a,0xFFFF
-	hwi [id_disquette]
-	set PC,pop
  
  
 ;---------------------------------------------
 ;---------------------------------------------
 ;---------------------------------------------
-;GetDisqueProperties : lit les paramettre du disque. retourne B= le nombre de mots par secteur
-;                                                            C= le nombre de secteur
+;GetDisqueProperties : lit les paramettre du disque. retourne B= le nombre de mots par secteur - OBSOLETE, NE MARCHE PAS AVEC LE M35FD
+;                                                            C= le nombre de secteur - OBSOLETE, NE MARCHE PAS AVEC LE M35FD
 ;                                                            X= 1 si ont ne peut pas ecrire sur le disque, 0 sinon.
  
 :GetDisqueProperties
 	set a,0x0001
 	hwi [id_disquette]
+	SET A, 0
+	IFE B, 0x0002
+		SET A, 1
 	set pc,pop
  
 ;---------------------------------------------
+;OBSOLETE, n'existe pas avec le M35FD
 ;GetDisqueFlag : indique si le dique est en mode non-bloquant ou Media-interupt. retourne B= 0 si non-bloquant
 ;                                                                                            1 si media-interupt
  
@@ -70,47 +67,28 @@ set pc, pop
 	set pc,pop
  
 ;---------------------------------------------
-;SetDisqueFlag : change en mode non-bloquant ou Media-interupt. prend comme paramettre :B= 0 mode non-bloquant
-;                                                                                      B= 1 mode media-interupt
+;SetDisqueInterrupt : Active ou désactive les interruptions.. prend comme paramettre : X = 0 -> Pas d'interruptions
+;                                                                                        X != 0 -> Interruptions avec message X à chaque changement d'état ou erreur;
  
-:SetDisqueFlag
-	set a,0x0003
+:SetDisqueInterrrupt
+	set a,0x0001
 	hwi [id_disquette]
 	set pc,pop
  
 ;---------------------------------------------
-;GetDisqueInterupt : indique les interuptions du Media-interupt. retourne B= 0x0000 si il n'y a aucune interuptions
-;                                                                        B= 0x0001 si le status du media a changer
-;                                                                        B= 0x0002 si l'operations de lecture est finis
-;                                                                        B= 0x0003 si l'operations d'ecriture est finis
- 
-:GetDisqueInterupt
-	set a,0x0004
-	hwi [id_disquette]
-	set pc,pop
- 
-;---------------------------------------------
-;SetMessageInterupt : change le message d'interuptions par la valeur de B.par defaut le message est 0xFFFF.
- 
-:SetMessageInterupt
-	set a,0x0005
-	hwi [id_disquette]
-	set pc,pop
- 
-;---------------------------------------------
-;ReadDisque : lit le disque.prend 3 paramettres : B= le secteur initiale de lecture
-;                                                C= Nombre de secteur a lire
-;                                                X= la premiere adresse d'enregistrement de ces donnes
+;ReadDisque : lit le disque.prend 3 paramettres : X= le secteur initiale de lecture
+;                                                 Y= la premiere adresse d'enregistrement de ces donnes
+;                                                 B = 1 si la lecture est possible et a commencé.
 :ReadDisque
-	set a,0x0010
+	set a,0x0002
 	hwi [id_disquette]
 	set pc,pop
  
 ;---------------------------------------------
-;WriteDisque : ecrit sur le disque.prend 3 paramettres :B= le secteur initiale d'ecriture(sur le disque)
-;                                                      C= le nombre de secteur a ecrire
-;                                                      X= l'adresses des donnes a ecrire(sur la ram)
+;WriteDisque : ecrit sur le disque.prend 3 paramettres :X= le secteur initiale d'ecriture(sur le disque)
+;                                                       Y= l'adresses des donnes a ecrire(sur la ram)
+;                                                       B = 1 si l'écrite est possible et a commencé.
 :WriteDisque
-	set a,0x0011
+	set a,0x0003
 	hwi [id_disquette]
 	set pc,pop
