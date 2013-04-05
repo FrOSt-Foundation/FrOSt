@@ -1,118 +1,100 @@
-;---------------------------------------------
-;Detection du nombre de periph
-;Stocke le nombre de periph dans nb_periph
-;Stocke le nombre d'écran dans nb_ecran
-;Socke l'id de l'écran 1 dans id_ecran1
-;Sauvegarde de tous les registres
-;---------------------------------------------
-
+;--------------------------------------------------------
+; Cette routine détecte et initialise les périphériques
+; en appelant les sous-routines concernées.
+;--------------------------------------------------------
 :detection_and_init_periphs
-	JSR push_regs
+	jsr push_regs
 	hwn I
-	set J , 0
+	set J, -1
+	set PUSH, boucle_periph ; plus rapide et simple pour la suite
 	:boucle_periph
-		ife I , J
-			set PC , fin_boucle_periph
+		add J, 1
+		ife I, J
+			set PC, fin_boucle_periph
 		hwq J
-		ife A , 0xf615
-			set PC , sauvegarde_screen
-		ife A , 0x7406
-			set PC , sauvegarde_keyboard
-		ife B , 0x12d0
-			set PC , sauvegarde_clock
-		ife A , 0x74fa
-			set pc , sauvegarde_disquette
-		add J , 1
-		set PC , boucle_periph
 
+		ife A, MONITOR_ID_A
+			ife B, MONITOR_ID_B
+				set PC, hw_addScreen
+
+		ife A, KEYBOARD_ID_A
+			ife B, KEYBOARD_ID_B
+				set PC, hw_addKeyboard
+
+		ife A, CLOCK_ID_A
+			ife B, CLOCK_ID_B
+				set PC, hw_addClock
+
+		ife A, FLOPPY_DRIVE_ID_A
+			ife B, FLOPPY_DRIVE_ID_B
+				set PC, hw_addFloppy
+
+		set PC, PEEK ; le hw est inconnu, on l'ignore.
+		
 	:fin_boucle_periph
+		set A, POP ; on vire le label sur la pile
 		jsr init_periph
 		jsr pop_regs
-		set PC , POP
+		set PC, POP
 
 ;----------------------------------------
 ;Initialisation des peripheriques détectés
-;Appel à la routine contenue  dans la gestion du periph
+;Appel à la routine contenue dans le drivers du periph
 ;Aucun reg modifié
 ;----------------------------------------
 
 :init_periph
-	ifg [nb_ecran] , 0
-		JSR init_ecran
-	ifg [nb_keyboard] , 0
-		JSR init_clavier
-	ifg [nb_clock] , 0
-		JSR init_clock
-	ifg [nb_disquette] , 0
-		JSR init_disquette
-	set PC , POP
+	ifn [nb_screens], 0
+		jsr init_screens
+	ifn [nb_keyboards], 0
+		jsr init_keyboards
+	ifn [nb_clocks], 0
+		jsr init_clocks
+	ifn [nb_floppies], 0
+		jsr init_floppies
+	set PC, POP
 
 
 ;--------------------------------
 ;	Fonctions locales privées
 ;	Ne pas appeller ailleurs
+;   Elles règlent les variables locales
+;   de stockage d'id (dans driversData.dasm)
+;   Elles utilisent J, qui contient l'id
+;   du hw en détection.
+;   Pour l'instant, 1 seul hw par type est supporté.
 ;--------------------------------
-:sauvegarde_screen
-	ifg [nb_ecran],2
-		add J , 1
-	ifg [nb_ecran] , 2
-		set PC , boucle_periph
-	add [nb_ecran] , 1
-		ife [nb_ecran] , 1
-			set [id_ecran1] , j
-		ife [nb_ecran] , 2
-			set [id_ecran2] , j
-	add J , 1
-	set PC , boucle_periph
+:hw_addScreen
+	ife [nb_screens], SCREEN_NB_MAX ; ife car on n'a pas de >=
+		set PC, PEEK ; trop de hw par rapport à ce qui est supporté
+	add [nb_screens], 1
+	ife [nb_screens], 1
+		set [id_screen1], J
+	set PC, PEEK
 
 
-:sauvegarde_keyboard
-	ifg [nb_keyboard],1
-		add J , 1
-	ifg [nb_keyboard] , 1
-		set PC , boucle_periph
-	add [nb_keyboard] , 1
-		ife [nb_keyboard] , 1
-			set [id_keyboard1] , j
-	add J , 1
-	set PC , boucle_periph
+:hw_addKeyboard
+	ife [nb_keyboards], KEYBOARD_NB_MAX
+		set PC, PEEK
+	add [nb_keyboards], 1
+	ife [nb_keyboards], 1
+		set [id_keyboard1], J
+	set PC, PEEK
 
 
-:sauvegarde_clock
-	ifg [nb_clock],1
-		add J , 1
-	ifg [nb_clock], 1
-		set PC , boucle_periph
-	add [nb_clock] , 1
-		ife [nb_clock] , 1
-			set [id_clock1] , j
-	add J , 1
-	set PC , boucle_periph
+:hw_addClock
+	ife [nb_clocks], CLOCK_NB_MAX
+		set PC, PEEK
+	add [nb_clocks], 1
+	ife [nb_clocks], 1
+		set [id_clock1], J
+	set PC, PEEK
 
 
-
-:sauvegarde_disquette
-	ifg [nb_disquette],1
-		add J , 1
-	ifg [nb_disquette] , 1
-		set PC , boucle_periph
-	add [nb_disquette] , 1
-	ife [nb_disquette] , 1
-		set [id_disquette] , j
-	add J , 1
-	set pc , boucle_periph
-
-; ----------------------------
-; DATA
-; ----------------------------
-
-:nb_periph dat 0x0
-:nb_ecran dat 0x0
-:id_ecran1 dat 0x0
-:id_ecran2 dat 0x0
-:nb_keyboard dat 0x0
-:id_keyboard1 dat 0x0
-:nb_clock dat 0x0
-:id_clock1 dat 0x0
-:div_clock dat 60
-
+:hw_addFloppy
+	ife [nb_floppies], FLOPPY_NB_MAX
+		set PC, PEEK
+	add [nb_floppies], 1
+	ife [nb_floppies], 1
+		set [id_floppy1], J
+	set PC, PEEK

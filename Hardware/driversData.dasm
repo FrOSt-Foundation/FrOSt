@@ -14,15 +14,15 @@
 .define SCREEN_WIDTH 32
 .define SCREEN_HEIGHT 12
 :screen_color dat 0xF000
-:nb_ecrans dat 0
-:id_ecran1 dat 0
+:nb_screens dat 0
+:id_screen1 dat 0
 :ecran_actif dat 0 ; utilisé par le scheduler
 
 ; * Clavier
 .define KEYBOARD_NB_MAX 1
-:nb_claviers dat 0
-:msg_clavier dat 0x7000
-:id_clavier1 dat 0
+:nb_keyboards dat 0
+:msg_keyboards dat 0x7000
+:id_keyboard1 dat 0
 
 ; * Horloge
 .define CLOCK_NB_MAX 1
@@ -35,7 +35,7 @@
 .define FLOPPY_NB_MAX 1
 :nb_floppies dat 0
 :id_floppy1 dat 0
-:msg_disquette1 dat 0x8000
+:msg_floppy1 dat 0x8000
 
 
 ; ******* Id du matériel *******
