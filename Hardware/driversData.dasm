@@ -4,23 +4,57 @@
 ; Description: Datas RAM utilisés par les drivers, originellement dans kernel/DAT.dasm.
 ; *************************
 
-:nb_ecrans dat 0x0
-:id_ecran dat 0x0
+; ******** Variables du matériel *******
+; contienent les id et variables du hw.
+:nb_periph dat 0
 
-:nb_claviers dat 0x0
-:id_clavier dat 0x0
+; * Écran
+.define SCREEN_NB_MAX 1
+.define SCREEN_SIZE SCREEN_WEIGHT * SCREEN_HIDTH
+.define SCREEN_WIDTH 32
+.define SCREEN_HEIGHT 12
+:screen_color dat 0xF000
+:nb_ecrans dat 0
+:id_ecran1 dat 0
+:ecran_actif dat 0 ; utilisé par le scheduler
+
+; * Clavier
+.define KEYBOARD_NB_MAX 1
+:nb_claviers dat 0
 :msg_clavier dat 0x7000
+:id_clavier1 dat 0
 
-:id_clock dat 0x0
-;:div_clock dat 60 ;ne sert pas pour l'instant
-:msg_clock dat 0x6000
+; * Horloge
+.define CLOCK_NB_MAX 1
+:nb_clocks dat 0
+:msg_clock1 dat 0x6000
+:id_clock1 dat 0
+:div_clock1 dat 60
 
-:nb_disquette dat 0
-:id_disquette dat 0x0
-:msg_disquette dat 0x8000
+; * Lecteur de disquettes
+.define FLOPPY_NB_MAX 1
+:nb_floppies dat 0
+:id_floppy1 dat 0
+:msg_disquette1 dat 0x8000
 
-:ecran_taille dat 384
-:ecran_w dat 32
-:ecran_h dat 12
-:ecran_actif dat 0x0
-:couleur dat 0xF000
+
+; ******* Id du matériel *******
+; Les id (from doc) sont optenus avec `hw_ID_A + (hw_ID_B << 16)`
+; avec hw_ID_A et hw_ID_B dans A et B avec HWQ
+.define CLOCK_ID_A 0xB402
+.define CLOCK_ID_B 0x12D0
+
+.define FLOPPY_DRIVE_ID_A 0x24C5
+.define FLOPPY_DRIVE_ID_B 0x4FD5
+
+.define KEYBOARD_ID_A 0x7406
+.define KEYBOARD_ID_B 0x30CF
+
+.define MONITOR_ID_A 0xF615
+.define MONITOR_ID_B 0x7349
+
+.define SLEEP_CHAMBER_ID_A 0x1D9D
+.define SLEEP_CHAMBER_ID_B 0x40E4
+
+.define SPED_ID_A 0xBF3C
+.define SPED_ID_B 0x42BA
