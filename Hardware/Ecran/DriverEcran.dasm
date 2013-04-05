@@ -279,18 +279,18 @@ set pc , pop
 ;      0x0000 à 0x0080)
 ; --------------------------------------------
 
-:write
+:puts
 	set PUSH, J
 	set PUSH, C
 	
 	set C, [screen_color]
 	add i, [ecran_actif]
 	set J, B
-	:write_loop
+	:puts_loop
 		bor [J], C
 		sti [I], [J]
 		ifn [J], 0
-			set PC, write_loop
+			set PC, puts_loop
 			
 	set J, POP
 	set C, POP

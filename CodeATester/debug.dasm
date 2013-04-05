@@ -13,21 +13,6 @@
 
 	SET B, debug_text
 	SET I, 0x0000
-	JSR write
-	
-	SET C, 0x3e ; = ">"
-	INT 0x1001 ;printc
-	SET C, 0x20 ;espace
-	INT 0x1001
-	
-	:debug_loop
-		SET A, 1
-		HWI [id_keyboard1]
-		IFE C, 0
-			SET PC, debug_loop
-	
-	SET B, debug_keyboardWorking
-	SET I, 0x0060
-	JSR write
+	JSR puts
 	
 	JSR attente
