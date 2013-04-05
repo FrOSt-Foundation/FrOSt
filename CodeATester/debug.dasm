@@ -1,0 +1,33 @@
+; *************************
+; Project: FrOSt
+; File: testWrite.dasm
+; *************************
+
+:debug_titre DAT "Debugging screen", 0
+:debug_text DAT "FrOSt completement charge. La console ne fonctionne pas, ce programme alternatif a donc ete lance.", 0
+:debug_keyboardWorking DAT "Si vous voyez ceci, le clavier fonctionne !", 0
+
+:debug
+	set B, 0x2000
+	JSR change_couleur
+
+	SET B, debug_text
+	SET I, 0x0000
+	JSR write
+	
+	SET C, 0x3e ; = ">"
+	INT 0x1001 ;printc
+	SET C, 0x20 ;espace
+	INT 0x1001
+	
+	:debug_loop
+		SET A, 1
+		HWI [id_keyboard1]
+		IFE C, 0
+			SET PC, debug_loop
+	
+	SET B, debug_keyboardWorking
+	SET I, 0x0060
+	JSR write
+	
+	JSR attente

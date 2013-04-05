@@ -7,6 +7,7 @@ set pc, BootSequence
 .include ../Hardware/includes.dasm
 .include ../kernel/includes.dasm
 .include ../Apps/includes.dasm
+.include ../CodeATester/debug.dasm
 
 set pc , end
 :FrOSt_end

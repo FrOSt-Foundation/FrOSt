@@ -4,13 +4,16 @@
 	JSR init_interrupthandler
 	JSR init_interpreteur
 	JSR init_launcher
-	set A,Console
-	set B,A
-	add A,8
-	set C,[A]
-	add A,1
-	set push,end
-	set push,A
+	;set A,Console
+	;set B,A
+	;add A,8
+	;set C,[A]
+	;add A,1
+	;set push,end
+	;set push,A
+	set A, debug
+	set B, debug_text
+	set C, 1
 	set pc,Sched_AddProc
 
 ;---------------------------------------------
