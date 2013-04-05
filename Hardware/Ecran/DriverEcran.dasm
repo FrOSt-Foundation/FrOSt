@@ -205,7 +205,6 @@ sub X,[ecran_actif]
 mod X,[SCREEN_WIDTH]
 add I,[SCREEN_WIDTH]
 sub I,X
-add I,[ecran_actif]
 add J,1
 ifl I,Y
 	ifn I,Y
