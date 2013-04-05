@@ -43,6 +43,10 @@
 :msg_floppy2 dat 0x8001
 :msg_floppy3 dat 0x8003
 
+; * SPED-3
+.define SPED_NB_MAX 1
+:nb_sped dat 0
+:id_sped dat 0
 
 ; ******* Id du matériel *******
 ; Les id (from doc) sont optenus avec `hw_ID_A + (hw_ID_B << 16)`

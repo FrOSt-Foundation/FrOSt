@@ -28,6 +28,10 @@
 		ife A, FLOPPY_DRIVE_ID_A
 			ife B, FLOPPY_DRIVE_ID_B
 				set PC, hw_addFloppy
+		
+		ife A, SPED_ID_A
+			ife B, SPED_ID_B
+				set PC, hw_addSped
 
 		set PC, PEEK ; le hw est inconnu, on l'ignore.
 		
@@ -99,4 +103,13 @@
 	add [nb_floppies], 1
 	ife [nb_floppies], 1
 		set [id_floppy1], J
+	set PC, PEEK
+	
+	
+:hw_addSped
+	ife [nb_sped], SPED_NB_MAX
+		set PC, PEEK
+	add [nb_sped], 1
+	ife [nb_sped], 1
+		set [id_sped], J
 	set PC, PEEK
