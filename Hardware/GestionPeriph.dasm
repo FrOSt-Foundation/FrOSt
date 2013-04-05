@@ -70,6 +70,8 @@
 	add [nb_screens], 1
 	ife [nb_screens], 1
 		set [id_screen1], J
+	ife [nb_screens], 2
+		set [id_screen2], J
 	set PC, PEEK
 
 

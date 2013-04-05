@@ -138,7 +138,7 @@
 	rfi 0
 
 :ih_getC
-	set B,[couleur]
+	set B,[screen_color]
 	set [ecran_actif],pop
 	rfi 0
 

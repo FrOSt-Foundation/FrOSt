@@ -1,27 +1,35 @@
-:init_clock ;J=id clock
-	set push,A
-	set push,B
-	set [id_clock],J
-	set a,2
-	set b,[msg_clock]
-	hwi [id_clock]
-	set A,0
-	set B,0
-	hwi [id_clock]
-	set B,pop
-	set A,pop
-	set pc,pop
+:init_clocks ;J = id clock
+	set PUSH,A
+	set PUSH,B
+	
+	set [id_clock1], J
+	
+	set a, 2 ;Activation des interruptions avec le message msg_clock1
+	set b, [msg_clock1]
+	hwi [id_clock1]
+	
+	set A, 0 ;On désactive le tick de l'horloge.
+	set B, 0
+	hwi [id_clock1]
+	
+	set B, POP
+	set A, POP
+	set pc, POP
 
 :set_clock_tick ;60/b ticks, 0=off
-	set push,A
-	set a,0
-	hwi [id_clock]
-	set A,pop
-	set pc,pop
+	set PUSH, A
+	
+	set a, 0 ;L'horloge tickera à 60/b ticks/seconde (ou ne tickera pas si b = 0)
+	hwi [id_clock1]
+	
+	set A, POP
+	set pc, POP
 
 :set_clock_int ;b=message des int, 0=off
-	set push,A
-	set a,2
-	hwi [id_clock]
-	set A,pop
-	set pc,pop
+	set PUSH, A
+	
+	set a, 2
+	hwi [id_clock1] ;On change le message d'interruption.
+	
+	set A, POP
+	set pc, POP
