@@ -3,3 +3,12 @@
 ; File: defines.dasm
 ; *************************
 
+; ***** Valeurs booléenes *****
+; exemples :
+; set [label], FALSE
+; IF_TRUE [label]
+;     set PC, POP
+.define TRUE 1
+.define FALSE 0
+.define IF_TRUE ifn 0,
+.define IF_FALSE ife 0,
