@@ -90,10 +90,10 @@
 :efface_ligne
 	set push , i
 	set push , j
-	ifg i , [SCREEN_HEIGHT]
-		set i , [SCREEN_HEIGHT]
+	ifg i , SCREEN_HEIGHT
+		set i , SCREEN_HEIGHT
 	sub i , 1
-	mul i , [SCREEN_WIDTH]
+	mul i , SCREEN_WIDTH
 	add i , [ecran_actif]
 	set j , 0
 	:boucle_efface_ligne
@@ -105,7 +105,7 @@
 		sti [I],0
 		sti [I],0
 		sti [I],0
-		ifn J,[SCREEN_WIDTH]
+		ifn J,SCREEN_WIDTH
 			set pc,boucle_efface_ligne
 		set j , pop
 		set i , pop
@@ -123,9 +123,9 @@
 	set push,I
 	set A,[ecran_actif]
 	set B,A
-	add B,[SCREEN_WIDTH]
-	set C,[SCREEN_SIZE]
-	sub C,[SCREEN_WIDTH]
+	add B,SCREEN_WIDTH
+	set C,SCREEN_SIZE
+	sub C,SCREEN_WIDTH
 	jsr memcpy
 	set I,12
 	jsr efface_ligne
@@ -151,19 +151,19 @@
 		set pc,fin_printf
 	ifl i,1
 		set I,1
-	ifg I,[SCREEN_HEIGHT]
-		set I,[SCREEN_HEIGHT]
+	ifg I,SCREEN_HEIGHT
+		set I,SCREEN_HEIGHT
 	ifl J,1
 		set J,1
-	ifg J,[SCREEN_WIDTH]
-		set J,[SCREEN_WIDTH]
+	ifg J,SCREEN_WIDTH
+		set J,SCREEN_WIDTH
 	sub I,1
 	sub J,1
-	mul I,[SCREEN_WIDTH]
+	mul I,SCREEN_WIDTH
 	add I,J
 	add I,[ecran_actif]
 	set J,A
-	set Y,[SCREEN_SIZE]
+	set Y,SCREEN_SIZE
 	add Y,[ecran_actif]
 	:boucle_printf
 		set B,[J]
@@ -192,7 +192,7 @@
 
 :scroll_printf
 JSR scroll_ecran
-sub I,[SCREEN_WIDTH]
+sub I,SCREEN_WIDTH
 set pc , pop
 
 ;------------------------------
@@ -202,15 +202,15 @@ set pc , pop
 :p_return
 set X,I
 sub X,[ecran_actif]
-mod X,[SCREEN_WIDTH]
-add I,[SCREEN_WIDTH]
+mod X,SCREEN_WIDTH
+add I,SCREEN_WIDTH
 sub I,X
 add J,1
 ifl I,Y
 	ifn I,Y
 		set pc,boucle_printf
 jsr scroll_ecran
-sub I,[SCREEN_WIDTH]
+sub I,SCREEN_WIDTH
 set pc,boucle_printf
 
 
@@ -225,7 +225,7 @@ ifl I,Y
 	ifn I,Y
 		set pc,boucle_printf
 jsr scroll_ecran
-sub I,[SCREEN_WIDTH]
+sub I,SCREEN_WIDTH
 set PC,boucle_printf
 
 ;-------------------------------------
@@ -251,15 +251,15 @@ set push,J
 set push,C
 ifl i , 1
 	set i , 1
-ifg i , [SCREEN_HEIGHT]
-	set i , [SCREEN_HEIGHT]
+ifg i , SCREEN_HEIGHT
+	set i , SCREEN_HEIGHT
 ifl j , 1
 	set j , 1
-ifg j , [SCREEN_WIDTH]
-	set j , [SCREEN_WIDTH]
+ifg j , SCREEN_WIDTH
+	set j , SCREEN_WIDTH
 sub i , 1
 sub j , 1
-mul i , [SCREEN_WIDTH]
+mul i , SCREEN_WIDTH
 add i , j
 add i , [ecran_actif]
 BOR c , [screen_color]
