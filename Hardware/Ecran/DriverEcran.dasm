@@ -268,3 +268,30 @@ set C,pop
 set J,pop
 set I,pop
 set pc , pop
+
+; --------------------------------------------
+; Affiche rapidement une chaine de caractères
+;
+; REGISTRES :
+; ===========
+;  - B : Pointeur vers la chaîne
+;  - I : Adresse de l'écran où écrire (de
+;      0x0000 à 0x0080)
+; --------------------------------------------
+
+:write
+	set PUSH, J
+	set PUSH, C
+	
+	set C, [screen_color]
+	add i, [ecran_actif]
+	set J, B
+	:write_loop
+		bor [J], C
+		sti [I], [J]
+		ifn [J], 0
+			set PC, write_loop
+			
+	set J, POP
+	set C, POP
+	SET PC, POP
