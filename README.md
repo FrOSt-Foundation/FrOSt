@@ -57,6 +57,8 @@ Nous utilisons actuellement
 * N'hésitez pas à utiliser les branches pour toute modification
   utilisant plus d'un commit (cf règle précédente). Cela permet aux
   autres développeurs de mieux comprendre votre travail.
+  [Pour mieux comprendre la gestion des branches.]
+  (http://www.croes.org/gerald/blog/git-modele-de-branche-efficace/649/)
 * N'hésitez pas à relire et commenter les commits des autres. Le code
   résultant n'en sera que meilleur.
   
