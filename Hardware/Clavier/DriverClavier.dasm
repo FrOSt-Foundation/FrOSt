@@ -1,18 +1,15 @@
-:init_clavier
+:init_keyboards
 ;J=id clavier
 	set push,A
 	set push,B
-	ife [nb_claviers],1
-			set pc,init_clavier_end
-	add [nb_claviers],1
-	set [id_clavier],J
-	
+	ife [nb_keyboards], 0
+		set PC, init_clavier_end
 	set a,0
-	hwi [id_clavier]
-
-	set a,3
-	set b,[msg_clavier]
-	hwi [id_clavier]
+	hwi [id_keyboard1]
+	
+	ifg [nb_keyboards], 1 ;Si on a un deuxième clavier, on l'initalise aussi
+		hwi [id_keyboard2]
+	
 :init_clavier_end
 	set B,pop
 	set A,pop
@@ -26,7 +23,7 @@
 
 	set b,a
 	set a,2
-	hwi [id_clavier]
+	hwi [id_keyboard1]
 
 	set z,c
 
@@ -38,7 +35,7 @@
 	SET PUSH, C ;Sauvegarde du registre B qui va être overwrite par le keyboard
 	SET A, 1
 	:waitKey_loop
-		HWI [id_clavier]
+		HWI [id_keyboard1]
 		IFE C, 0
 			SET PC, waitKey_loop
 	SET C, POP

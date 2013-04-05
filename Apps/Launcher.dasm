@@ -7,7 +7,7 @@
 
 
 :launch
-	set I,[ecran_h]
+	set I,[SCREEN_HEIGHT]
 	set J,0
 	set C,commandes_txt
 	set A,[parse_commande1]

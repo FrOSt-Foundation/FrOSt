@@ -44,9 +44,9 @@
 	add i , 383
 	set x , 1
 	set c , 0x0020
-	BOR c , [couleur]
+	BOR c , [screen_color]
 	set a , 0x009F
-	BOR a , [couleur]
+	BOR a , [screen_color]
 	:parseurCommande_loop
 		ife b , i
 			set pc , parseurCommande_endLoop
@@ -93,7 +93,7 @@
 		set push , C
 		set a , [parse_commande1]
 		set c , [B]
-		XOR c , [couleur]
+		XOR c , [screen_color]
 		set [a] , C
 		add [parse_commande1] , 1
 		set c , pop
@@ -106,7 +106,7 @@
 		set a , [parse_commande2]
 		set c , [B]
 		ifn C,0
-			XOR c , [couleur]
+			XOR c , [screen_color]
 		set [a] , C
 		add [parse_commande2] , 1
 		set c , pop
@@ -118,7 +118,7 @@
 		set push , C
 		set a , [parse_commande3]
 		set c , [B]
-		XOR c , [couleur]
+		XOR c , [screen_color]
 		set [a] , C
 		add [parse_commande3] , 1
 		set c , pop
@@ -130,7 +130,7 @@
 		set push , C
 		set a , [parse_commande4]
 		set c , [B]
-		XOR c , [couleur]
+		XOR c , [screen_color]
 		set [a] , C
 		add [parse_commande4] , 1
 		set c , pop
@@ -142,7 +142,7 @@
 		set push , C
 		set a , [parse_commande5]
 		set c , [B]
-		XOR c , [couleur]
+		XOR c , [screen_color]
 		set [a] , C
 		add [parse_commande5] , 1
 		set c , pop

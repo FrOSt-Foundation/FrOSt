@@ -75,7 +75,7 @@
 		set pc, sched_addProc_noScreen
 		
 	;Sinon on alloue de la mémoire pour l'écran
-	set A, [ecran_taille]
+	set A, [SCREEN_SIZE]
 	jsr malloc
 	ife Z, 0xFFFF ;Si on ne peut pas en allouer, on quitte
 		set pc, end
@@ -159,7 +159,7 @@
 		ifn 0, [currently_running]
 			set B, 62
 	set A, 0
-	hwi [id_clock]
+	hwi [id_clock1]
 	;restore the program
 	set EX, POP
 	set J, POP
@@ -232,7 +232,7 @@
 		set PUSH, C
 		set PUSH, A
 		set A, 1
-		hwi [id_clavier]
+		hwi [id_keyboard1]
 		set A, peek
 		set A, [A + 3]
 		set [A + 6], C

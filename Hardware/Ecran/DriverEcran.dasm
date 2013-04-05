@@ -1,29 +1,26 @@
 ;J=id ecran
-:init_ecran
-	ife [nb_ecrans],1
-		set pc,pop
-	add [nb_ecrans],1
-	set [id_ecran],J
+:init_screens
+	;Rien à faire, les IDs sont déjà enregistrées
 	set pc,pop
 
 ;b=pointeur font,0=default
 :change_font
 	set push,A
 	set a,1
-	hwi [id_ecran]
+	hwi [id_screen1]
 	set A,pop
 	set pc,pop
 
 ;b=couleur, aucun controle sur b
 :change_couleur
-	set [couleur] , B
+	set [screen_color] , B
 	set pc , pop
 
 ;b=pointeur palette,0=default
 :change_palette
 	set push,A
 	set a,2
-	hwi [id_ecran]
+	hwi [id_screen1]
 	set A,pop
 	set pc,pop
 
@@ -31,7 +28,7 @@
 :change_bordure
 	set push,A
 	set a,3
-	hwi [id_ecran]
+	hwi [id_screen1]
 	set A,pop
 	set pc,pop
 
@@ -44,7 +41,7 @@
 		set pc,gf_end
 	set a,4
 	set b,z
-	hwi [id_ecran]
+	hwi [id_screen1]
 	:gf_end
 	set A,pop
 	set pc,pop
@@ -58,7 +55,7 @@
 		set pc,gf_end
 	set a,5
 	set b,z
-	hwi [id_ecran]
+	hwi [id_screen1]
 	:gp_end
 	set A,pop
 	set pc,pop
@@ -80,7 +77,7 @@
 	set push,B
 	set a,0
 	set b,[ecran_actif]
-	hwi [id_ecran]
+	hwi [id_screen1]
 	set B,pop
 	set A,pop
 	set pc,pop
@@ -93,10 +90,10 @@
 :efface_ligne
 	set push , i
 	set push , j
-	ifg i , [ecran_h]
-		set i , [ecran_h]
+	ifg i , [SCREEN_HEIGHT]
+		set i , [SCREEN_HEIGHT]
 	sub i , 1
-	mul i , [ecran_w]
+	mul i , [SCREEN_WIDTH]
 	add i , [ecran_actif]
 	set j , 0
 	:boucle_efface_ligne
@@ -108,7 +105,7 @@
 		sti [I],0
 		sti [I],0
 		sti [I],0
-		ifn J,[ecran_w]
+		ifn J,[SCREEN_WIDTH]
 			set pc,boucle_efface_ligne
 		set j , pop
 		set i , pop
@@ -126,9 +123,9 @@
 	set push,I
 	set A,[ecran_actif]
 	set B,A
-	add B,[ecran_w]
-	set C,[ecran_taille]
-	sub C,[ecran_w]
+	add B,[SCREEN_WIDTH]
+	set C,[SCREEN_SIZE]
+	sub C,[SCREEN_WIDTH]
 	jsr memcpy
 	set I,12
 	jsr efface_ligne
@@ -154,19 +151,19 @@
 		set pc,fin_printf
 	ifl i,1
 		set I,1
-	ifg I,[ecran_h]
-		set I,[ecran_h]
+	ifg I,[SCREEN_HEIGHT]
+		set I,[SCREEN_HEIGHT]
 	ifl J,1
 		set J,1
-	ifg J,[ecran_w]
-		set J,[ecran_w]
+	ifg J,[SCREEN_WIDTH]
+		set J,[SCREEN_WIDTH]
 	sub I,1
 	sub J,1
-	mul I,[ecran_w]
+	mul I,[SCREEN_WIDTH]
 	add I,J
 	add I,[ecran_actif]
 	set J,A
-	set Y,[ecran_taille]
+	set Y,[SCREEN_SIZE]
 	add Y,[ecran_actif]
 	:boucle_printf
 		set B,[J]
@@ -174,7 +171,7 @@
 			jsr scroll_printf
 		ifl B,0x20
 			set pc,choix_printf
-		BOR B,[COULEUR]
+		BOR B,[screen_color]
 		sti [I],B
 		ifn [J],0
 			set pc , boucle_printf
@@ -195,7 +192,7 @@
 
 :scroll_printf
 JSR scroll_ecran
-sub I,[ecran_w]
+sub I,[SCREEN_WIDTH]
 set pc , pop
 
 ;------------------------------
@@ -205,15 +202,15 @@ set pc , pop
 :p_return
 set X,I
 sub X,[ecran_actif]
-mod X,[ecran_w]
-add I,[ecran_w]
+mod X,[SCREEN_WIDTH]
+add I,[SCREEN_WIDTH]
 sub I,X
 add J,1
 ifl I,Y
 	ifn I,Y
 		set pc,boucle_printf
 jsr scroll_ecran
-sub I,[ecran_w]
+sub I,[SCREEN_WIDTH]
 set pc,boucle_printf
 
 
@@ -228,7 +225,7 @@ ifl I,Y
 	ifn I,Y
 		set pc,boucle_printf
 jsr scroll_ecran
-sub I,[ecran_w]
+sub I,[SCREEN_WIDTH]
 set PC,boucle_printf
 
 ;-------------------------------------
@@ -254,18 +251,18 @@ set push,J
 set push,C
 ifl i , 1
 	set i , 1
-ifg i , [ecran_h]
-	set i , [ecran_h]
+ifg i , [SCREEN_HEIGHT]
+	set i , [SCREEN_HEIGHT]
 ifl j , 1
 	set j , 1
-ifg j , [ecran_w]
-	set j , [ecran_w]
+ifg j , [SCREEN_WIDTH]
+	set j , [SCREEN_WIDTH]
 sub i , 1
 sub j , 1
-mul i , [ecran_w]
+mul i , [SCREEN_WIDTH]
 add i , j
 add i , [ecran_actif]
-BOR c , [couleur]
+BOR c , [screen_color]
 set [i] , c
 set C,pop
 set J,pop
