@@ -65,20 +65,7 @@ Nous utilisons actuellement
 
 #### Normes
 
-* Les instructions (set, add, mul…) sont en minuscule
-* Les registres + POP, PUSH, PEEK sont écrits an majuscule (pour les
-  différencier des labels
-* Les opérandes sont séparés par une virgule et une espace (cf
-  exemples)
-* Les labels sont écrits ainsi : routine_bouclePrincipale_sousBoucle
-
-Exemple :
-
-```dasm
-	set A, B
-	add PEEK, [id_processus]
-	jsr maRoutine_loop
-```
+Toutes les normes, **à respecter impérativement pour toute nouvelle fonctionnalité codée**, se trouvent sur le (https://github.com/FrOSt-Foundation/FrOSt/wiki/Conventions-de-codage wiki).
 
 ### Branches disponibles :
 
