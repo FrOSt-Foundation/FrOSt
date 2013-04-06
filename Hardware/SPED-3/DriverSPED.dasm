@@ -1,0 +1,27 @@
+; *************************
+; Project: FrOSt
+; File: DriverSPED.dasm
+; *************************
+
+;Affiche un modèle 3D dans le sped-3
+;X = Adresse de début du modèle
+;Y = Adresse de fin du modèle
+
+:sped_printModel
+	set PUSH, A
+	set A, 1
+	sub Y, X
+	div Y, 2
+	hwi [id_sped]
+	
+	set A, POP
+	set PC, POP
+
+;Tourne le modèle précédemment affiché à l'aide de sped_printModem
+;X = Nombre de degrés de la rotation
+
+:sped_rotateModel
+	set A, 2
+	hwi [id_sped]
+	
+	set PC, POP

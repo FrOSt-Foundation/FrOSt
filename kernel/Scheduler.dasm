@@ -75,7 +75,7 @@
 		set pc, sched_addProc_noScreen
 		
 	;Sinon on alloue de la mémoire pour l'écran
-	set A, [SCREEN_SIZE]
+	set A, SCREEN_SIZE
 	jsr malloc
 	ife Z, 0xFFFF ;Si on ne peut pas en allouer, on quitte
 		set pc, end

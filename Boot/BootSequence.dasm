@@ -11,6 +11,9 @@
 	add A,1
 	set push,end
 	set push,A
+	;set A, debug
+	;set B, debug_text
+	;set C, 1
 	set pc,Sched_AddProc
 
 ;---------------------------------------------

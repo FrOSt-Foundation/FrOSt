@@ -24,13 +24,15 @@
 	JSR affiche_invite
 	JSR affiche_curseur
 	:console_mainLoop
-		int 0x4000
-		jsr console_traiter_caractere
+		set A, 1
+		hwi [id_keyboard1]
+		ifn C, 0
+			jsr console_traiter_caractere
 		set pc, console_mainLoop
 
 :affiche_invite
 	set B , invite_FrSH
-	set i , [SCREEN_HEIGHT]
+	set i , SCREEN_HEIGHT
 	set j , 1
 	int 0x1000 ;printf
 	
@@ -38,9 +40,9 @@
 
 :affiche_curseur
 	set C , [curseur_FrSH]
-	set i , [SCREEN_HEIGHT]
+	set i , SCREEN_HEIGHT
 	set j , [pos_curseur]
-	MOD j , [SCREEN_WIDTH]
+	MOD j , SCREEN_WIDTH
 	int 0x1001 ;printc
 	
 	set pc , pop
@@ -51,9 +53,9 @@
 	set A,B
 	set B,0
 	int 0x2000
-	set i , [SCREEN_HEIGHT]
+	set i , SCREEN_HEIGHT
 	set j , [pos_curseur]
-	MOD j , [SCREEN_WIDTH]
+	MOD j , SCREEN_WIDTH
 	int 0x1001 ;printc
 	set B,A
 	int 0x2000
@@ -88,7 +90,7 @@
 :efface_caractere
 	ife [pos_curseur] , 6
 		set pc , pop
-	set i , [SCREEN_HEIGHT]
+	set i , SCREEN_HEIGHT
 	set j , [pos_curseur]
 	set C,0
 	int 0x2003
