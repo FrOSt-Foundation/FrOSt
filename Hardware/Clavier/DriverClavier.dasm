@@ -33,8 +33,5 @@
 
 :waitKey ;Attend qu'une touche soit pressée, une fois que c'est le cas on retourne au programme.
 	SET A, 1
-	:waitKey_loop
-		HWI [id_keyboard1]
-		IFE C, 0
-			SET PC, waitKey_loop
+	HWI [id_keyboard1]
 	SET PC, POP
