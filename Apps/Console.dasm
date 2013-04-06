@@ -24,8 +24,10 @@
 	JSR affiche_invite
 	JSR affiche_curseur
 	:console_mainLoop
-		int 0x4001
-		jsr console_traiter_caractere
+		set A, 1
+		hwi [id_keyboard1]
+		ifn C, 0
+			jsr console_traiter_caractere
 		set pc, console_mainLoop
 
 :affiche_invite
