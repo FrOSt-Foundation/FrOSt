@@ -178,7 +178,7 @@
 	
 :ih_launch
 	set A,pop
-	JSR launch
+	;JSR launch
 	rfi 0
 	
 :ih_disquette
