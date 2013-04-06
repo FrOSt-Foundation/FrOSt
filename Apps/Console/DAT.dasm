@@ -1,0 +1,7 @@
+; *************************
+; Project: FrOSt
+; File: DAT.dasm
+; *************************
+
+:console_titre DAT "Console", 0
+:console_welcomeMessage DAT "Bienvenue dans FrOSt.", 0x11, "Tapez help si vous etes perdu.", 0

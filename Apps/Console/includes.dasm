@@ -4,3 +4,4 @@
 ; *************************
 
 .include console.dasm
+.include DAT.dasm
