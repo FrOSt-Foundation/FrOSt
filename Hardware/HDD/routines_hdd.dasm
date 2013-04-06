@@ -40,6 +40,12 @@ set pc, pop
 	IFE B, 0x0002
 	SET B, 1
 	set pc,pop
+	
+:getPeripheralConnected ;Si il y a un lecteur de disquettes connecté, retourne 1 dans B. Sinon, retourne 0.
+	set B, 0
+	ifn [id_floppy1], 0
+		set B, 1	
+	set pc, pop
  
  
 ;---------------------------------------------
