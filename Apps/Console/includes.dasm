@@ -3,4 +3,4 @@
 ; File: includes.dasm
 ; *************************
 
-.include Console/includes.dasm
+.include console.dasm

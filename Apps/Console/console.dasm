@@ -1,0 +1,24 @@
+; *************************
+; Project: FrOSt
+; File: console.dasm
+; *************************
+
+:console
+	set B, console_welcomeMessage
+	set I, 1
+	set J, 1
+	int 0x1000 ;printf
+	
+	set C, 0x3e ; 0x3e : ">"
+	set I, 3 ;J est dejà égal à 1;
+	int 0x1001 ;printc
+	
+	JSR attente
+	
+
+
+; --------------------------------
+; Data
+; --------------------------------
+:console_titre DAT "Console", 0
+:console_welcomeMessage DAT "Bienvenue dans FrOSt.", 0x11, "Tapez help si vous etes perdu.", 0
