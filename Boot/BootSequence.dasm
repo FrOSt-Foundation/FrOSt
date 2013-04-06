@@ -2,8 +2,6 @@
 	JSR init_memoire
 	JSR detection_and_init_periphs
 	JSR init_interrupthandler
-	JSR init_interpreteur
-	JSR init_launcher
 	set A,console
 	set B, console_titre
 	set C, 1
