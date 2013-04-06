@@ -65,7 +65,7 @@ Nous utilisons actuellement
 
 #### Normes
 
-Toutes les normes, **à respecter impérativement pour toute nouvelle fonctionnalité codée**, se trouvent sur le (https://github.com/FrOSt-Foundation/FrOSt/wiki/Conventions-de-codage wiki).
+* Toutes les normes, **à respecter impérativement pour toute nouvelle fonctionnalité codée**, se trouvent sur le (https://github.com/FrOSt-Foundation/FrOSt/wiki/Conventions-de-codage wiki).
 
 ### Branches disponibles :
 
