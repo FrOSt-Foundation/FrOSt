@@ -24,5 +24,6 @@
 ; tableau de pointeurs pour l'interrupthandler
 ; ---------------------------------------------
 
+:nombre_commandes dat 0
 :nombre_ptr dat 0
 :int_ptr dat ih_mem,ih_print,ih_screen,ih_launch,ih_ask_k,ih_stop,ih_clock,ih_clavier,ih_disquette
