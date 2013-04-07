@@ -6,4 +6,4 @@
 :console_titre DAT "Console", 0
 :console_welcomeMessage DAT "Bienvenue dans FrOSt.", 0x11, "Tapez help si vous etes perdu.", 0
 :console_errorNotEnoughFreeSpace_text DAT "Erreur : plus de memoire libre disponible.", 0
-:console_unknownCommand DAT "Unknown command : ", 0
+:console_unknownCommand DAT "Commande inconnue :", 0
