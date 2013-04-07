@@ -67,14 +67,18 @@
 	ife Z, 0xFFFF
 		set PC, console_errorNotEnoughFreeSpace
 	set Y, Z ;On enregistre la commande en Y car on va poper Z : on a donc l'adresse de la commande entière en Z, de la future commande parsée en X et des futurs arguments en Y.
-	set Z, POP
-	;On fait des pointeurs vers la mémoire qu'on pourra modifier sans tout casser ^^
-	set I, Z ;En I l'adresse de la commande complète
-	set J, X ;En J l'adresse de la commande parsée
+	set Z, PEEK ;On peek Z car on veut garder l'adresse mémoire originale.
+	;On met la fin de chaque bloc mémoire alloué à zéro pour en faire une chaine de caractères valide.
+	set [X + 31], 0
+	set [Y + 31], 0
 	:console_processCommand_loop
-		ife [I], 0x20 ;Si on tombe sur l'espace, on quitte la boucle
+		ife [Z], 0x20 ;Si on tombe sur l'espace, on quitte la boucle
 			set PC, console_processCommand_endLoop
-		sti [J], [I]
+		ife [Z], 0
+			set PC, console_processCommand_endLoop
+		set [X], [Z]
+		add X, 1
+		add Z, 1
 		set PC, console_processCommand_loop
 	
 	:console_processCommand_endLoop
@@ -105,7 +109,7 @@
 	int 0x1000 ;Printf
 	
 	;Affichage de la commande ^^
-	set J, 18
+	set J, 21
 	set B, Z
 	int 0x1000
 	
