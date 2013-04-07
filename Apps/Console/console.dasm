@@ -4,13 +4,28 @@
 ; *************************
 
 :console
+	set B, 0x2000
+	jsr change_couleur
+	
 	set B, console_welcomeMessage
 	set I, 1
 	set J, 1
 	int 0x1000 ;printf
 	
-	set C, 0x3e ; 0x3e : ">"
-	set I, 3 ;J est dejà égal à 1;
-	int 0x1001 ;printc
+	:console_loop
+		set C, 0x3e ; 0x3e : ">"
+		set I, [SCREEN_HEIGHT] ;J déjà égal à 1
+		int 0x1001 ;printc
+		JSR console_readLine
+		set PC, console_loop
 	
 	JSR attente
+	
+	
+:console_errorNotEnoughFreeSpace ;Routine générique permettant d'afficher un message d'erreur et crasher le DCPU.
+	int 0x2004 ;clear_screen
+	set B, console_errorNotEnoughFreeSpace_text
+	set I, 1
+	set J, 1
+	int 0x1000 ;printf
+	set PC, end

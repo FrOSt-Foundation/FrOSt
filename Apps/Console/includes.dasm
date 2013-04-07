@@ -5,3 +5,4 @@
 
 .include console.dasm
 .include DAT.dasm
+.include input.dasm

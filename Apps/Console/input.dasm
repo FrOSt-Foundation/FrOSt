@@ -1,0 +1,135 @@
+; *************************
+; Project: FrOSt
+; File: input.dasm
+; *************************
+
+:console_readLine
+	jsr push_regs
+	
+	set J, 3 ;Adresse du caractere sur la ligne
+	set B, 31 ;On alloue 31 mots de memoire pour y enregistrer la commande (longueur de la ligne car on perd 2 cases avec l'invite ("> "), et un dernier mot = 0 pour que on puisse considerer ça comme une chaine :D
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	
+	set [Z + 31], 0 ;On met le dernier mot comme étant égal à 0, comme ça le tampon est une chaine.
+	
+	:console_readLine_loop
+		int 0x4001 ;Attente que un caractère soit tapé. Celui-ci sera enregistré en C.
+		ifn C, 0
+			jsr console_processChar
+		set PC, console_readLine_loop
+		
+	:console_readLine_end
+	set B, Z
+	int 0x0001 ;On libère la mémoire que l'on avait réservée.
+	jsr pop_regs
+	
+	set PC, POP
+	
+	
+:console_processChar
+	ife C, 0x11 ;Return
+		set PC, console_processCommand
+	ife C, 0x10 ;Backspace
+		set PC, console_backspace
+	ife J, 32 ;Si on est a la fin de la ligne, on ne fait rien ^^
+		set PC, POP
+	;Si aucune des conditions ci-dessus n'est remplie, alors on affiche le caractere.
+	;set I, SCREEN_HEIGHT ;On affichera le caractère à la dernière ligne.
+	int 0x1001 ;printc
+	
+	sub J, 3 ;On enleve les deux caractères de J nécessaires à faire un affichage correct à l'écran
+	
+	;set [Z + J], C ne marche pas, il y a trop de registres pour DevCPU.
+	add Z, J
+	set [Z], C
+	sub Z, J
+	
+	add J, 4 ;Puis on remet ces 2 caractères plus un autre puisque on vient de taper un caratère ^^
+	 
+	set PC, POP
+	
+	
+:console_processCommand
+	;Todo : Parser et lancer les différents programmes en fonction de la commande
+	set PUSH, Z
+	
+	;On alloue de la mémoire pour y enregistrer la commande
+	set B, 32
+	int 0x0000 ;malloc
+	ife Z, 0xFFFF
+		set PC, console_errorNotEnoughFreeSpace
+	set X, Z ;On enregistre la commande en X car on va faire un nouveau malloc ^^
+	
+	set B, 32
+	int 0x0000 ;malloc
+	ife Z, 0xFFFF
+		set PC, console_errorNotEnoughFreeSpace
+	set Y, Z ;On enregistre la commande en Y car on va poper Z : on a donc l'adresse de la commande entière en Z, de la future commande parsée en X et des futurs arguments en Y.
+	
+	;On fait des pointeurs vers la mémoire qu'on pourra modifier sans tout casser ^^
+	set I, Z ;En I l'adresse de la commande complète
+	set J, X ;En J l'adresse de la commande parsée
+	:console_processCommand_loop
+		ife [I], 0x20 ;Si on tombe sur l'espace, on quitte la boucle
+			set PC, console_processCommand_endLoop
+		sti [J], [I]
+		set PC, console_processCommand_loop
+	
+	:console_processCommand_endLoop
+	
+	;TEMP, vérifie le parseur en printant tout ^^
+	int 0x2001
+	set B, X
+	set J, 1
+	int 0x1000
+	
+	;On libère la mémoire prise, sauf Z qui sera libérée plus tard.
+	set B, X
+	int 0x0001 ;Free
+	set B, Y
+	int 0x0001 ;Free
+	
+	set Z, POP
+	
+	;Si on arrive ici, la commande n'a pas été reconnue.
+	set B, 0xC000
+	jsr change_couleur
+	
+	int 0x2001 ;Scroll
+	
+	set B, console_unknownCommand
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000 ;Printf
+	
+	;Affichage de la commande ^^
+	set J, 18
+	set B, Z
+	int 0x1000
+	
+	int 0x2001 ;Scroll
+	
+	set B, 0x2000
+	jsr change_couleur
+	
+	set J, POP
+	set PC, console_readLine_end
+	
+:console_backspace
+	ife J, 3 ;Si on est au début de la ligne, on ne fait rien ^^
+		set B, POP
+	ife J, 3
+		set PC, console_readLine_loop
+	
+	sub J, 2 ;set [Z + J] ne marche pas, il y a trop de registres pour devCPU.
+	add Z, J ;Donc, on enlève les deux caractères de J en trop, on met l'adresse tampon à zéro, on remet Z normalement puis on rajoute 1 à J (ça évite de faire add J, 2 puis sub J, 1 ^^)
+	set [Z], 0
+	sub Z, J
+	add J, 1
+
+	set C, 0x20
+	int 0x1001 ;On met un espace. Ca donnera 0x2020 en RAM mais ça n'a pas d'importance ^^
+	
+	set PC, POP
