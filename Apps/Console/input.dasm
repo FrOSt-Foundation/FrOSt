@@ -67,7 +67,7 @@
 	ife Z, 0xFFFF
 		set PC, console_errorNotEnoughFreeSpace
 	set Y, Z ;On enregistre la commande en Y car on va poper Z : on a donc l'adresse de la commande entière en Z, de la future commande parsée en X et des futurs arguments en Y.
-	
+	set Z, POP
 	;On fait des pointeurs vers la mémoire qu'on pourra modifier sans tout casser ^^
 	set I, Z ;En I l'adresse de la commande complète
 	set J, X ;En J l'adresse de la commande parsée
