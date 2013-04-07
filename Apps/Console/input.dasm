@@ -56,21 +56,21 @@
 	set PUSH, Z
 	
 	;On alloue de la mémoire pour y enregistrer la commande
-	set B, 32
+	set B, 31
 	int 0x0000 ;malloc
 	ife Z, 0xFFFF
 		set PC, console_errorNotEnoughFreeSpace
 	set X, Z ;On enregistre la commande en X car on va faire un nouveau malloc ^^
 	
-	set B, 32
+	set B, 31
 	int 0x0000 ;malloc
 	ife Z, 0xFFFF
 		set PC, console_errorNotEnoughFreeSpace
 	set Y, Z ;On enregistre la commande en Y car on va poper Z : on a donc l'adresse de la commande entière en Z, de la future commande parsée en X et des futurs arguments en Y.
 	set Z, PEEK ;On peek Z car on veut garder l'adresse mémoire originale.
 	;On met la fin de chaque bloc mémoire alloué à zéro pour en faire une chaine de caractères valide.
-	set [X + 31], 0
-	set [Y + 31], 0
+	set [X + 30], 0
+	set [Y + 30], 0
 	:console_processCommand_loop
 		ife [Z], 0x20 ;Si on tombe sur l'espace, on quitte la boucle
 			set PC, console_processCommand_endLoop
