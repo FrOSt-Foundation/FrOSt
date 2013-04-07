@@ -12,7 +12,7 @@
 	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
 		set PC, console_errorNotEnoughFreeSpace
 	
-	set [Z + 31], 0 ;On met le dernier mot comme étant égal à 0, comme ça le tampon est une chaine.
+	set [Z + 30], 0 ;On met le dernier mot comme étant égal à 0, comme ça le tampon est une chaine.
 	
 	:console_readLine_loop
 		int 0x4001 ;Attente que un caractère soit tapé. Celui-ci sera enregistré en C.
