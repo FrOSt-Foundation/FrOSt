@@ -186,7 +186,7 @@
 	:memcpy_boucle3
 		sti [I],[J]
 		sub peek,1
-		ifn 0,peek
+		ifn peek,0
 			set pc,memcpy_boucle3
 		set pc,memcpy_boucle
 
