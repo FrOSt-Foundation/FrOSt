@@ -91,8 +91,7 @@
 		:free_gauche_end
 			ifn [B],0xFFFF
 				set pc,free_end
-			add B,1
-			add [B],[A+1]
+			add [B+1],[A+1]
 	:free_end
 		set C,pop
 		set A,pop
@@ -176,9 +175,7 @@
 	:memcpy_boucle2
 		sti [I],[J]
 		ifn C,J
-			set pc,memcpy_boucle
-		set C,pop
-		set C,pop
+			set pc,memcpy_boucle2
 		set C,pop
 		set C,pop
 		set J,pop
@@ -189,7 +186,7 @@
 	:memcpy_boucle3
 		sti [I],[J]
 		sub peek,1
-		ifn peek,0
+		ifn 0,peek
 			set pc,memcpy_boucle3
 		set pc,memcpy_boucle
 
