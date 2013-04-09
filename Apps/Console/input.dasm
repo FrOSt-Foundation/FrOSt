@@ -72,7 +72,7 @@
 	set [X + 30], 0
 	set [Y + 30], 0
 	:console_processCommand_loop
-		ifg 0x21, [Z] ;Si on tombe sur l'espace ou \t ou \n ou \0, on quitte la boucle
+		ifl [Z], 0x21 ;Si on tombe sur l'espace ou \t ou \n ou \0, on quitte la boucle
 			set PC, console_processCommand_endLoop
 		set [X], [Z]
 		add X, 1
