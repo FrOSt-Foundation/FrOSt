@@ -71,12 +71,8 @@
 	;On met la fin de chaque bloc mémoire alloué à zéro pour en faire une chaine de caractères valide.
 	set [X + 30], 0
 	set [Y + 30], 0
-	set I, [screen_color]
-	add I,0x20
 	:console_processCommand_loop
-		ifl [Z], I ;Si on tombe sur l'espace ou \t ou \n, on quitte la boucle
-			set PC, console_processCommand_endLoop
-		ife [Z], 0
+		ifg 0x21, [Z] ;Si on tombe sur l'espace ou \t ou \n, on quitte la boucle
 			set PC, console_processCommand_endLoop
 		set [X], [Z]
 		add X, 1
