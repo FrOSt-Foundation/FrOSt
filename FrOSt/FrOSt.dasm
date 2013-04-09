@@ -1,6 +1,6 @@
 set pc, BootSequence
 
-.include defines.dasm
+.include ../defines/global-defines.dasm   ; en attendant .include ../defines/*
 
 .include ../lib/includes.dasm
 .include ../Boot/includes.dasm
