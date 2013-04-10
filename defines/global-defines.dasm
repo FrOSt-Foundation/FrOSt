@@ -71,5 +71,6 @@
 .define COLOR_YELLOW        0xE
 .define COLOR_WHITE         0xF
 
-.define TO_BG   << 8
-.define TO_FG   << 12
+.define TO_BG      << 8
+.define TO_FG      << 12
+.define NO_COLOR   & 0x00FF
