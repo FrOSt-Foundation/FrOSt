@@ -49,6 +49,8 @@
 ;  Couleurs
 ;************
 ; Utilisable avec la palette par défaut
+; Exemple : set [screen_color], COLOR_BLACK TO_BG
+;           bor [screen_color], COLOR_WHITE TO_FG
 
 .define COLOR_BLACK         0x0
 .define COLOR_BLUE          0x1
@@ -66,3 +68,6 @@
 .define COLOR_PINK          0xD
 .define COLOR_YELLOW        0xE
 .define COLOR_WHITE         0xF
+
+.define TO_BG   << 8
+.define TO_FG   << 12
