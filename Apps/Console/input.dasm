@@ -99,11 +99,29 @@
 		set PC, console_processCommand_loop
 	
 	:console_processCommand_endLoop
+	add Z, 1
+	
+	;On copie les arguments en Y maintenant
+	:console_processCommand_loop2
+		ife [Z], 0x0 ;On ne veut s'arrêter QUE si on est à la fin, on prend tous les arguments en une seule chaine.
+			set PC, console_processCommand_endLoop2
+		set [Y], [Z]
+		add Y, 1
+		add Z, 1
+		set PC, console_processCommand_loop2
+	
+	:console_processCommand_endLoop2
 	
 	;On restaure X, Y et Z.
 	set X, POP
 	set Y, POP
 	set Z, POP
+	
+	;TEMP : afficahge de Y
+	int 0x2001 ;Scroll
+	set B, Y
+	set J, 1
+	int 0x1000
 	
 	;On libère Y, Z sera libéré plus tard et on a besoin de X juste après
 	set B, Y
