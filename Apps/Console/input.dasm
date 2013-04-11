@@ -96,7 +96,7 @@
 	set Z, POP
 	
 	;Si on arrive ici, la commande n'a pas été reconnue.
-	set B, 0xC000
+	set B, 0x4000
 	jsr change_couleur
 	
 	int 0x2001 ;Scroll
