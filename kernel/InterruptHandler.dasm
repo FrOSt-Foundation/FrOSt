@@ -22,6 +22,7 @@
 
 ;msg 0x0000 malloc B blocs return in Z
 ;msg 0x0001 free the b bloc
+;msg 0x0002 initialize the b bloc
 
 ;msg 0x1000 printf B-> string, I-> line, J-> colonne
 
@@ -33,8 +34,6 @@
 
 ;msg 0x2002 efface ligne I
 ;msg 0x2004 clear ecran
-
-;msg 0x0002 efface memoire
 
 ;msg 0x3000 launch a program
 
