@@ -11,6 +11,21 @@
 	int 0x0000 ;MALLOC
 	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
 		set PC, console_errorNotEnoughFreeSpace
+		
+	;On initialise Z
+	set PUSH, I
+	set PUSH, Z
+	set Z, PEEK
+	set I, [Z + 30]
+	:initializeZ
+		ifg Z, I
+			set PC, initializeZ_end
+		set [Z], 0
+		add Z, 1
+		set PC, initializeZ
+	:initializeZ_end
+	set Z, POP
+	set I, POP
 	
 	set [Z + 30], 0 ;On met le dernier mot comme étant égal à 0, comme ça le tampon est une chaine.
 	
@@ -62,11 +77,41 @@
 		set PC, console_errorNotEnoughFreeSpace
 	set X, Z ;On enregistre la commande en X car on va faire un nouveau malloc ^^
 	
+	;On initialise X
+	set PUSH, I
+	set PUSH, X
+	set X, PEEK
+	set I, [X + 30]
+	:initializeX
+		ifg X, I
+			set PC, initializeX_end
+		set [X], 0
+		add X, 1
+		set PC, initializeX
+	:initializeX_end
+	set X, POP
+	set I, POP
+	
 	set B, 31
 	int 0x0000 ;malloc
 	ife Z, 0xFFFF
 		set PC, console_errorNotEnoughFreeSpace
 	set Y, Z ;On enregistre la commande en Y car on va poper Z : on a donc l'adresse de la commande entière en Z, de la future commande parsée en X et des futurs arguments en Y.
+	
+	;On initialise Y
+	set PUSH, I
+	set PUSH, Y
+	set Y, PEEK
+	set I, [Y + 30]
+	:initializeY
+		ifg Y, I
+			set PC, initializeY_end
+		set [Y], 0
+		add Y, 1
+		set PC, initializeY
+	:initializeY_end
+	set Y, POP
+	set I, POP
 	
 	;On peek Z. Pas besoin pour X et Y car ils sont déjà sauvegardés.
 	set Z, PEEK
