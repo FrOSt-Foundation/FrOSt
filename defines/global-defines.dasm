@@ -80,7 +80,7 @@
 ;***************
 .define INT_CLOCK 0x6000
 .define INT_KEYBOARD 0x7000
-.define 0x8000 INT_FLOPPY
+.define INT_FLOPPY 0x8000
 
 .define INT_MALLOC 0x0000
 .define INT_FREE 0x0001
