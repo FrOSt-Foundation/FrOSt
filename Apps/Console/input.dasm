@@ -105,15 +105,7 @@
 	set Y, POP
 	set Z, POP
 	
-	;TEMP, vérifie le parseur en printant tout ^^
-	int 0x2001
-	set B, X
-	set J, 1
-	int 0x1000
-	
-	;On libère la mémoire prise, sauf Z qui sera libérée plus tard.
-	set B, X
-	int 0x0001 ;Free
+	;On libère Y, Z sera libéré plus tard et on a besoin de X juste après
 	set B, Y
 	int 0x0001 ;Free
 	
@@ -130,8 +122,12 @@
 	
 	;Affichage de la commande ^^
 	set J, 21
-	set B, Z
+	set B, X
 	int 0x1000
+	
+	;On n'a plus besoin de X, on le libère
+	set B, X
+	int 0x0001 ;Free
 	
 	int 0x2001 ;Scroll
 	
