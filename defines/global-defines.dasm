@@ -74,3 +74,26 @@
 .define TO_BG      << 8
 .define TO_FG      << 12
 .define NO_COLOR   & 0x00FF
+
+;***************
+; Interruptions
+;***************
+.define 0x6000 INT_CLOCK
+.define 0x7000 INT_KEYBOARD
+.define 0x8000 INT_FLOPPY
+
+.define 0x0000 INT_MALLOC
+.define 0x0001 INT_FREE
+.define 0x0002 INT_INITMEM
+
+.define 0x1000 INT_PRINTF
+.define 0x1001 INT_PRINTC
+.define 0x2001 INT_SCROLL
+.define 0x2002 INT_CLEARLINE
+.define 0x2003 INT_GETCOLOR
+.define 0x2004 INT_CLEARSCREEN
+
+.define 0x3000 INT_LAUNCH
+.define 0x4000 INT_WAITKEY_BLOCKING
+.define 0x4001 INT_WAITKEY_NOTBLOCKING
+.define 0x5000 INT_KILL
