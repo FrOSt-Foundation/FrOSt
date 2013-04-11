@@ -117,12 +117,6 @@
 	set Y, POP
 	set Z, POP
 	
-	;TEMP : afficahge de Y
-	int 0x2001 ;Scroll
-	set B, Y
-	set J, 1
-	int 0x1000
-	
 	;On libère Y, Z sera libéré plus tard et on a besoin de X juste après
 	set B, Y
 	int 0x0001 ;Free
