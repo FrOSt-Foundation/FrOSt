@@ -2,3 +2,25 @@
 ; Project: FrOSt
 ; File: commands.dasm
 ; *************************
+
+:launch_echo
+	int 0x2001 ;Scrolling
+	
+	;Affichage de l'argument (le texte)
+	set B, Y
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_help
+	int 0x2001 ;Scrollong
+	
+	;Affichage des commandes
+	set B, msg_help
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP

@@ -3,7 +3,22 @@
 ; File: DAT.dasm
 ; *************************
 
+:ptr_commands DAT launch_echo, launch_help ;Le reste est encore à implémenter ^^
+:txt_commands DAT txt_echo,    txt_help
+:txt_commands_end
+:nb_commands DAT 0
+
+;Commands
+:txt_echo DAT "echo", 0
+:txt_help DAT "help", 0
+
 :console_titre DAT "Console", 0
 :console_welcomeMessage DAT "Bienvenue dans FrOSt.", 0x11, "Tapez help si vous etes perdu.", 0
 :console_errorNotEnoughFreeSpace_text DAT "Erreur : plus de memoire libre disponible.", 0
 :console_unknownCommand DAT "Commande inconnue :", 0
+
+:msg_help
+DAT " Aide", 0x11
+DAT "------", 0x11
+DAT "help : Affiche cette aide", 0x11
+DAT "echo <texte> : Affiche <texte>.", 0

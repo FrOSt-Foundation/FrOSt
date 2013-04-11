@@ -56,6 +56,11 @@
 	
 	
 :console_processCommand
+	
+	; ----------------------
+	; Allocation de mémoire
+	; ----------------------
+	
 	;Todo : Parser et lancer les différents programmes en fonction de la commande
 	set PUSH, Z
 	
@@ -79,6 +84,10 @@
 	;Initialisation de la mémoire
 	set B, Y
 	int 0x0002
+	
+	; --------------
+	; Parser
+	; --------------
 	
 	;On peek Z. Pas besoin pour X et Y car ils sont déjà sauvegardés.
 	set Z, PEEK
@@ -117,11 +126,47 @@
 	set Y, POP
 	set Z, POP
 	
+	; -------------------
+	; Launcher
+	; -------------------
+	
+	set PUSH, Z ;On sauvegarde Z car il est modifié par strcmp
+	
+	set A, txt_commands
+	sub A, ptr_commands
+	set [nb_commands], A
+	
+	int 0x2000 ;Dans tous les cas, on scrolle
+	set A, X
+	set B, txt_commands
+	:launch_loop
+		;On compare la commande (A), et B (le pointeur vers la commande à tester)
+		jsr strcmp
+		
+		;Si C'est bien cette commande, on lance le programe enregistré dans le tableau de pointeurs juste avant le tableau du nom des commandes : on doit donc soustraire le nombre de commandes.
+		ife Z, 1
+			sub B, [nb_commands]
+		ife Z, 1
+			set PUSH, console_endCommand
+		ife Z, 1
+			set PC, [B]
+		
+		add B, 1
+		ifl B, txt_commands_end
+			set PC, launch_loop
+			
+			
+		
+	; ----------------------
+	; Commande non reconnue
+	; ----------------------
+	
+	set Z, POP ;On reprend Z sauvegardé avec le launcher
+	
 	;On libère Y, Z sera libéré plus tard et on a besoin de X juste après
 	set B, Y
 	int 0x0001 ;Free
 	
-	;Si on arrive ici, la commande n'a pas été reconnue.
 	set B, 0x4000
 	jsr change_couleur
 	
@@ -165,3 +210,13 @@
 	int 0x1001 ;On met un espace. Ca donnera 0x2020 en RAM mais ça n'a pas d'importance ^^
 	
 	set PC, POP
+	
+:console_endCommand
+	set Z, POP ;On reprend Z sauvegardé avec le launcher
+	set B, X
+	int 0x0001 ;Free
+	set B, Y
+	int 0x0001 ;Free
+	
+	set J, POP
+	set PC, console_readLine_end
