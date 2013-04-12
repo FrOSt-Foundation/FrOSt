@@ -137,7 +137,7 @@
 	add A, 1
 	set [nb_commands], A
 	
-	int 0x2000 ;Dans tous les cas, on scrolle
+	int 0x2001 ;Dans tous les cas, on scrolle
 	set A, X
 	set I, 0
 	
