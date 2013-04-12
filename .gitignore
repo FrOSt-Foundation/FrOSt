@@ -1,4 +1,5 @@
 test/
+export/
 *.10cdisk
 *.bin
 *.hex
