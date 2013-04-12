@@ -13,12 +13,187 @@
 	set PC, POP
 	
 :launch_help
-	int 0x2001 ;Scrollong
-	
 	;Affichage des commandes
 	set B, msg_help
 	set I, SCREEN_HEIGHT
 	set J, 1
 	int 0x1000
+	
+	set PC, POP
+	
+:launch_about
+	set B, msg_about
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_color
+	set A, Y
+	set B, 16
+	jsr ctoi
+	set B, Z
+	int 0x2000
+	set PC, POP
+	
+:launch_clear
+	int 0x2004
+	set PC, POP
+	
+:launch_kill
+	set A, Y
+	set B, 10
+	jsr ctoi
+	ife [A], 0
+		set PC, launch_kill_errNoArgs
+	set A, Z
+	
+	;On a en A l'ID du programme à tuer, reste à implémenter la fonction.
+	
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+	:launch_kill_errNoArgs
+		set B, msg_errNoArgs
+		set I, [SCREEN_HEIGHT]
+		set J, 1
+		int 0x1000
+		set PC, POP
+	
+:launch_ls
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_cd
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_run
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_mem
+	set I, SCREEN_HEIGHT
+	set J, 1
+	
+	set A, [free_mem]
+	set B, 16
+	set C, mem_print
+	jsr dump
+	
+	set B, msg_mem
+	int 0x1000
+	
+	add J, 18
+	set B, mem_print
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_mkdir
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_mv
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_cp
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_touch
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_cat
+	set B, msg_todo
+	set I, SCREEN_HEIGHT
+	set J, 1
+	int 0x1000
+	
+	set PC, POP
+	
+:launch_ps
+	set PUSH, X
+	set PUSH, Y
+	set Z, process
+	ife [Z], 0
+		set PC, POP
+	set PUSH, I
+	set PUSH, J
+	set I, mem_print
+	set J, 0
+	
+	:launch_ps_loop2
+		sti [I], 0
+		ifn 4, J
+			set pc, launch_ps_loop2
+			
+	set J, POP
+	set I, POP
+	set B, 10
+	:launch_ps_loop1
+		set C, mem_print
+		set X, [Z]
+		set A, [X]
+		jsr dump
+		
+		set B, mem_print
+		int 0x1000
+		
+		set B, 10
+		add J, 7
+		set A, [X + 1]
+		
+		set C, mem_print
+		jsr dump
+		
+		set B, mem_print
+		int 0x1000
+		
+		set B, [X + 2]
+		add J, 7
+		int 0x1000
+		add Z, 1
+		ifn Z, counter
+			ifn	[Z], 0
+				set pc, launch_ps_loop1
+				
+	set X, POP
+	set Y, POP
 	
 	set PC, POP
