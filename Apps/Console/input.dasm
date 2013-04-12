@@ -169,7 +169,7 @@
 	set B, 0x4000
 	jsr change_couleur
 	
-	int 0x2001 ;Scroll
+	int INT_SCROLL ;Scroll
 	
 	set B, console_unknownCommand
 	set I, SCREEN_HEIGHT
@@ -185,7 +185,7 @@
 	set B, X
 	int 0x0001 ;Free
 	
-	int 0x2001 ;Scroll
+	int INT_SCROLL ;Scroll
 	
 	set B, 0x2000
 	jsr change_couleur
