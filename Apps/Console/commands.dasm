@@ -4,8 +4,6 @@
 ; *************************
 
 :launch_echo
-	int 0x2001 ;Scrolling
-	
 	;Affichage de l'argument (le texte)
 	set B, Y
 	set I, SCREEN_HEIGHT

@@ -217,6 +217,7 @@
 	set PC, B
 	
 :console_endCommand
+	int 0x2001
 	set Z, POP ;On reprend Z sauvegardé avec le launcher
 	set B, X
 	int 0x0001 ;Free
