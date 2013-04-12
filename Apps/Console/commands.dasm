@@ -6,8 +6,6 @@
 :launch_echo
 	;Affichage de l'argument (le texte)
 	set B, Y
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
@@ -15,16 +13,12 @@
 :launch_help
 	;Affichage des commandes
 	set B, msg_help
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_about
 	set B, msg_about
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
@@ -52,47 +46,35 @@
 	;On a en A l'ID du programme à tuer, reste à implémenter la fonction.
 	
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 	:launch_kill_errNoArgs
 		set B, msg_errNoArgs
-		set I, [SCREEN_HEIGHT]
 		set J, 1
 		int 0x1000
 		set PC, POP
 	
 :launch_ls
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_cd
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_run
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_mem
-	set I, SCREEN_HEIGHT
-	set J, 1
-	
 	set A, [free_mem]
 	set B, 16
 	set C, mem_print
@@ -109,40 +91,30 @@
 	
 :launch_mkdir
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_mv
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_cp
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_touch
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP
 	
 :launch_cat
 	set B, msg_todo
-	set I, SCREEN_HEIGHT
-	set J, 1
 	int 0x1000
 	
 	set PC, POP

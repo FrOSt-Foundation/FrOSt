@@ -214,6 +214,8 @@
 :console_launch
 	set B, [ptr_commands + I]
 	set PUSH, console_endCommand
+	set I, SCREEN_HEIGHT
+	set J, 1
 	set PC, B
 	
 :console_endCommand
