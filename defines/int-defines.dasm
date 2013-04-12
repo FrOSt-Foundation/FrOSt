@@ -1,0 +1,22 @@
+;***************
+; Interruptions
+;***************
+.define INT_CLOCK 0x6000
+.define INT_KEYBOARD 0x7000
+.define INT_FLOPPY 0x8000
+
+.define INT_MALLOC 0x0000
+.define INT_FREE 0x0001
+.define INT_INITMEM 0x0002
+
+.define INT_PRINTF 0x1000
+.define INT_PRINTC 0x1001
+.define INT_SCROLL 0x2001
+.define INT_CLEARLINE 0x2002
+.define INT_GETCOLOR 0x2003
+.define INT_CLEARSCREEN 0x2004
+
+.define INT_LAUNCH 0x3000
+.define INT_WAITKEY_BLOCKING 0x4000
+.define INT_WAITKEY_NOTBLOCKING 0x4001
+.define INT_KILL 0x5000

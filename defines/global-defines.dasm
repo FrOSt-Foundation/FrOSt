@@ -1,0 +1,76 @@
+;********************************
+;  Touches spéciales du clavier
+;********************************
+.define KBD_BACKSPACE   0x10
+.define KBD_RETURN      0x11
+.define KBD_INSERT      0x12
+.define KBD_DELETE      0x13
+
+; Les touches ascii sont accessibles avec ', par exemple 'a'.
+
+.define KBD_ARROW_UP      0x80
+.define KBD_ARROW_DOWN    0x81
+.define KBD_ARROW_LEFT    0x82
+.define KBD_ARROW_RIGHT   0x83
+
+.define KBD_SHIFT   0x90
+.define KBD_CTRL    0x91
+
+
+;***************************
+;  Caractères d'échapement
+;***************************
+
+.define CHAR_NULL        0x00   ; \0
+.define CHAR_BACKSPACE   0x08   ; \b
+.define CHAR_HTAB        0x09   ; \t
+.define CHAR_LINEFEED    0x0A   ; \n
+.define CHAR_VTAB        0x0B   ; \v
+.define CHAR_FORMFEED    0x0C   ; \f
+.define CHAR_CR          0x0D   ; \r
+
+
+;*********************
+;  Valeurs booléenes
+;*********************
+; exemples :
+; set [label], FALSE
+; IF_TRUE [label]
+;     set PC, POP
+
+.define TRUE    1
+.define FALSE   0
+
+.define IF_TRUE    ifn 0,
+.define IF_FALSE   ife 0,
+
+
+;************
+;  Couleurs
+;************
+; Utilisable avec la palette par défaut
+; Exemple : set [screen_color], COLOR_BLACK TO_BG
+;           bor [screen_color], COLOR_WHITE TO_FG
+; ou en plus court :
+;           set [screen_color], (COLOR_BLACK TO_BG)|(COLOR_WHITE TO_FG)
+
+.define COLOR_BLACK         0x0
+.define COLOR_BLUE          0x1
+.define COLOR_GREEN         0x2
+.define COLOR_CYAN          0x3
+.define COLOR_RED           0x4
+.define COLOR_MAGENTA       0x5
+.define COLOR_BROWN         0x6
+.define COLOR_LIGHT_GREY    0x7
+.define COLOR_GREY          0x8
+.define COLOR_LIGHT_BLUE    0x9
+.define COLOR_LIGHT_GREEN   0xA
+.define COLOR_LIGHT_BLUE    0xB
+.define COLOR_LIGHT_RED     0xC
+.define COLOR_PINK          0xD
+.define COLOR_YELLOW        0xE
+.define COLOR_WHITE         0xF
+
+.define TO_BG      << 8
+.define TO_FG      << 12
+.define NO_COLOR   & 0x00FF
