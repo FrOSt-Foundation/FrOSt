@@ -134,6 +134,7 @@
 	
 	set A, txt_commands
 	sub A, ptr_commands
+	add A, 1
 	set [nb_commands], A
 	
 	int 0x2000 ;Dans tous les cas, on scrolle
@@ -142,15 +143,15 @@
 	
 	:launch_loop
 		set B, [txt_commands + I]
-		set B, [B]
 		;On compare la commande (en A), et B (le pointeur vers la commande à tester)
 		jsr strcmp
 		
 		;Si C'est bien cette commande, on lance le programe enregistré dans le tableau de pointeurs juste avant le tableau du nom des commandes : on doit donc soustraire le nombre de commandes.
-		set PC, console_launch
+		ife Z, 1
+			set PC, console_launch
 		
 		add I, 1
-		ifl B, txt_commands_end
+		ifl I, [nb_commands]
 			set PC, launch_loop
 			
 			
@@ -212,9 +213,8 @@
 	
 :console_launch
 	set B, [ptr_commands + I]
-	set B, [B]
 	set PUSH, console_endCommand
-	set PC, [B]
+	set PC, B
 	
 :console_endCommand
 	set Z, POP ;On reprend Z sauvegardé avec le launcher
