@@ -2,10 +2,10 @@ set pc, BootSequence
 
 .include defines.dasm
 
-.include ../lib/includes.dasm
 .include ../Boot/includes.dasm
 .include ../Hardware/includes.dasm
 .include ../kernel/includes.dasm
+.include ../lib/includes.dasm
 .include ../Apps/includes.dasm
 .include ../CodeATester/debug.dasm
 
