@@ -60,8 +60,7 @@
 	; ----------------------
 	; Allocation de mémoire
 	; ----------------------
-	
-	;Todo : Parser et lancer les différents programmes en fonction de la commande
+
 	set PUSH, Z
 	
 	;On alloue de la mémoire pour y enregistrer la commande
