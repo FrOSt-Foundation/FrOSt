@@ -14,7 +14,7 @@
 	
 	:console_loop
 		set C, 0x3e ; 0x3e : ">"
-		set I, [SCREEN_HEIGHT] ;J déjà égal à 1
+		set I, SCREEN_HEIGHT ;J déjà égal à 1
 		int 0x1001 ;printc
 		JSR console_readLine
 		set PC, console_loop
