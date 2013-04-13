@@ -212,6 +212,13 @@
 	
 	
 :console_launch
+	;On free X car on en aura plus besoin
+	set B, X
+	int INT_FREE
+	
+	;On sauve Y car il risque d'être modifié.
+	set PUSH, Y
+	
 	set B, [ptr_commands + I]
 	set PUSH, console_endCommand
 	set I, SCREEN_HEIGHT
@@ -220,9 +227,8 @@
 	
 :console_endCommand
 	int 0x2001
+	set Y, POP ;On reprend Y sauvegardé dans console_launch
 	set Z, POP ;On reprend Z sauvegardé avec le launcher
-	set B, X
-	int 0x0001 ;Free
 	set B, Y
 	int 0x0001 ;Free
 	
