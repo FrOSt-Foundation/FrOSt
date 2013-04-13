@@ -1,6 +1,6 @@
 set pc, BootSequence
 
-.include defines.dasm
+.include ../defines/includes.dasm
 
 .include ../Boot/includes.dasm
 .include ../Hardware/includes.dasm
