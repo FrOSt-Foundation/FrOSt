@@ -169,33 +169,3 @@
 		set B,pop
 		
 		set PC,pop
-
-
-:coller_string
-	set push , A
-	set push , I
-	set I , B
-
-:boucle_collerB
-	ife [I] , 0
-		set pc , coller_C
-	set [A] , [I]
-	add i , 1
-	add A , 1
-	set pc , boucle_collerB
-
-:coller_C
-	set [A] , 0x20
-	add a , 1
-	set I , C
-	:boucle_collerC
-		ife [I] , 0
-			set pc , fin_coller
-		set [A] , [I]
-		add i , 1
-		add A , 1
-		set pc , boucle_collerC
-:fin_coller
-	set i , pop
-	set a , pop
-	set pc , pop
