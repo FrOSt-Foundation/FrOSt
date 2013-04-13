@@ -12,13 +12,38 @@
 	set J, 1
 	int 0x1000 ;printf
 	
+	set A, txt_commands
+	sub A, ptr_commands
+	add A, 1
+	set [nb_commands], A
+	
+	set B, 31 ;On alloue 31 mots de memoire pour y enregistrer la commande (longueur de la ligne car on perd 2 cases avec l'invite ("> "), et un dernier mot = 0 pour que on puisse considerer ça comme une chaine :D
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	set push,Z
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	set push,Z
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	set push,Z
+	
 	:console_loop
 		set C, 0x3e ; 0x3e : ">"
 		set I, [SCREEN_HEIGHT] ;J déjà égal à 1
+		set J,1
 		int 0x1001 ;printc
 		JSR console_readLine
 		set PC, console_loop
-	
+	set B,pop
+	int 1
+	set B,pop
+	int 1
+	set B,pop
+	int 1
 	JSR attente
 	
 	
