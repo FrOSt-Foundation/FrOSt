@@ -12,9 +12,10 @@
 	set J, 1
 	int 0x1000 ;printf
 	
+	set C, 0x3e ; 0x3e : ">"
+	set I, SCREEN_HEIGHT ;J déjà égal à 1
 	:console_loop
-		set C, 0x3e ; 0x3e : ">"
-		set I, SCREEN_HEIGHT ;J déjà égal à 1
+		;Pas besoin de reset C et I car console_readLine fait un push_regs et un pop_regs :)
 		int 0x1001 ;printc
 		JSR console_readLine
 		set PC, console_loop
