@@ -65,7 +65,7 @@
 .define COLOR_GREY          0x8
 .define COLOR_LIGHT_BLUE    0x9
 .define COLOR_LIGHT_GREEN   0xA
-.define COLOR_LIGHT_YELLOW  0xB
+.define COLOR_LIGHT_UNKOWN  0xB
 .define COLOR_LIGHT_RED     0xC
 .define COLOR_PINK          0xD
 .define COLOR_YELLOW        0xE
