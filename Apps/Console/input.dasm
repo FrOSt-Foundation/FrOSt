@@ -162,6 +162,9 @@
 	
 	set Z, POP ;On reprend Z sauvegardé avec le launcher
 	
+	int INT_GETCOLOR
+	set PUSH, B ;On sauvegarde la couleur actuelle de l'écran
+	
 	;On libère Y, Z sera libéré plus tard et on a besoin de X juste après
 	set B, Y
 	int 0x0001 ;Free
@@ -187,7 +190,7 @@
 	
 	int 0x2001 ;Scroll
 	
-	set B, 0x2000
+	set B, POP ;On récupère la couleur précédemment sauvegardée
 	jsr change_couleur
 	
 	set J, POP
