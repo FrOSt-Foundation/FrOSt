@@ -142,8 +142,8 @@
 :console_launch
 	set B, [ptr_commands + I]
 	set push,console_endCommand
-	set X,pick 2
-	set Y,pick 3
+	set X,pick 3
+	set Y,pick 4
 	set I, SCREEN_HEIGHT
 	set J, 1
 	set PC, B
