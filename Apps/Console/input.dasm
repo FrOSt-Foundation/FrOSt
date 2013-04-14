@@ -46,18 +46,31 @@
 	
 :console_arrows
 set A,C
-set C,0x20
+sub J,3
+add B,J
+set C,[B]
+sub B,J
+add J,3
 int 0x1001
 ife A,KBD_ARROW_LEFT
 	sub J,1
 ife A,KBD_ARROW_RIGHT
 	add J,1
-ifg J,0x30
+ife J,32
 	sub J,1
-ifl J,0
+ife J,3
 	add J,1
-set C,0x220
+sub J,3
+add B,J
+set C,[B]
+sub B,J
+add J,3
+set B,0x200
+jsr change_couleur
 int 0x1001
+set B,0x2000
+jsr change_couleur
+set B,pick 1
 set pc,console_readLine_loop
 :console_processCommand
 	
