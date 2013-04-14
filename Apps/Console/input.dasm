@@ -23,6 +23,9 @@
 		set PC, console_processCommand
 	ife C, 0x10 ;Backspace
 		set PC, console_backspace
+	ifg C,0x79
+		ifl C,0x84
+			set pc,console_arrows
 	ife J, 32 ;Si on est a la fin de la ligne, on ne fait rien ^^
 		set PC, console_readLine_loop
 	;Si aucune des conditions ci-dessus n'est remplie, alors on affiche le caractere.
@@ -37,10 +40,25 @@
 	sub B, J
 	
 	add J, 4 ;Puis on remet ces 2 caractères plus un autre puisque on vient de taper un caratère ^^
-	 
+	set C,0x220
+	int 0x1001
 	set PC, console_readLine_loop
 	
-	
+:console_arrows
+set A,C
+set C,0x20
+int 0x1001
+ife A,KBD_ARROW_LEFT
+	sub J,1
+ife A,KBD_ARROW_RIGHT
+	add J,1
+ifg J,0x30
+	sub J,1
+ifl J,0
+	add J,1
+set C,0x220
+int 0x1001
+set pc,console_readLine_loop
 :console_processCommand
 	
 	; ----------------------
@@ -126,16 +144,16 @@
 :console_backspace
 	ife J, 3
 		set PC, console_readLine_loop
-	
+	set C,0x20
+	int 0x1001
 	sub J, 2 ;set [Z + J] ne marche pas, il y a trop de registres pour devCPU.
 	add B, J ;Donc, on enlève les deux caractères de J en trop, on met l'adresse tampon à zéro, on remet Z normalement puis on rajoute 1 à J (ça évite de faire add J, 2 puis sub J, 1 ^^)
 	set [B], 0
 	sub B, J
 	add J, 1
 
-	set C, 0x20
+	set C, 0x220
 	int 0x1001 ;On met un espace. Ca donnera 0x2020 en RAM mais ça n'a pas d'importance ^^
-	
 	set PC, console_readLine_loop
 	
 	
