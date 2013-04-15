@@ -13,7 +13,7 @@
 	set B,pick 1
 	int 2	
 	:console_readLine_loop
-		int 0x4001 ;Attente que un caractère soit tapé. Celui-ci sera enregistré en C.
+		int 0x4001 ;end que un caractère soit tapé. Celui-ci sera enregistré en C.
 		ife C, 0
 			set pc, console_readLine_loop
 		set PC, console_processChar	

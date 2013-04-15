@@ -1,7 +1,5 @@
 :end set pc,end ;Boucle de bug
 
-:attente set pc,attente ;la boucle d'attente
-
 :KER_SP dat 0x0
 
 ;adresse de la structure processus du programme en cours d'execution, 0 -> OS
