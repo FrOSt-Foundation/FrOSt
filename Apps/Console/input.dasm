@@ -77,6 +77,8 @@ set pc,console_readLine_loop
 	; --------------
 	; Parser
 	; --------------
+	set C,0x20
+	int 0x1001 ;on vire le carré à la fin de la chaîne.
 	
 	;On peek I,J.
 	set I, pick 1
