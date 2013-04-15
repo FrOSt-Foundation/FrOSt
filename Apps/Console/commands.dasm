@@ -120,8 +120,6 @@
 	set PC, POP
 	
 :launch_ps
-	set PUSH, X
-	set PUSH, Y
 	set Z, process
 	ife [Z], 0
 		set PC, POP
@@ -163,9 +161,5 @@
 		add Z, 1
 		ifn Z, counter
 			ifn	[Z], 0
-				set pc, launch_ps_loop1
-				
-	set X, POP
-	set Y, POP
-	
+				set pc, launch_ps_loop1	
 	set PC, POP

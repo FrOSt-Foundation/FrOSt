@@ -11,16 +11,33 @@
 	set I, 1
 	set J, 1
 	int 0x1000 ;printf
+
+	set A, txt_commands
+	sub A, ptr_commands
+	add A, 1
+	set [nb_commands], A
 	
-	set C, 0x3e ; 0x3e : ">"
-	set I, SCREEN_HEIGHT ;J déjà égal à 1
+	set B, 31 ;On alloue 31 mots de memoire pour y enregistrer la commande (longueur de la ligne car on perd 2 cases avec l'invite ("> "), et un dernier mot = 0 pour que on puisse considerer ça comme une chaine :D
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	set push,Z
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	set push,Z
+	int 0x0000 ;MALLOC
+	ife Z, 0xFFFF ;Si on n'a plus de mémoire libre
+		set PC, console_errorNotEnoughFreeSpace
+	set push,Z
+	
 	:console_loop
-		;Pas besoin de reset C et I car console_readLine fait un push_regs et un pop_regs :)
+		set C, 0x3e ; 0x3e : ">"
+		set I, [SCREEN_HEIGHT]
+		set J,1
 		int 0x1001 ;printc
 		JSR console_readLine
 		set PC, console_loop
-	
-	JSR attente
 	
 	
 :console_errorNotEnoughFreeSpace ;Routine générique permettant d'afficher un message d'erreur et crasher le DCPU.
@@ -30,27 +47,3 @@
 	set J, 1
 	int 0x1000 ;printf
 	set PC, end
-	
-:console_launch
-	;On free X car on en aura plus besoin
-	set B, X
-	int INT_FREE
-	
-	;On sauve Y car il risque d'être modifié.
-	set PUSH, Y
-	
-	set B, [ptr_commands + I]
-	set PUSH, console_endCommand
-	set I, SCREEN_HEIGHT
-	set J, 1
-	set PC, B
-	
-:console_endCommand
-	int 0x2001
-	set Y, POP ;On reprend Y sauvegardé dans console_launch
-	set Z, POP ;On reprend Z sauvegardé avec le launcher
-	set B, Y
-	int 0x0001 ;Free
-	
-	set J, POP
-	set PC, console_readLine_end
