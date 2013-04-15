@@ -4,8 +4,9 @@
 ; *************************
 
 :console_readLine	
-	set J, 3 ;Adresse du caractere sur la ligne		
+	set J, 3 ;Adresse du caractere sur la ligne
 	;Initialisation de la mémoire
+	set X,0
 	set B, pick 3
 	int 0x0002
 	set B,pick 2
@@ -43,26 +44,36 @@
 	set C,0x220
 	int 0x1001
 	set PC, console_readLine_loop
-	
+
+:console_arrows_define
+set X,J
+add X,1
+set pc,pop
 :console_arrows
 set A,C
 sub J,3
 add B,J
 set C,[B]
+ife C,0
+	set C,0x20
 sub B,J
 add J,3
 int 0x1001
+ifg J,X
+	jsr console_arrows_define
 ife A,KBD_ARROW_LEFT
 	sub J,1
 ife A,KBD_ARROW_RIGHT
 	add J,1
-ife J,32
+ife J,X
 	sub J,1
-ife J,3
+ife J,2
 	add J,1
 sub J,3
 add B,J
 set C,[B]
+ife C,0
+	set C,0x20
 sub B,J
 add J,3
 set B,0x200
