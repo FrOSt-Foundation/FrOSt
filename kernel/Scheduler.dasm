@@ -211,7 +211,7 @@
 		ifn [A], [screen_process]
 			ifn A, disk_need
 				set pc, sched_resumeKey_loop1
-		ife A, disk_need ;il n'est pas dans la liste d'end, on retourne
+		ife A, disk_need ;il n'est pas dans la liste d'attente, on retourne
 			rfi 0
 		set PUSH, B
 		set PUSH, [A]

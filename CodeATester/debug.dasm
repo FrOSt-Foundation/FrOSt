@@ -22,7 +22,7 @@
 	SET X, 270
 	JSR sped_rotateModel
 	
-	JSR end
+	set pc,end
 	
 	
 :model
