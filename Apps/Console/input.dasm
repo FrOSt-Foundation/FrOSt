@@ -132,8 +132,15 @@
 	sub B, J
 	add J, 1
 
-	set C, 0x20
-	int 0x1001 ;On met un espace. Ca donnera 0x2020 en RAM mais ça n'a pas d'importance ^^
+	set C, 0
+	int INT_GETCOLOR
+	set push,B
+	set B,0
+	jsr change_couleur
+	int 0x1001 ;On met un 0.
+	set B,pop
+	jsr change_couleur
+	set B,pick 1
 	
 	set PC, console_readLine_loop
 	
