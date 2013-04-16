@@ -25,7 +25,7 @@
 		set PC, console_backspace
 	ife J, 32 ;Si on est a la fin de la ligne, on ne fait rien ^^
 		set PC, console_readLine_loop
-	ifg C,KBD_ARROW_UP
+	ifg C,0x7F
 		set pc,console_readLine_loop
 	;Si aucune des conditions ci-dessus n'est remplie, alors on affiche le caractere.
 	;set I, SCREEN_HEIGHT ;On affichera le caractère à la dernière ligne.
