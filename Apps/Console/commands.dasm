@@ -25,6 +25,8 @@
 	
 :launch_color
 	set A, Y
+	ife [A],0
+		set pc,pop
 	set B, 16
 	jsr ctoi
 	and Z,0xFF00 ;on garde seulement ce qui colore
