@@ -27,6 +27,7 @@
 	set A, Y
 	set B, 16
 	jsr ctoi
+	and Z,0xFF00 ;on garde seulement ce qui coloré
 	set B, Z
 	int 0x2000
 	set PC, POP
