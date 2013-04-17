@@ -1,10 +1,14 @@
-;memoire
-;schema d'un bloc de memoire : proprio|taille|data si proprio=0xFFFF->bloc libre
+; memoire
+; schema d'un bloc de memoire : proprio|taille|data
+; si proprio=MEM_BLOCK_FREE -> bloc libre
 
-;malloc
-;A contient la taille, retour de l'adresse dans Z si B=0xFFFF alors erreur
+.define MEM_BLOCK_FREE 0xFFFF
+
+; malloc
+; A contient la taille, retour de l'adresse dans Z si B=MALLOC_ERROR alors erreur
+; Possibilité de tester avec IF_MALLOC_ERROR
 :malloc
-	set Z,0xFFFF
+	set Z, MALLOC_ERROR
 	set push,A
 	add A,2
 	ifg A,[free_mem]
@@ -18,7 +22,7 @@
 	set push,I
 	set I,[start_mem]
 	:malloc_boucle
-		ife [I],0xFFFF
+		ife [I], MEM_BLOCK_FREE
 			set pc,malloc_bloc_libre	
 	:malloc_continue
 		add I,[I+1]
@@ -28,6 +32,7 @@
 		set I,pop
 		set A,pop
 		set pc,pop
+
 		;un bloc est libre, verification de la taille
 	:malloc_bloc_libre
 		ifg [I+1],A
@@ -35,16 +40,18 @@
 		ife [I+1],A
 				set pc,malloc_return
 		set pc,malloc_continue
+
 	;on a une taille trop grande
 	;on decoupe
 	:malloc_new_bloc
 		set push,[I+1]
 		set [I+1],A
 		add I,A
-		set [I],0xFFFF
+		set [I], MEM_BLOCK_FREE
 		sub peek,A
 		set [I+1],pop
 		sub I,A
+
 	;on retourne le pointeur apres avoir update l'header
 	:malloc_return
 		set Z,I
@@ -68,14 +75,16 @@
 		add B,[B+1]
 		set pc,free_boucle
 		;bloc memoire a free trouve, on libere
+
 	:free_found
-		set [A],0xFFFF
+		set [A], MEM_BLOCK_FREE
 		add [free_mem],[A+1]
 		;recollage a droite
-		ifn [B],0xFFFF
+		ifn [B], MEM_BLOCK_FREE
 			set pc,free_gauche
 		add [A+1],[B+1]
 		;recollage a gauche
+
 	:free_gauche
 		set B,[start_mem]
 		set push,C
@@ -89,9 +98,10 @@
 			set pc,free_gauche_boucle
 			;on concatene si besoin est
 		:free_gauche_end
-			ifn [B],0xFFFF
+			ifn [B], MEM_BLOC_LIBRE
 				set pc,free_end
 			add [B+1],[A+1]
+
 	:free_end
 		set C,pop
 		set A,pop
@@ -141,7 +151,7 @@
 		set pc,pop
 
 ;--------------------------------------
-;memcpy copy de [B] vers [A] C mots
+; memcpy copy de [B] vers [A] C mots
 ;--------------------------------------
 :memcpy
 	set push,I
@@ -191,7 +201,7 @@
 		set pc,memcpy_boucle
 
 ;--------------------------------------
-;size renvoie la taille dans B de l'adresse A
+; size renvoie la taille dans B de l'adresse A
 ;--------------------------------------
 :size
 	;on trouve le bon bloc memoire
@@ -212,9 +222,10 @@
 		set pc,pop
 
 ;--------------------------------------
-;Realloc, realloue l'adresse A avec la taille B, et copie les donnees de A vers B (tronque si A>B)
-;si l'adresse suivante est libre, on empiete
-;A contient la nouvelle adresse, 0xFFFF si erreur
+; Realloc, realloue l'adresse A avec la taille B, et copie les donnees de A vers B (tronque si A>B)
+; si l'adresse suivante est libre, on empiete
+; A contient la nouvelle adresse, REALLOC_ERROR si erreur.
+; Possibilité de tester une erreur avec IF_REALLOC_ERROR
 ;--------------------------------------
 :realloc
 	set push,C
@@ -227,20 +238,23 @@
 		set A,C
 		add C,[C+1]
 		set pc,realloc_boucle
+
 	:realloc_found
 		add SP,1
 		set push,B
 		ifl B,[A+1]
 			set pc,realloc_down
-		ife [C],0xFFFF
+		ife [C], MEM_BLOCK_FREE
 			set pc,realloc_up
+
 	:realloc_malloc
 		set push,A
 		set push,Z
 		set A,B
 		jsr malloc
-		ife Z,0xFFFF
-		set pc,realloc_error
+		IF_MALLOC_ERROR
+			set pc,realloc_error
+
 	:realloc_fin
 		set C,pick 1
 		set C,[C+1]
@@ -253,17 +267,20 @@
 		set A,B
 		set B,pop
 		jsr memcpy
+
 		set push,A
 		set A,B
 		jsr free
+
 		set A,pop
 		set B,pop
 		set C,pop
 		set pc,pop
+
 	:realloc_error
 		set B,pop
 		set C,pop
-		set A,0xFFFF
+		set A, MALLOC_ERROR
 		set pc,pop
 	:realloc_up
 		ifl [C+1],B
@@ -274,13 +291,17 @@
 		set push,Z
 		set A,B
 		jsr malloc
+
 		set Z,pop
 		set A,pop
 		add [A+1],B
 		add [A+1],2
+		
 		set B,pop
 		set C,pop
+		
 		set pc,pop
+
 	:realloc_down
 		set push,A
 		sub [A+1],B
@@ -288,8 +309,9 @@
 		set [A],[currently_running]
 		set [A+1],B
 		jsr free
+
 		set A,pop
 		set B,pop
-	set C,pop
+		set C,pop
 	
-	set pc,pop
+		set pc,pop
