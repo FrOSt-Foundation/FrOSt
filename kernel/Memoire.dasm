@@ -9,9 +9,7 @@
 	add A,2
 	ifg A,[free_mem]
 		set pc,malloc_error
-	ifl A,2 ;si la taille est inferieure ou egale a 0
-		set pc,malloc_error
-	ife A,2
+	ifl A,3 ;si la taille est inferieure ou egale a 0
 		set pc,malloc_error
 	sub [free_mem],A
 	;on parcours la mémoire pour savoir s'il y a un bloc assez grand
