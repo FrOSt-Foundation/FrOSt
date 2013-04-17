@@ -5,8 +5,9 @@
 .define MEM_BLOCK_FREE 0xFFFF
 
 ; malloc
-; A contient la taille, retour de l'adresse dans Z si B=MALLOC_ERROR alors erreur
-; Possibilité de tester avec IF_MALLOC_ERROR
+; A contient la taille, retour de l'adresse dans Z.
+; Si Z = MALLOC_ERROR, alors erreur.
+; Possibilité de tester s'il y a eu une erreur avec IF_MALLOC_ERROR.
 :malloc
 	set Z, MALLOC_ERROR
 	set push,A
