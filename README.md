@@ -83,14 +83,3 @@ Nous utilisons actuellement
 [Dernières spécifications du DCPU-16 et du hardware](http://dcpu.com/)
 
 [Tuto git](http://git-scm.com/book/fr)
-
-
-## Credits :
-
-* Alocer
-* ElectricBanana
-* Faërie
-* Franck97
-* natnat
-* Yamakaky
-* Earth75
