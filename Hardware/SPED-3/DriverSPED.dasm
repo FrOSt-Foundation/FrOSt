@@ -44,15 +44,13 @@
 	set PC, POP
 
 
-;Affiche un modèle 3D dans le SPED-3
-;X = Adresse de début du modèle
-;Y = Adresse de fin du modèle
+; Affiche un modèle 3D dans le SPED-3
+; X = Adresse de début du modèle
+; Y = Nombre de points à afficher
 :sped_printModel
 	set PUSH, A
 
 	set A, 1
-	sub Y, X
-	div Y, 2
 	hwi [id_sped]
 
 	set A, POP
