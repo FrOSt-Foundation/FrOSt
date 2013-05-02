@@ -72,8 +72,8 @@
 	set X, SP
 	add Y, 1
 	hwi [id_sped]
-	
-	add SP, 10
+	mul Y, 2
+	add SP, Y
 	set J, POP
 	set I, POP
 	set B, POP
