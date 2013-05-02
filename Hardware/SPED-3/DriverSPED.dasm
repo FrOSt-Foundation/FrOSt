@@ -3,6 +3,14 @@
 ; File: DriverSPED.dasm
 ;*************************
 
+.define STATE_NO_DATA   0
+.define STATE_RUNNING   1
+.define STATE_TURNING   2
+
+.define ERROR_NONE     0
+.define ERROR_BROKEN   0xffff
+
+
 ; Remet le SPED dans son état à l'allumage.
 :sped_reinit
 	set PUSH, A
