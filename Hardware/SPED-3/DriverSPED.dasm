@@ -1,12 +1,36 @@
-; *************************
+*************************
 ; Project: FrOSt
 ; File: DriverSPED.dasm
 ; *************************
 
-;Affiche un modèle 3D dans le sped-3
+:sped_reinit
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set PUSH, X
+	set PUSH, Y
+	set X, 0
+	set A, 2
+	hwi [id_sped]
+	set A, 0
+	:sped_reinit_loop1
+		hwi [id_sped]
+		ife B, 2
+			set PC, sped_reinit_loop1
+	set A, 1
+	set Y, 0
+	hwi [id_sped]
+	set Y, POP
+	set X, POP
+	set C, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+
+
+;Affiche un modèle 3D dans le SPED-3
 ;X = Adresse de début du modèle
 ;Y = Adresse de fin du modèle
-
 :sped_printModel
 	set PUSH, A
 	set A, 1
@@ -17,11 +41,110 @@
 	set A, POP
 	set PC, POP
 
+;Affiche UN polygone
+;X = Adresse de début du poly
+;Y = Nombre de côté du poly
+:sped_printPoly
+	set PUSH, A
+	set PUSH, B
+	set PUSH, I
+	set PUSH, J
+	set I, X
+	set J, X
+	add J, 1
+	set PUSH, [J]
+	set PUSH, [I]
+	set B, Y
+	sub B, 1
+	mul B, 2
+	add I, B
+	add J, B
+	set B, 0
+	:sped_printPoly_loop1
+		set PUSH, [J]
+		set PUSH, [I]
+		sub I, 2
+		sub J, 2
+		add B, 1
+		ifn B, Y
+			set PC, sped_printPoly_loop1
+	set A, 1
+	set X, SP
+	add Y, 1
+	hwi [id_sped]
+	
+	add SP, 10
+	set J, POP
+	set I, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+
+;Efface le SPED-3
+:sped_clearModel
+	set PUSH, A
+	set PUSH, Y
+	set A, 1
+	set Y, 0
+	hwi [id_sped]
+	set Y, POP
+	set A, POP
+	set PC, POP
+
+;Interroge le SPED-3 sur son état
+:sped_pollState
+	set PUSH, A
+	set A, 0
+	hwi [id_sped]
+	set A, POP
+	set PC, POP
+
+:sped_waitForStaticState
+	set PUSH, A
+	set A, 0
+	:sped_waitForStaticState_loop1
+		hwi [id_sped]
+		ife B, 2
+			set PC, sped_waitForStaticState_loop1
+	set A, POP
+	set PC, POP
+
 ;Tourne le modèle précédemment affiché à l'aide de sped_printModem
 ;X = Nombre de degrés de la rotation
-
+;Y = Paramètre de sécurité, 0: aucune attente, 1: attente début, 2: attente fin, 3: attente debut et fin
 :sped_rotateModel
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set B, Y
+	mod B, 2
+	ife B, 0
+		set PC, sped_rotateModel_skip1
+	set A, 0
+	:sped_rotateModel_loop1
+		hwi [id_sped]
+		ife B, 2
+			set PC, sped_rotateModel_loop1
+	:sped_rotateModel_skip1
+	set A, 2
+	hwi [id_sped]
+	ifl Y, 2
+		set PC, sped_rotateModel_skip2
+	set A, 0
+	:sped_rotateModel_loop2
+		hwi [id_sped]
+		ife B, 2
+			set PC, sped_rotateModel_loop2
+	:sped_rotateModel_skip2
+	set C, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+
+:sped_rotateModel_unsafe
+	set PUSH, A
 	set A, 2
 	hwi [id_sped]
 	
+	set A, POP
 	set PC, POP
