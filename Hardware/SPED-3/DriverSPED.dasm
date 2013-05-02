@@ -1,25 +1,33 @@
 ;*************************
 ; Project: FrOSt
 ; File: DriverSPED.dasm
-; *************************
+;*************************
 
+; Remet le SPED dans son état à l'allumage.
 :sped_reinit
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
 	set PUSH, X
 	set PUSH, Y
-	set X, 0
+
+	; On arrête la rotation.
 	set A, 2
+	set X, 0
 	hwi [id_sped]
+
+	; On attend que la rotation se termine.
 	set A, 0
 	:sped_reinit_loop1
 		hwi [id_sped]
 		ife B, 2
 			set PC, sped_reinit_loop1
+
+	; On vide les points affichés
 	set A, 1
 	set Y, 0
 	hwi [id_sped]
+
 	set Y, POP
 	set X, POP
 	set C, POP
@@ -33,27 +41,36 @@
 ;Y = Adresse de fin du modèle
 :sped_printModel
 	set PUSH, A
+
 	set A, 1
 	sub Y, X
 	div Y, 2
 	hwi [id_sped]
-	
+
 	set A, POP
 	set PC, POP
 
-;Affiche UN polygone
-;X = Adresse de début du poly
-;Y = Nombre de côté du poly
+
+; Affiche UN polygone.
+; X = Adresse de début du poly
+; Y = Nombre de côté du poly
+
+; Fonctionnement interne : on push les points à afficher (+ 1 pour former un
+; polygone et non une ligne brisée), en faisant attention à l'ordre des mots.
+; Puis, on passe SP au SPED, et on restaure la pile.
 :sped_printPoly
 	set PUSH, A
 	set PUSH, B
 	set PUSH, I
 	set PUSH, J
+
+	; On push le premier point (2 mots).
 	set I, X
 	set J, X
 	add J, 1
 	set PUSH, [J]
 	set PUSH, [I]
+
 	set B, Y
 	sub B, 1
 	mul B, 2
@@ -74,28 +91,35 @@
 	hwi [id_sped]
 	mul Y, 2
 	add SP, Y
+
 	set J, POP
 	set I, POP
 	set B, POP
 	set A, POP
 	set PC, POP
 
-;Efface le SPED-3
+; Efface le SPED-3.
 :sped_clearModel
 	set PUSH, A
 	set PUSH, Y
+
 	set A, 1
 	set Y, 0
 	hwi [id_sped]
+
 	set Y, POP
 	set A, POP
 	set PC, POP
 
-;Interroge le SPED-3 sur son état
+; Interroge le SPED-3 sur son état.
+; return B = état actuel
+; return C = dernière erreur
 :sped_pollState
 	set PUSH, A
+
 	set A, 0
 	hwi [id_sped]
+
 	set A, POP
 	set PC, POP
 
@@ -109,42 +133,54 @@
 	set A, POP
 	set PC, POP
 
-;Tourne le modèle précédemment affiché à l'aide de sped_printModem
-;X = Nombre de degrés de la rotation
-;Y = Paramètre de sécurité, 0: aucune attente, 1: attente début, 2: attente fin, 3: attente debut et fin
+; Tourne le modèle précédemment affiché (à l'aide de sped_printModem par exemple).
+; X = Nombre de degrés de la rotation
+; Y = Paramètre de sécurité, 0: aucune attente, 1: attente début, 2: attente fin, 3: attente debut et fin
+.define SPED_WAIT_NONE    0
+.define SPED_WAIT_BEGIN   1
+.define SPED_WAIT_END     2
+.define SPED_WAIT_BOTH    3
 :sped_rotateModel
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
+
 	set B, Y
 	mod B, 2
 	ife B, 0
 		set PC, sped_rotateModel_skip1
+
 	set A, 0
 	:sped_rotateModel_loop1
 		hwi [id_sped]
 		ife B, 2
 			set PC, sped_rotateModel_loop1
+
 	:sped_rotateModel_skip1
 	set A, 2
 	hwi [id_sped]
 	ifl Y, 2
 		set PC, sped_rotateModel_skip2
+
 	set A, 0
 	:sped_rotateModel_loop2
 		hwi [id_sped]
 		ife B, 2
 			set PC, sped_rotateModel_loop2
+
 	:sped_rotateModel_skip2
 	set C, POP
 	set B, POP
 	set A, POP
 	set PC, POP
 
+; Même chose que la fonction précédente, mais ne vérifie pas les paramètres et
+; n'attend pas que la rotation soit effectuée.
 :sped_rotateModel_unsafe
 	set PUSH, A
+
 	set A, 2
 	hwi [id_sped]
-	
+
 	set A, POP
 	set PC, POP
