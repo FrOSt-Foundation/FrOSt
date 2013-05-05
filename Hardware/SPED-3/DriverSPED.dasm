@@ -46,7 +46,7 @@
 ;				Configuration					;
 ;-----------------------------------------------;
 
-; Affiche un modèle 3D dans le SPED-3
+; Définit les variables du buffer du SPED-3
 ; X = Adresse de début du buffer
 ; Y = Adresse de fin du buffer
 :sped_setBuffer_data
@@ -60,7 +60,7 @@
 	set Y, POP
 	set PC, POP 
 
-; Définit le buffer
+; Définit les variables du buffer du SPED-3
 ; X = Adresse de début du buffer
 ; Y = Nombre de points contenu dans le buffer
 :sped_setBuffer_point
@@ -112,7 +112,7 @@
 	set A, POP
 	set PC, POP
 
-; On met à jour le SPED selon les variables
+; Met à jour le SPED selon les variables
 ; X = Paramètre de sécurité, voir sped_rotate
 :sped_update
 	set PUSH, A
@@ -133,7 +133,7 @@
 	set A, POP
 	set PC, POP
 
-; On affiche le buffer
+; Affiche le buffer
 :sped_printBuffer
 	set PUSH, A
 	set PUSH, X
@@ -162,7 +162,7 @@
 	set A, POP
 	set PC, POP
 
-; Tourne le modèle précédemment affiché (à l'aide de sped_printModem par exemple).
+; Tourne l'affichage
 ; X = Nombre de degrés de la rotation
 ; Y = Paramètre de sécurité, 0: passer si déjà en train de tourner, 1: attente début, 2: attente fin, 3: attente debut et fin
 .define SPED_SKIP_IF_TURNING    0
@@ -186,12 +186,12 @@
 	:sped_rotate_skip1
 	
 	ife Y, 2
-		set PC, sped_rotateModel_skip2
+		set PC, sped_rotate_skip2
 
 		:sped_rotate_loop1
 			hwi [id_sped]
 			ife B, 2
-				set PC, sped_rotateModel_loop1
+				set PC, sped_rotate_loop1
 
 	:sped_rotate_skip2
 	
@@ -199,13 +199,13 @@
 	hwi [id_sped]
 	
 	ifl Y, 2
-		set PC, sped_rotateModel_skip3
+		set PC, sped_rotate_skip3
 
 	set A, 0
 	:sped_rotate_loop2
 		hwi [id_sped]
 		ife B, 2
-			set PC, sped_rotateModel_loop2
+			set PC, sped_rotate_loop2
 
 	:sped_rotate_skip3
 	
