@@ -1,0 +1,5 @@
+.define MALLOC_ERROR      0xFFFF
+.define IF_MALLOC_ERROR   ife Z, MALLOC_ERROR
+
+.define REALLOC_ERROR      0xFFFF
+.define IF_REALLOC_ERROR   ife A, REALLOC_ERROR
