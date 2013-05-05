@@ -102,7 +102,7 @@
 	
 	mul Y, 2
 	add Y, X
-	jsr :sped_printPoints_data
+	jsr sped_printPoints_data
 	
 	set Y, POP
 	set PC, POP
@@ -152,12 +152,12 @@
 ; X = Adresse de début du modèle polygonal
 ; Y = Nombre de vertices
 ; Z = Nombre de côtés des poly (véritablement fonctionnel que pour 3 ou 4
-:sped_printPoints
+:sped_printPoly
 	set PUSH, Y
 	
 	mul Y, 2
 	add Y, X
-	jsr :sped_printPoints_data
+	jsr sped_printPoly_data
 	
 	set Y, POP
 	set PC, POP
@@ -200,7 +200,7 @@
 		sub B, 1
 		set PUSH, [B]
 		ife B, X
-			set PZ, sped_printPoly_data_loop1_break
+			set PC, sped_printPoly_data_loop1_break
 		add B, 3 
 		set PC, sped_printPoly_data_loop1
 	:sped_printPoly_data_loop1_break
