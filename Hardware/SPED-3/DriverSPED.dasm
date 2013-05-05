@@ -43,6 +43,28 @@
 	set A, POP
 	set PC, POP
 
+; Interroge le SPED-3 sur son état.
+; return B = état actuel
+; return C = dernière erreur
+:sped_pollState
+	set PUSH, A
+
+	set A, 0
+	hwi [id_sped]
+
+	set A, POP
+	set PC, POP
+
+; Attend jusqu'à la fin de la rotation en cour
+:sped_waitForStaticState
+	set PUSH, A
+	set A, 0
+	:sped_waitForStaticState_loop1
+		hwi [id_sped]
+		ife B, 2
+			set PC, sped_waitForStaticState_loop1
+	set A, POP
+	set PC, POP
 
 ; Affiche un modèle 3D dans le SPED-3
 ; X = Adresse de début du modèle
@@ -56,50 +78,144 @@
 	set A, POP
 	set PC, POP
 
-
-; Affiche UN polygone.
-; X = Adresse de début du poly
-; Y = Nombre de côté du poly
-
-; Fonctionnement interne : on push les points à afficher (+ 1 pour former un
-; polygone et non une ligne brisée), en faisant attention à l'ordre des mots.
-; Puis, on passe SP au SPED, et on restaure la pile.
-:sped_printPoly
+; Affiche un modèle 3D dans le SPED-3
+; X = Adresse de début du modèle
+; Y = Adresse de fin du modèle
+:sped_printModel_data
 	set PUSH, A
-	set PUSH, B
+	set PUSH, Y
+	
+	set A, 1
+	sub Y, X
+	div Y, 2
+	hwi [id_sped]
+
+	set Y, POP
+	set A, POP
+	set PC, POP
+
+; Affiche les vertices non reliés
+; X = Adresse de début
+; Y = Nombre de points
+:sped_printPoints
+	set PUSH, Y
+	
+	mul Y, 2
+	add Y, X
+	jsr :sped_printPoints_data
+	
+	set Y, POP
+	set PC, POP
+
+; Affiche les vertices non reliés
+; X = Adresse de début
+; Y = Adresse de fin
+:sped_printPoints_data
+	set PUSH, A
+	set PUSH, X
+	set PUSH, Y
 	set PUSH, I
 	set PUSH, J
+	
+	set I, Y
+	sub I, 1
+	std J, Y
+	set Y, SP
+	:sped_printPoint_data_loop1
+		set PUSH, [J]
+		set PUSH, [I]
+		set A, [J]
+		mod A, 0x0100
+		ifn A, 0x0000
+			sub A, 1
+		set PUSH, A
+		std PUSH, [I]
+		std A, A
+		ifg I, X
+			set PC, sped_printPoint_data_loop1
+	set A, 1
+	set X, SP
+	set SP, Y
+	sub Y, X
+	div Y, 2
+	hwi [id_sped]
+	
+	
+	set J, POP
+	set I, POP
+	set Y, POP
+	set X, POP
+	set A, POP
+	set PC, POP
 
-	; On push le premier point (2 mots).
-	set I, X
-	set J, X
-	add J, 1
-	set PUSH, [J]
-	set PUSH, [I]
+; Affiche un modèle polygonal.
+; X = Adresse de début du modèle polygonal
+; Y = Nombre de vertices
+; Z = Nombre de côtés des poly (véritablement fonctionnel que pour 3 ou 4
+:sped_printPoints
+	set PUSH, Y
+	
+	mul Y, 2
+	add Y, X
+	jsr :sped_printPoints_data
+	
+	set Y, POP
+	set PC, POP
+
+; Affiche un modèle polygonal.
+; X = Adresse de début du modèle polygonal
+; Y = Adresse de fin du modèle polygonal
+; Z = Nombre de côtés des poly
+;Les deux dernier vertices des polygones seront repris pour le prochain.
+:sped_printPoly_data
+	set PUSH, A
+	set PUSH, B
+	set PUSH, X
+	set PUSH, Y
+	set PUSH, Z
 
 	set B, Y
 	sub B, 1
-	mul B, 2
-	add I, B
-	add J, B
-	set B, 0
-	:sped_printPoly_loop1
-		set PUSH, [J]
-		set PUSH, [I]
-		sub I, 2
-		sub J, 2
-		add B, 1
-		ifn B, Y
-			set PC, sped_printPoly_loop1
+	sub Z, 1
+	mul Z, 2
+	set Y, SP
+	
+	:sped_printPoly_data_loop1
+		set A, B
+		sub A, Z
+		set PUSH, [A]
+		sub A, 1
+		set PUSH, [A]
+		
+		set A, 0
+		:sped_printPoly_data_loop2
+			set PUSH, [B]
+			sub B, 1
+			add A, 1
+			ifn A, Z
+				set PC, sped_printPoly_data_loop2
+		set A, [B]
+		mod A, 0x0100
+		set PUSH, A
+		sub B, 1
+		set PUSH, [B]
+		ife B, X
+			set PZ, sped_printPoly_data_loop1_break
+		add B, 3 
+		set PC, sped_printPoly_data_loop1
+	:sped_printPoly_data_loop1_break
+	
 	set A, 1
 	set X, SP
-	add Y, 1
+	set B, Y
+	sub Y, X
+	div Y, 2
 	hwi [id_sped]
-	mul Y, 2
-	add SP, Y
-
-	set J, POP
-	set I, POP
+	set SP, B
+	
+	set Z, POP
+	set Y, POP
+	set X, POP
 	set B, POP
 	set A, POP
 	set PC, POP
@@ -117,53 +233,34 @@
 	set A, POP
 	set PC, POP
 
-; Interroge le SPED-3 sur son état.
-; return B = état actuel
-; return C = dernière erreur
-:sped_pollState
-	set PUSH, A
-
-	set A, 0
-	hwi [id_sped]
-
-	set A, POP
-	set PC, POP
-
-:sped_waitForStaticState
-	set PUSH, A
-	set A, 0
-	:sped_waitForStaticState_loop1
-		hwi [id_sped]
-		ife B, 2
-			set PC, sped_waitForStaticState_loop1
-	set A, POP
-	set PC, POP
-
 ; Tourne le modèle précédemment affiché (à l'aide de sped_printModem par exemple).
 ; X = Nombre de degrés de la rotation
-; Y = Paramètre de sécurité, 0: aucune attente, 1: attente début, 2: attente fin, 3: attente debut et fin
-.define SPED_WAIT_NONE    0
-.define SPED_WAIT_BEGIN   1
-.define SPED_WAIT_END     2
-.define SPED_WAIT_BOTH    3
+; Y = Paramètre de sécurité, 0: passer si déjà en train de tourner, 1: attente début, 2: attente fin, 3: attente debut et fin
+.define SPED_SKIP_IF_TURNING    0
+.define SPED_WAIT_BEGIN			1
+.define SPED_WAIT_END			2
+.define SPED_WAIT_BOTH			3
 :sped_rotateModel
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
 
+	set A, 0
 	set B, Y
 	mod B, 2
 	ife B, 0
 		set PC, sped_rotateModel_skip1
 
-	set A, 0
 	:sped_rotateModel_loop1
 		hwi [id_sped]
 		ife B, 2
 			set PC, sped_rotateModel_loop1
 
 	:sped_rotateModel_skip1
+	
 	set A, 2
+	ife B, 2
+		set PC, sped_rotateModel_skip2
 	hwi [id_sped]
 	ifl Y, 2
 		set PC, sped_rotateModel_skip2
