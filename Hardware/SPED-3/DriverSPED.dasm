@@ -165,10 +165,10 @@
 ; Tourne l'affichage
 ; X = Nombre de degrés de la rotation
 ; Y = Paramètre de sécurité, 0: passer si déjà en train de tourner, 1: attente début, 2: attente fin, 3: attente debut et fin
-.define SPED_SKIP_IF_TURNING    0
-.define SPED_WAIT_BEGIN			1
-.define SPED_WAIT_END			2
-.define SPED_WAIT_BOTH			3
+.define SPED_ROTATE_SKIP_IF_TURNING		0
+.define SPED_ROTATE_WAIT_BEGIN			1
+.define SPED_ROTATE_WAIT_END			2
+.define SPED_ROTATE_WAIT_BOTH			3
 
 :sped_rotate
 	set PUSH, A
