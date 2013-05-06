@@ -190,7 +190,7 @@
 
 		:sped_rotate_loop1
 			hwi [id_sped]
-			ife B, 2sur 
+			ife B, 2
 				set PC, sped_rotate_loop1
 
 	:sped_rotate_skip2
