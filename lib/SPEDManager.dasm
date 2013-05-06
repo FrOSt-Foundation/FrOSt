@@ -5,6 +5,7 @@
 
 :spedmanager_buffer_begin 	dat 0x0000
 :spedmanager_buffer_size 	dat 0x0000
+:spedmanager_buffer_pointer dat 0x0000
 
 
 ; Envois les données au buffer
@@ -12,28 +13,50 @@
 ; Y = Adresse de fin des données
 :spedmanager_pushToBuffer
 	set PUSH, A
+	set PUSH, Y
 	set PUSH, I
 	set PUSH, J
 	
 	set I, spedmanager_buffer_begin
+	add I, spedmanager_buffer_pointer
 	set J , Y
 	sub J, X
+	add J, spedmanager_buffer_pointer
 	ifl J, spedmanager_buffer_size
 		set PC, spedmanager_pushToBuffer_skip1
 		
 		set Y, spedmanager_buffer_size
-		add Y, spedmanager_buffer_begin
+		sub Y, spedmanager_buffer_pointer
+		add Y, X
 	:spedmanager_pushToBuffer_skip1
 	set J, X
 	
 	:spedmanager_pushToBuffer_loop1
 		sti [I], [J]
+		add spedmanager_buffer_pointer, 1
 		ifn J, Y
 			set PC, spedmanager_pushToBuffer_loop1
 	
 	set J, POP
 	set I, POP
+	set Y, POP
 	set A, POP
+	set PC, POP
+
+:spedmanager_clearBuffer
+	set PUSH, I
+	set PUSH, J
+	
+	set I, spedmanager_buffer_begin
+	:spedmanager_clearBuffer_loop1
+		sti [I], 0
+		ifn J, spedmanager_buffer_size
+			set PC, spedmanager_clearBuffer_loop1
+	
+	set spedmanager_buffer_pointer, 0
+	
+	set J, POP
+	set I, POP
 	set PC, POP
 
 ; Alloue/ré-alloue le buffer
@@ -54,6 +77,7 @@
 			
 			set spedmanager_buffer_begin, A
 			set spedmanager_buffer_size, X
+			set spedmanager_buffer_pointer, 0
 	:spedmanager_allocateBuffer_skip1
 		set A, X
 		jsr malloc
@@ -63,6 +87,7 @@
 		
 			set spedmanager_buffer_begin, Z
 			set spedmanager_buffer_size, X
+			set spedmanager_buffer_pointer, 0
 	:spedmanager_allocateBuffer_skip2
 	
 	set Z, POP
