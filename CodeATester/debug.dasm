@@ -3,24 +3,26 @@
 ; File: testWrite.dasm
 ; *************************
 
-:debug_titre DAT "Debugging screen", 0
-:debug_text DAT "FrOSt completement charge. La console ne fonctionne pas, ce programme alternatif a donc ete lance.", 0
-:debug_keyboardWorking DAT "Si vous voyez ceci, le clavier fonctionne !", 0
+:debug_titre dat "Debugging screen", 0
+:debug_text dat "FrOSt completement charge. La console ne fonctionne pas, ce programme alternatif a donc ete lance.", 0
+:debug_keyboardWorking dat "Si vous voyez ceci, le clavier fonctionne !", 0
 
 :debug
 	set B, 0x2000
-	JSR change_couleur
+	jsr change_couleur
 
-	SET B, debug_text
-	SET I, 0x0000
-	JSR puts
+	set B, debug_text
+	set I, 0x0000
+	jsr puts
 	
-	SET X, model
-	SET Y, endModel
-	JSR sped_printModel
+	set X, model
+	set Y, endModel
+	jsr sped_setBuffer_data
+	jsr sped_printBuffer
 	
-	SET X, 270
-	JSR sped_rotateModel
+	set X, 270
+	set Y, SPED_ROTATE_WAIT_END
+	jsr sped_rotate
 	
 	set pc,end
 	
