@@ -97,7 +97,7 @@
 			set pc,free_gauche_boucle
 			;on concatene si besoin est
 		:free_gauche_end
-			ifn [B], MEM_BLOC_LIBRE
+			ifn [B], MEM_BLOCK_FREE
 				set pc,free_end
 			add [B+1],[A+1]
 
