@@ -179,7 +179,7 @@
 		set PC, sped_rotate_skip1
 		
 		hwi [id_sped]
-		ife B, 0
+		ife B, 2
 			set PC, sped_rotate_skip3
 		set PC, sped_rotate_skip2
 		
@@ -190,13 +190,15 @@
 
 		:sped_rotate_loop1
 			hwi [id_sped]
-			ife B, 2
+			ife B, 2sur 
 				set PC, sped_rotate_loop1
 
 	:sped_rotate_skip2
 	
 	set A, 2
 	hwi [id_sped]
+	
+	set sped_angle, X
 	
 	ifl Y, 2
 		set PC, sped_rotate_skip3
@@ -208,8 +210,6 @@
 			set PC, sped_rotate_loop2
 
 	:sped_rotate_skip3
-	
-	set sped_angle, X
 	
 	set B, POP
 	set A, POP
