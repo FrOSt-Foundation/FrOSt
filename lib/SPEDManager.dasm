@@ -1,0 +1,196 @@
+; *************************
+; Project: FrOSt
+; File: spedVertexManager.dasm
+; *************************
+
+:spedmanager_buffer_begin 	dat 0x0000
+:spedmanager_buffer_size 	dat 0x0000
+
+
+; Envois les données au buffer
+; X = Adresse de début données
+; Y = Adresse de fin des données
+:spedmanager_pushToBuffer
+	set PUSH, A
+	set PUSH, I
+	set PUSH, J
+	
+	set I, spedmanager_buffer_begin
+	set J , Y
+	sub J, X
+	ifl J, spedmanager_buffer_size
+		set PC, spedmanager_pushToBuffer_skip1
+		
+		set Y, spedmanager_buffer_size
+		add Y, spedmanager_buffer_begin
+	:spedmanager_pushToBuffer_skip1
+	set J, X
+	
+	:spedmanager_pushToBuffer_loop1
+		sti [I], [J]
+		ifn J, Y
+			set PC, spedmanager_pushToBuffer_loop1
+	
+	set J, POP
+	set I, POP
+	set A, POP
+	set PC, POP
+
+; Alloue/ré-alloue le buffer
+; X = Taille du buffer
+:spedmanager_allocateBuffer
+	set PUSH, A
+	set PUSH, B
+	set PUSH, Z
+	
+	ife spedmanager_buffer_size, 0
+		set PC, spedmanager_allocateBuffer_skip1
+	
+		set A, spedmanager_buffer_begin
+		set B, X
+		jsr realloc
+		ife A, REALLOC_ERROR
+			set PC, spedmanager_allocateBuffer_skip2
+			
+			set spedmanager_buffer_begin, A
+			set spedmanager_buffer_size, X
+	:spedmanager_allocateBuffer_skip1
+		set A, X
+		jsr malloc
+	
+		ife Z, MALLOC_ERROR
+			set PC, spedmanager_allocateBuffer_skip2
+		
+			set spedmanager_buffer_begin, Z
+			set spedmanager_buffer_size, X
+	:spedmanager_allocateBuffer_skip2
+	
+	set Z, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+
+; Affiche les vertices non reliés
+; X = Adresse de début
+; Y = Nombre de points
+:spedmanager_printPoints
+	set PUSH, Y
+	
+	mul Y, 2
+	add Y, X
+	jsr spedmanager_printPoints_data
+	
+	set Y, POP
+	set PC, POP
+
+; Affiche les vertices non reliés
+; X = Adresse de début
+; Y = Adresse de fin
+:spedmanager_printPoints_data
+	set PUSH, A
+	set PUSH, X
+	set PUSH, Y
+	set PUSH, I
+	set PUSH, J
+	
+	set I, Y
+	sub I, 1
+	std J, Y
+	set Y, SP
+	:spedmanager_printPoint_data_loop1
+		set PUSH, [J]
+		set PUSH, [I]
+		set A, [J]
+		mod A, 0x0100
+		ifn A, 0x0000
+			sub A, 1
+		set PUSH, A
+		std PUSH, [I]
+		std A, A
+		ifg I, X
+			set PC, spedmanager_printPoint_data_loop1
+	set X, SP
+	
+	jsr spedmanagermanager_pushToBuffer
+	
+	set SP, Y
+	
+	set J, POP
+	set I, POP
+	set Y, POP
+	set X, POP
+	set A, POP
+	set PC, POP
+
+; Affiche un modèle polygonal.
+; X = Adresse de début du modèle polygonal
+; Y = Nombre de vertices
+; Z = Nombre de côtés des poly (véritablement fonctionnel que pour 3 ou 4
+:spedmanager_printPoly
+	set PUSH, Y
+	
+	mul Y, 2
+	add Y, X
+	jsr spedmanager_printPoly_data
+	
+	set Y, POP
+	set PC, POP
+
+; Affiche un modèle polygonal.
+; X = Adresse de début du modèle polygonal
+; Y = Adresse de fin du modèle polygonal
+; Z = Nombre de côtés des poly, si inférieur à 3 il sera considérer comme 3
+; Les deux dernier vertices des polygones seront repris pour le prochain.
+:spedmanager_printPoly_data
+	set PUSH, A
+	set PUSH, B
+	set PUSH, X
+	set PUSH, Y
+	set PUSH, Z
+
+	set B, Y
+	sub B, 1
+	ifl Z, 3
+		set Z, 3
+	sub Z, 1
+	mul Z, 2
+	set Y, SP
+	
+	:spedmanager_printPoly_data_loop1
+		set A, B
+		sub A, Z
+		set PUSH, [A]
+		sub A, 1
+		set PUSH, [A]
+		
+		set A, 0
+		:spedmanager_printPoly_data_loop2
+			set PUSH, [B]
+			sub B, 1
+			add A, 1
+			ifn A, Z
+				set PC, spedmanager_printPoly_data_loop2
+		set A, [B]
+		mod A, 0x0100
+		set PUSH, A
+		sub B, 1
+		set PUSH, [B]
+		ife B, X
+			set PC, spedmanager_printPoly_data_loop1_break
+		add B, 3 
+		set PC, spedmanager_printPoly_data_loop1
+	:spedmanager_printPoly_data_loop1_break
+	
+	set A, 1
+	set X, SP
+	
+	jsr spedmanagermanager_pushToBuffer
+	
+	set SP, Y
+	
+	set Z, POP
+	set Y, POP
+	set X, POP
+	set B, POP
+	set A, POP
+	set PC, POP
