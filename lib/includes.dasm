@@ -1,3 +1,4 @@
 .include nombre.dasm
 .include registre.dasm
+.include SPEDManager.dasm
 .include string.dasm

@@ -136,7 +136,7 @@
 			set PC, spedmanager_printPoint_data_loop1
 	set X, SP
 	
-	jsr spedmanagermanager_pushToBuffer
+	jsr spedmanager_pushToBuffer
 	
 	set SP, Y
 	
@@ -209,7 +209,7 @@
 	set A, 1
 	set X, SP
 	
-	jsr spedmanagermanager_pushToBuffer
+	jsr spedmanager_pushToBuffer
 	
 	set SP, Y
 	
