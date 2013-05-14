@@ -1,0 +1,50 @@
+; *************************
+; Project: FrOSt
+; File: checksum.dasm
+; *************************
+
+; Bien entendu ces checksum sont simples, et il est facile d'obtenir une collision complete, mais c'est un début, et reste utilisable tant que le besoin de sécurité n'est pas trop grand.
+
+; Checksum pour la petite précision, ne faisant que ajouter les octets
+; X = début de plage [X] inclus
+; Y = fin de plage [Y] exclu
+; 
+; A: Sortie de la somme
+:checksum_simple
+	set PUSH, B
+	
+	set B, X
+	set A, 0
+	
+	:checksum_simple_loop1
+		add A, [B]
+		add B, 1
+		ifn B, Y
+			set PC, checksum_simple_loop1
+	
+	set B, POP
+	set PC, POP
+
+; Checksum multipliant l'octet ajouté avec son adresse
+; X = début de plage [X] inclus
+; Y = fin de plage [Y] exclu
+; 
+; A: Sortie de la somme
+:checksum_mult
+	set PUSH, B
+	set PUSH, C
+	
+	set B, X
+	set A, 0
+	
+	:checksum_mult_loop1
+		set C, [B]
+		mul C, B
+		add A, C
+		add B, 1
+		ifn B, Y
+			set PC, checksum_mult_loop1
+	
+	set C, POP
+	set B, POP
+	set PC, POP
