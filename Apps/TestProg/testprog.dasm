@@ -3,10 +3,11 @@
 ; File: testprog.dasm
 ; *************************
 :testprog
-	set B, msg_test
+	int 0x2001
+	set B, msg_testprog_test
 	int 0x1000
 	
 	set PC, POP
 
 
-:msg_test DAT "DAT' OS", 0
+:msg_testprog_test DAT "Programme de test lancé", 0
