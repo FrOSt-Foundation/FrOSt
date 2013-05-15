@@ -4,4 +4,3 @@
 .include MMU.dasm
 .include Memoire.dasm
 .include Scheduler.dasm
-.include Checksum.dasm
