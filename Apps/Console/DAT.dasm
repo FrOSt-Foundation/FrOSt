@@ -40,6 +40,6 @@ DAT 0x1F, "mem", 0x1F, "mkdir", 0x1F, "mv", 0x1F, "cp", 0x1F, "touch" ;Fin de li
 DAT 0x1F, "cat", 0x1F, "ps", 0x1F, "shutdown",0
 
 :msg_todo DAT "Non-implemente.", 0
-:msg_about DAT "FrOSt v0.1, developpe par Alocer, ElectricBanana, Faerie, Franck97, natnat, Yamakaki, Earth75 et azertyfun.", 0
+:msg_about DAT "FrOSt v0.1, developpe par Alocer, ElectricBanana, Faerie, Franck97, natnat, Yamakaki, Earth75, azertyfun et Vaasref.", 0
 :msg_mem DAT "Memoire libre : 0x     mots", 0
 :msg_errNoArgs DAT "Erreur : argument requis.", 0
