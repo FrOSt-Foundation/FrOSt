@@ -76,7 +76,7 @@
 	int 0x1000
 	
 	set PC, POP
-	
+
 :launch_mem
 	set A, [free_mem]
 	set B, 16
@@ -167,8 +167,15 @@
 				set pc, launch_ps_loop1	
 	set PC, POP
 
+:launch_test
+	set B, msg_testprog
+	int 0x1000
+	jsr testprog
+	
+	set PC, POP
+
 :launch_shutdown
-set B,0
-jsr set_vram
-jsr set_clock_tick
-set pc,end
+	set B,0
+	jsr set_vram
+	jsr set_clock_tick
+	set PC,end

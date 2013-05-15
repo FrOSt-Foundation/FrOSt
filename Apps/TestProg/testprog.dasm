@@ -1,0 +1,12 @@
+; *************************
+; Project: FrOSt
+; File: testprog.dasm
+; *************************
+:testprog
+	set B, msg_test
+	int 0x1000
+	
+	set PC, POP
+
+
+:msg_test DAT "DAT' OS", 0
