@@ -6,6 +6,8 @@ set pc, BootSequence
 .include ../Hardware/includes.dasm
 .include ../kernel/includes.dasm
 .include ../lib/includes.dasm
+.include ../fs/includes.dasm
+
 .include ../Apps/includes.dasm
 .include ../CodeATester/debug.dasm
 
