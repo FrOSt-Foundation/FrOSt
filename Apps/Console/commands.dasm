@@ -168,7 +168,7 @@
 	set PC, POP
 
 :launch_shutdown
-set B,0
-jsr set_vram
-jsr set_clock_tick
-set pc,end
+	set B,0
+	jsr lem_setVram
+	jsr set_clock_tick
+	set pc,end

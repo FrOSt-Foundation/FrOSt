@@ -49,7 +49,7 @@
 
 :init_periph
 	ifn [nb_screens], 0
-		jsr init_screens
+		jsr lem_init
 	ifn [nb_keyboards], 0
 		jsr init_keyboards
 	ifn [nb_clocks], 0
