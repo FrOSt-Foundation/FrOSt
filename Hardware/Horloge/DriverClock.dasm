@@ -8,8 +8,8 @@
 	set b, [msg_clock1]
 	hwi [id_clock1]
 	
-	set A, 0 ;On désactive le tick de l'horloge.
-	set B, 0
+	set A, 0 ;On active le tick de l'horloge.
+	set B, [div_clock1]
 	hwi [id_clock1]
 	
 	set B, POP

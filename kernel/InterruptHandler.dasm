@@ -79,13 +79,15 @@
 	set push,[ecran_actif]
 	set push,A
 	set A,[currently_running]
-	set [ecran_actif],[A+4]
+	set [ecran_actif],[A+1]
 	set A,pop
 	and A,0x000F
-	ife A,0
-		set pc,ih_printf
-	ife A,1
-		set pc,ih_printc
+	ifn [ecran_actif],0
+		ife A,0
+			set pc,ih_printf
+	ifn [ecran_actif],0
+		ife A,1
+			set pc,ih_printc
 	set [ecran_actif],pop
 	rfi 1
 
@@ -94,25 +96,30 @@
 	set push,[ecran_actif]
 	set push,A
 	set A,[currently_running]
-	set [ecran_actif],[A+4]
+	set [ecran_actif],[A+1]
 	set A,pop
 	and A,0x000F
-	ife A,0
-		set pc,ih_couleur
-	ife A,1
-		jsr scroll_ecran
-	ife A,4
-		set pc,ih_clear_screen
-	ife A,2
-		jsr efface_ligne
-	ife A,3
-		set pc,ih_getC
+	ifn [ecran_actif],0
+		ife A,0
+			set pc,ih_couleur
+	ifn [ecran_actif],0
+		ife A,1
+			jsr scroll_ecran
+	ifn [ecran_actif],0
+		ife A,4
+			set pc,ih_clear_screen
+	ifn [ecran_actif],0
+		ife A,2
+			jsr efface_ligne
+	ifn [ecran_actif],0
+		ife A,3
+			set pc,ih_getC
 	set [ecran_actif],pop
 	rfi 1
 
 :ih_clavier
 	set A,pop
-	set pc,sched_resumeKey
+	;set pc,sched_resumeKey
 	rfi 0
 
 :ih_malloc
@@ -158,22 +165,11 @@
 
 :ih_clock
 	set A,pop
-	set A,process
-	add A,[current_process]
-	ife 0,[currently_running]
-		set A,0
-	ife A,0
-		set pc,schedChanger
-	:ih_clock_loop1
-		add A,1
-		ife A,counter
-			set A,process
-		ife [A],0
-			set pc,ih_clock_loop1
-		set [current_process],A
-		sub [current_process],process
-		set A,[A]
-		set pc,schedChanger
+	set A,[currently_running]
+	sub [A+2],1
+	ife [A+2],0
+		set pc,Sched_change
+	rfi 0
 	
 :ih_launch
 	set A,pop
@@ -186,7 +182,8 @@
 	rfi 0
 
 :ih_ask_bk
-	set pc,sched_blockKey
+	;set pc,sched_blockKey
+	rfi 0
 
 :ih_ask_nk
 	JSR waitKey
@@ -197,4 +194,5 @@
 
 :ih_stop
 	set A,pop
-	set pc,Finisher
+	;set pc,Finisher
+	rfi 0

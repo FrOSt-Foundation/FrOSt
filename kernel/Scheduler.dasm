@@ -1,247 +1,126 @@
-;struct process : int id, int priority, char* name, int* SP,  int* screen -> 5 words
-;the pc register is saved on the stack, then A, B, C, X, Y, Z, I, J, Ex in this order
-;if screen=0, then there is no need for a screen so the program is never displayed
-;priority : 1-10 automatic
+;struct program : 
+;int PID
+;char* screen (if==0 then no screen)
+;int time (time elapsed since it's been running)
+;char* SP (save for SP)
+;char *KER_SP (save for kernel SP)
+;int CPUtime (time he has to run)
+;char* name
+;int PIDParent (the parent who created the process)
 
-;max 4 process at a time
+;processes treated in a "round-robin" modified way :
+;the process who is on screen gets more time and more often
+;than others (not yet, it's still a caroussel :p )
 
-:key_need dat 0, 0, 0, 0
-:disk_need dat 0, 0, 0, 0
-:clock_need dat 0, 0, 0, 0
-:process dat 0, 0, 0, 0 ;Pointeur sur les processus lancés
-:counter dat 0
-:running_process dat 0 ;how many are running currently
-:current_process dat 0 ;the index in the process tab
-:screen_process dat 0 ;the process with the screen printed
-:total_prio dat 0
+;the clock should tick 20 times per second (so once every 3ms)
+;if the interrupt doesn't use more than 40 cycles
+;then the program gets 125 cycles per second (assuming all
+;4 processes running together).
 
-;-----------------------------------
-;add a proc, adress in A, name in B
-;if a screen is needed, then C is 1 otherwise it is 0
-;if there's a screen, the screen changes
-;-----------------------------------
-:sched_addProc
-	ife [running_process], 4 ;La limite de processus est de 4, on ne peut donc pas en rajouter.
-		set pc, end
-	add [running_process], 1 ;Sinon, on en ajoute un au nombre de processus utilisés.
-	
-	set PUSH, Z
-	set PUSH, [currently_running]
-	set PUSH, A
-	
-	;On tente d'allouer de la mémoire
-	set A, 5
+:process_readyToRun dat 0,0,0,0
+:process_waitingKBD dat 0,0,0,0
+:process_waitingHDD dat 0,0,0,0
+
+:nbprocess dat 0
+
+:KER_PROCESS dat 0,0,0,0,0,1,0,0
+
+;Adress of the program in A
+;Assuming the program is already copied in RAM
+;Adress of the name in B
+;if C==1 then Screen, otherwise no screen
+
+:Sched_addProc
+set push,B
+set push,A
+set push,[currently_running]
+set [currently_running],0
+set A,8
+jsr malloc
+ife Z,0xFFFF
+	set pc,end ;error
+set [currently_running],pop
+add [nbprocess],1
+set [Z],[nbprocess] ;pid
+set [Z+2],1 ;time
+set [Z+5],1 ;cpu time
+set [Z+6],B ;name
+set [Z+7],[currently_running] ;parent pid
+set push,Z
+set Z,0
+set A,SCREEN_SIZE
+ife C,1
 	jsr malloc
-	ife Z, 0xFFFF ;Si ce n'est pas possible, on crash
-		set pc, end
+ife Z,0xFFFF
+	set pc,end
+set B,pop
+set [B+1],Z ;screen
+set A,0x3F
+jsr malloc
+ife Z,0xFFFF
+	set pc,end
+add A,0xF
+set [B+4],A ;ker_sp
+add A,0x26
+set [B+3],A ;sp
+add A,9
+set [A],pop
+;adding to the processes list
+set A,process_readyToRun
+sub A,1
+:Sched_addProc_loop
+add A,1
+ifn A,process_waitingKBD
+	ifn A,0
+		set pc,Sched_addProc_loop
+ife A,process_waitingKBD
+	set pc,end
+set [A],B
+set B,pop
+set pc,Sched_change
 
-	set A, process
-	sub A, 1 ;On enlève 1 en vue du ADD A, 1 dans la boucle. C'est pas très propre tout ça Faërie ^^
-	
-	:sched_addProc_loop1
-		;Tant que l'on a pas trouvé de place pour un processus.
-		add A, 1
-		ifn [A], 0
-			ifn A, counter
-				set pc, sched_addProc_loop1
-		
-	ife A, counter
-		set pc, sched_addProc_error
-	
-	set [A], Z ;On enregistre à l'adresse du processus la mémoire précédemment allouée.
-	set A, Z ;On redirige l'adresse du processus vers cette mémoire allouée (???)
-	set [A], [counter]
-	add [counter], 1
-	
-	set [currently_running], A ;On dit que le processus actuel est celui que l'on vient de créer
-	
-	set [A + 1], 10 ;Le deuxième mot correspond à la priorité ; on la met au maximum.
-	add [total_prio], 10
-	set [A + 2], B ;Le deuxième mot correspond au pointeur vers le nom du processus, on y met donc le pointeur reçu en argument.
-	set PUSH, A
-	
-	;On tente d'allouer de la mémoire
-	set A, 0x30
-	jsr malloc
-	ife Z, 0xFFFF ;Si ce n'est pas possible, crash.
-		set pc, end
-		
-	set A, PEEK ;Récupération de l'adresse du processus en cours de remplissage
-	set [Z + 0x2F], [SP + 1] ;À la fin de la mémoire allouée, on y met l'adresse du processus (PEEK lis A sans le retirer de la pile)
-	add Z, 0x26 ;Adresse de la pile
-	set [A + 3], Z ;On met le pointeur vers la pile dans le programme
-	
-	ife C, 0 ;Si on n'a pas besoin d'écran (C = 0) -> on ajoute un processus sans écran
-		set pc, sched_addProc_noScreen
-		
-	;Sinon on alloue de la mémoire pour l'écran
-	set A, SCREEN_SIZE
-	jsr malloc
-	ife Z, 0xFFFF ;Si on ne peut pas en allouer, on quitte
-		set pc, end
-	
-	set PUSH, B ;On sauvegarde B et on y met à la place l'adresse mémoire contenant l'écran
-	set B, Z
-	jsr set_vram ;On y mappe l'écran.
-	set B, POP
-	set A, POP
-	
-	set [A + 4], Z ;On met l'adresse de l'écran là où on alloué de la RAM.
-	set A, POP
-	
-	;On affiche l'écran
-	set A, [currently_running]
-	set [currently_running], POP
-	set [screen_process], A
-	set Z, POP
-	
-	set pc, schedChanger ;On change le programme
 
-	:sched_addProc_error
-		;Si il y a une erreur, on libère la mémoire précédemment allouée.
-		set A, Z
-		jsr free
-		set A, POP
-		set Z, POP
-		set Z, POP
-		set pc, POP
-
-	:sched_addProc_noScreen
-		;Si il n'y a pas besoin d'écran, le pointeur vers l'écran (5e mot) devient nul.
-		set [A + 4], 0
-		set A, POP
-		set A, POP
-		set A, [currently_running]
-		set [currently_running], POP
-		set Z, POP
-		set pc, schedChanger
-
-;----------------------------------------
-;changes the program currently running to the one in A
-;assumes the current stack has already pc then A
-;if A==0 then it's the OS that's running.
-;reset the clock
-;/!\ does a rfi 0 to return to the program /!\
-;you have to jump to this routine directly
-;----------------------------------------
-:schedChanger
-	;saving the current process
-	set PUSH, B
-	set PUSH, C
-	set PUSH, X
-	set PUSH, Y
-	set PUSH, Z
-	set PUSH, I
-	set PUSH, J
-	set PUSH, EX
-	
-	set B, A
-	set A, [currently_running]
-	ifn A, 0
-		set [A + 3], SP
-	ife A, 0
-		set [KER_SP], SP
-	ifn B, 0
-		set SP, [B + 3]
-	ife B, 0
-		set SP, [KER_SP]
-	set [currently_running], B
-	;set the clock to tick once the time to the current program is elapsed
-	ifn B, 0
-		set B , [B + 1]
-	set A, [total_prio]
-	add A, 1
-	div B, A
-	set B, EX
-	mul B, 60
-	set B, EX
-	ife B, 0
-		ifn 0, [currently_running]
-			set B, 62
-	set A, 0
-	hwi [id_clock1]
-	;restore the program
-	set EX, POP
-	set J, POP
-	set I, POP
-	set Z, POP
-	set Y, POP
-	set X, POP
-	set C, POP
-	set B, POP
-	
-	rfi 0
-
-;----------------------------------
-;freezes the current program until the keyboard triggers an int
-;----------------------------------
-:sched_blockKey
-	set PUSH, B
-	set A, SP
-	set SP, key_need
-	:sched_blockKey_loop1
-		ifn 0, POP
-			set pc, sched_blockKey_loop1
-		set B, SP
-		set SP, A
-		sub B, 1
-		set [B], [currently_running]
-		set B, [B]
-		sub [total_prio], [B + 1]
-		set A, process
-		add A, [current_process]
-		set [A], 0
-		add A, 1
-		ife A, counter
-			set A, process
-		set [current_process], A
-		sub [current_process], process
-		set A, [A]
-		set B, POP
-		set pc, schedChanger
-		
-;------------------------------------
-;resumes the program with the screen waiting for a key
-;------------------------------------
-:sched_resumeKey
-	set A, key_need
-	sub A, 1
-	:sched_resumeKey_loop1
-		add A, 1
-		ifn [A], [screen_process]
-			ifn A, disk_need
-				set pc, sched_resumeKey_loop1
-		ife A, disk_need ;il n'est pas dans la liste d'attente, on retourne
-			rfi 0
-		set PUSH, B
-		set PUSH, [A]
-		set [A], 0
-		set B, SP
-		set SP, process
-	:sched_resumeKey_loop2
-		ifn 0, POP
-			set pc, sched_resumeKey_loop2
-		set A, SP
-		sub A, 1
-		set SP, B
-		set [A], POP
-		set [current_process], A
-		sub [current_process], process
-		set A, [A]
-		add [total_prio], [A + 1]
-		set PUSH, C
-		set PUSH, A
-		set A, 1
-		hwi [id_keyboard1]
-		set A, peek
-		set A, [A + 3]
-		set [A + 6], C
-		set A, POP
-		set C, POP
-		set B, POP
-		set pc, schedChanger
-
-;------------------------------------
-;kill a program which ID is in A (it's the same as terminate, but much shorter to write :p )
-;------------------------------------
-:Sched_kill
+;change current running process with the next one
+:Sched_change
+;saving current context
+set push,B
+set push,C
+set push,X
+set push,Y
+set push,Z
+set push,I
+set push,J
+set push,Ex
+;choosing the next process
+set A,process_readyToRun
+set B,[currently_running]
+sub A,1
+:Sched_change_loop1
+add A,1
+ifn A,process_waitingKBD
+	ifn A,B
+		set pc,Sched_change_loop1
+ife A,process_waitingKBD
+	set A,process_readyToRun
+add A,1
+ife A,process_waitingKBD
+	set A,process_readyToRun
+ife B,0
+	set B,KER_PROCESS
+set [B+3],SP
+ife A,0
+	set A,KER_PROCESS
+set SP,[A+3]
+set [currently_running],A
+;updating time
+set [A+2],[A+5]
+;restoring context
+set Ex,pop
+set J,pop
+set I,pop
+set Z,pop
+set Y,pop
+set X,pop
+set C,pop
+set B,pop
+rfi 0
