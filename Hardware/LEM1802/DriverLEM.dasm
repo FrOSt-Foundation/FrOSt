@@ -173,7 +173,7 @@
 	set PUSH, I
 	set PUSH, J
 	ife [A], 0
-		set pc, lem_printf_end
+		set PC, lem_printf_end
 	ifl I, 1
 		set I, 1
 	ifg I, SCREEN_HEIGHT
@@ -209,24 +209,24 @@
 	set B, POP
 	set pc, POP
 		
-	:lem_printf_selection
-		ife B, 0x11
-			set PC, lem_p_return
-		ife B, 0x1F
-			set PC, lem_p_tab
-		add J, 1
-		set PC, lem_printf_loop0
+:lem_printf_selection
+	ife B, 0x11
+		set PC, lem_printf_return
+	ife B, 0x1F
+		set PC, lem_printf_tab
+	add J, 1
+	set PC, lem_printf_loop0
 
 :lem_printf_scroll
 	jsr lem_scroll
 	sub I, SCREEN_WIDTH
-	set pc, POP
+	set PC, POP
 
 ;------------------------------
 ;un \n sans ajout de blanc
 ;------------------------------
 
-:lem_p_return
+:lem_printf_return
 	set X, I
 	sub X, [ecran_actif]
 	mod X, SCREEN_WIDTH
@@ -235,25 +235,25 @@
 	add J, 1
 	ifl I, Y
 		ifn I, Y
-			set pc, lem_printf_loop0
+			set PC, lem_printf_loop0
 	jsr lem_scroll
 	sub I, SCREEN_WIDTH
-	set pc, Lem_printf_loop0
-
-
+	
+	set PC, Lem_printf_loop0
 
 ;--------------------------------------
 ;un \t (sans ajout de blanc)
 ;--------------------------------------
-:lem_p_tab
-	add I,3
-	add J,1
-	ifl I,Y
-		ifn I,Y
-			set pc,lem_printf_loop0
+:lem_printf_tab
+	add I, 3
+	add J, 1
+	ifl I, Y
+		ifn I, Y
+			set PC, lem_printf_loop0
 	jsr lem_scroll
-	sub I,SCREEN_WIDTH
-	set PC,lem_printf_loop0
+	sub I, SCREEN_WIDTH
+	
+	set PC, lem_printf_loop0
 
 ;-------------------------------------
 ;CLEAR the screen
