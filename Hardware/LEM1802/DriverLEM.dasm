@@ -161,7 +161,7 @@
 	set PC, POP
 	
 ;--------------------------------
-;Afficher une phrase Ã  l'Ã©cran
+;Afficher une phrase à l'écran
 ;Ligne dans I , 1 < I < 12
 ;Colonne dans J , 1 < J < 32
 ;Adresse de du texte dans A
@@ -304,7 +304,7 @@ set PC, lem_printf_loop0
 	set PC, POP
 
 ; --------------------------------------------
-; Affiche rapidement une chaine de caractÃ¨res
+; Affiche rapidement une chaine de caractères
 ;
 ; REGISTRES :
 ; ===========
@@ -324,7 +324,6 @@ set PC, lem_printf_loop0
 	:lem_puts_loop0
 		bor [J], C
 		sti [I], [J]
-		:lol set PC, lol
 		ifn [J], 0
 			set PC, lem_puts_loop0
 			

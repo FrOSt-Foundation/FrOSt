@@ -12,7 +12,7 @@
 	jsr lem_setColor
 
 	set B, debug_text
-	set I, 0x0000
+	set I, 0
 	jsr lem_puts
 	
 	set X, model
