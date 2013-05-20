@@ -11,18 +11,17 @@
 ; 
 ; A: Sortie de la somme
 :checksum_simple
-	set PUSH, B
-	
-	set B, X
+	set PUSH, X
+
 	set A, 0
 	
 	:checksum_simple_loop1
-		add A, [B]
-		add B, 1
-		ifn B, Y
+		add A, [X]
+		add X, 1
+		ifn X, Y
 			set PC, checksum_simple_loop1
 	
-	set B, POP
+	set X, POP
 	set PC, POP
 
 ; Checksum multipliant l'octet ajouté avec son adresse
@@ -31,20 +30,19 @@
 ; 
 ; A: Sortie de la somme
 :checksum_mult
-	set PUSH, B
+	set PUSH, X
 	set PUSH, C
 	
-	set B, X
 	set A, 0
 	
 	:checksum_mult_loop1
-		set C, [B]
-		mul C, B
+		set C, [X]
+		mul C, X
 		add A, C
-		add B, 1
-		ifn B, Y
+		add X, 1
+		ifn X, Y
 			set PC, checksum_mult_loop1
 	
 	set C, POP
-	set B, POP
+	set X, POP
 	set PC, POP
