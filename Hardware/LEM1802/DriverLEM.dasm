@@ -26,7 +26,7 @@
 		add J, 18
 		set A, 0
 		:lem_displayFrOStLogo_loop1_skip
-		ifn I, lem_FrOStLogo_font_end
+		ifn I, lem_FrOStLogo_end
 			set PC, lem_displayFrOStLogo_loop1
 	
 	set J, POP
