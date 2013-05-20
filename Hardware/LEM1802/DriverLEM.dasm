@@ -3,16 +3,46 @@
 	;Rien à  faire, les IDs sont déjà  enregistrées
 	set PC, POP
 
-:lem_resetFont
+
+:lem_displayFrOStLogo
 	set PUSH, A
 	set PUSH, B
+	set PUSH, I
+	set PUSH, J
 	
-	set A, 1
-	set B, lem_font_default
-	hwi [id_screen1]
+	jsr lem_clear
+	set B, lem_FrOStLogo_font
+	jsr lem_setFont
+
+	set I, lem_FrOStLogo
+	set J, [ecran_actif]
+	add J, 137
+	set A, 0
+	:lem_displayFrOStLogo_loop1
+		sti [J], [I]
+		add A, 1
+		ifn A, 14
+			set PC, lem_displayFrOStLogo_loop1_skip 
+		add J, 18
+		set A, 0
+		:lem_displayFrOStLogo_loop1_skip
+		ifn I, lem_FrOStLogo_font_end
+			set PC, lem_displayFrOStLogo_loop1
 	
+	set J, POP
+	set I, POP
 	set B, POP
 	set A, POP
+	set PC, POP
+
+
+:lem_resetFont
+	set PUSH, B
+	
+	set B, 0
+	jsr lem_setFont
+	
+	set B, POP
 	set PC, POP
 
 ;b=pointeur font,0=default
@@ -56,7 +86,6 @@
 	set [ecran_actif], B
 	
 	set PC, lem_updateVram
-
 
 
 ;pointeur en z,0xFFFF si plus de place
