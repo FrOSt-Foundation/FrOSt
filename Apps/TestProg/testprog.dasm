@@ -7,7 +7,7 @@
 	set B, msg_testprog_test
 	int 0x1000
 	
-	set PC, POP
+	sub pc,1
 
 
 :msg_testprog_test DAT "Programme de test lancé", 0
