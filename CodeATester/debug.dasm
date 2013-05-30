@@ -9,11 +9,11 @@
 
 :debug
 	set B, 0x2000
-	jsr lem_setColor
+	jsr lem1802_setColor
 
 	set B, debug_text
 	set I, 0
-	jsr lem_puts
+	jsr lem1802_puts
 	
 	set X, model
 	set Y, endModel

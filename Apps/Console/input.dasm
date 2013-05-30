@@ -102,7 +102,7 @@
 	set PUSH, B ;On sauvegarde la couleur actuelle de l'écran
 	
 	set B, 0x4000
-	jsr lem_setColor
+	jsr lem1802_setColor
 	
 	int 0x2001 ;Scroll
 	
@@ -119,7 +119,7 @@
 	int 0x2001 ;Scroll
 	
 	set B, POP ;On récupère la couleur précédemment sauvegardée
-	jsr lem_setColor
+	jsr lem1802_setColor
 	set PC, pop
 	
 :console_backspace
@@ -136,10 +136,10 @@
 	int INT_GETCOLOR
 	set push,B
 	set B,0
-	jsr lem_setColor
+	jsr lem1802_setColor
 	int 0x1001 ;On met un 0.
 	set B,pop
-	jsr lem_setColor
+	jsr lem1802_setColor
 	set B,pick 1
 	
 	set PC, console_readLine_loop

@@ -5,7 +5,7 @@
 
 :console
 	set B, 0x2000
-	jsr lem_setColor
+	jsr lem1802_setColor
 	
 	set B, console_welcomeMessage
 	set I, 1
