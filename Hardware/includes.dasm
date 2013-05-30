@@ -1,7 +1,7 @@
 .include GestionPeriph.dasm
 .include driversData.dasm
 
-.include Clavier/includes.dasm
+.include Keyboard/includes.dasm
 .include Ecran/includes.dasm
 .include HDD/includes.dasm
 .include Horloge/includes.dasm

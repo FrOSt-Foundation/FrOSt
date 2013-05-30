@@ -189,7 +189,7 @@
 	set pc,sched_blockKey
 
 :ih_ask_nk
-	JSR waitKey
+	JSR keyboard_getNextPressedKey
 	rfi 0
 
 :ih_ask_disk
