@@ -177,5 +177,5 @@
 :launch_shutdown
 	set B,0
 	jsr set_vram
-	jsr set_clock_tick
+	jsr clock_setSpeed
 	set PC,end

@@ -1,0 +1,69 @@
+; *************************
+; Project: FrOSt
+; File: DriverClock.dasm
+; *************************
+
+:clock_speed 	dat 0x0000
+
+:clock_init
+	set PUSH,A
+	set PUSH,B
+	
+	set A, 2 ;Activation des interruptions avec le message msg_clock1
+	set B, [msg_clock1]
+	hwi [id_clock1]
+	
+	set A, 0 ;On désactive le tick de l'horloge.
+	set B, 0
+	hwi [id_clock1]
+	
+	set B, POP
+	set A, POP
+	set PC, POP
+
+; C return
+:clock_getTime
+	set PUSH, A
+	
+	set A, 1
+	hwi [id_clock1]
+	
+	set A, POP
+	set PC POP
+
+:clock_resetTime
+	set PUSH, A
+	set PUSH, B
+	
+	set B, [clock_speed]
+	set A, 0
+	hwi [id_clock1]
+	
+	set B, POP
+	set A, POP
+	set PC, POP
+
+; 60/B tick(s)/s  
+:clock_setSpeed 
+	set PUSH, A
+	
+	set [clock_speed], B
+	set A, 0 ;L'horloge tickera à 60/b ticks/seconde (ou ne tickera pas si b = 0)
+	hwi [id_clock1]
+		
+	set A, POP
+	set PC, POP
+
+; return dans B
+:clock_getSpeed
+	set B, [clock_speed]
+	set PC, POP
+
+:clock_setInterrupt ;b=message des int, 0=off
+	set PUSH, A
+	
+	set A, 2
+	hwi [id_clock1] ;On change le message d'interruption.
+	
+	set A, POP
+	set PC, POP

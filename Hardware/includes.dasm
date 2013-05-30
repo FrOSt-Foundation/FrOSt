@@ -4,5 +4,5 @@
 .include Clavier/includes.dasm
 .include Ecran/includes.dasm
 .include HDD/includes.dasm
-.include Horloge/includes.dasm
+.include Clock/includes.dasm
 .include SPED-3/includes.dasm
