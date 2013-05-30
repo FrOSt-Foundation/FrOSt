@@ -6,14 +6,15 @@
 :lem1802_resetFont
 	set PUSH, A
 	set PUSH, B
-	
+
 	set A, 1
 	set B, lem1802_font_default
 	hwi [id_screen1]
-	
+
 	set B, POP
 	set A, POP
 	set PC, POP
+
 
 ;b=pointeur font,0=default
 :lem1802_setFont
@@ -57,7 +58,6 @@
 	set [ecran_actif], B
 	
 	set PC, lem1802_updateVram
-
 
 
 ;pointeur en z,0xFFFF si plus de place
@@ -109,6 +109,41 @@
 	set B, [ecran_actif]
 	hwi [id_screen1]
 	
+	set B, POP
+	set A, POP
+	set PC, POP
+
+
+:lem1802_displayFrOStLogo
+	set PUSH, A
+	set PUSH, B
+	set PUSH, I
+	set PUSH, J
+
+	jsr lem1802_clear
+	set B, lem1802_FrOStLogo_font
+	jsr lem1802_setFont
+
+	set I, lem1802_FrOStLogo
+	set J, [ecran_actif]
+	add J, 137
+	set A, 0
+	:lem1802_displayFrOStLogo_loop1
+		sti [J], [I]
+		add A, 1
+		ifn A, 14
+			set PC, lem1802_displayFrOStLogo_loop1_skip
+		add J, 18
+		set A, 0
+		:lem1802_displayFrOStLogo_loop1_skip
+		ifn I, lem1802_FrOStLogo_end
+			set PC, lem1802_displayFrOStLogo_loop1
+
+	set B, 0
+	jsr lem1802_setFont
+
+	set J, POP
+	set I, POP
 	set B, POP
 	set A, POP
 	set PC, POP
