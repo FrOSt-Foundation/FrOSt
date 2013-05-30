@@ -176,6 +176,6 @@
 
 :launch_shutdown
 	set B,0
-	jsr lem_setVram
+	jsr lem1802_setVram
 	jsr clock_setSpeed
 	set PC,end

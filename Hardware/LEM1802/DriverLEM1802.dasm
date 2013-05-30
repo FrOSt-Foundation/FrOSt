@@ -1,14 +1,14 @@
 ;J=id ecran
-:lem_init
+:lem1802_init
 	;Rien à  faire, les IDs sont déjà  enregistrées
 	set PC, POP
 
-:lem_resetFont
+:lem1802_resetFont
 	set PUSH, A
 	set PUSH, B
 	
 	set A, 1
-	set B, lem_font_default
+	set B, lem1802_font_default
 	hwi [id_screen1]
 	
 	set B, POP
@@ -16,7 +16,7 @@
 	set PC, POP
 
 ;b=pointeur font,0=default
-:lem_setFont
+:lem1802_setFont
 	set PUSH, A
 	
 	set A, 1
@@ -27,13 +27,13 @@
 
 ;modifie la couleur des char à afficher.
 ;b=couleur, sa valeur n'est pas contrôlée.
-:lem_setColor
+:lem1802_setColor
 	set [screen_color], B
 	
 	set PC, POP
 
 ;b=pointeur palette,0=default
-:lem_setPalette
+:lem1802_setPalette
 	set PUSH, A
 	
 	set A, 2
@@ -43,7 +43,7 @@
 	set PC, POP
 
 ;b=color (0-F)
-:lem_setBorder
+:lem1802_setBorder
 	set PUSH, A
 	
 	set A, 3
@@ -53,53 +53,55 @@
 	set PC, POP
 
 ;pointeur en b
-:lem_setVram
+:lem1802_setVram
 	set [ecran_actif], B
 	
-	set PC, lem_updateVram
+	set PC, lem1802_updateVram
 
 
 
 ;pointeur en z,0xFFFF si plus de place
-:lem_getFont
+:lem1802_getFont
 	set PUSH, A
 	
 	set A, 256
 	jsr malloc
 	IF_MALLOC_ERROR
-		set PC, lem_getFont_end
+		set PC, lem1802_getFont_end
+
 	set A, 4
 	set B, Z
 	hwi [id_screen1]
-	:lem_getFont_end
+	:lem1802_getFont_end
 	
 	set A, POP
 	set PC, POP
 
 ;pointeur en z,0xFFFF si plus de place
-:lem_getPalette
+:lem1802_getPalette
 	set PUSH,A
 	
 	set A, 16
 	jsr malloc
 	IF_MALLOC_ERROR
-		set PC, lem_getPalette_end
+		set PC, lem1802_getPalette_end
+
 	set A, 5
 	set B, Z
 	hwi [id_screen1]
-	:lem_getPalette_end
+	:lem1802_getPalette_end
 	
 	set A, POP
 	set PC, POP
 
 ;pointeur en z
-:lem_getVram
+:lem1802_getVram
 	set Z, [ecran_actif]
 	
 	set PC, POP
 
 ;routine interne
-:lem_updateVram
+:lem1802_updateVram
 	set PUSH, A
 	set PUSH, B
 	
@@ -116,7 +118,7 @@
 ;Ligne stockée dans I (de 1 Ã  12)
 ;Si I > 12, I = 12
 ;-----------------------------------------
-:lem_clearLine
+:lem1802_clearLine
 	set PUSH, I
 	set PUSH, J
 	
@@ -126,10 +128,10 @@
 	mul I, SCREEN_WIDTH
 	add I, [ecran_actif]
 	set J, 0
-	:lem_clearLine_loop0
+	:lem1802_clearLine_loop0
 		sti [I],0
 		ifn J, SCREEN_WIDTH
-			set PC, lem_clearLine_loop0
+			set PC, lem1802_clearLine_loop0
 
 	set J, POP
 	set I, POP
@@ -140,7 +142,7 @@
 ;REMONTE TOUT D'UNE LIGNE
 ;ET EFFACE DERNIERE LIGNE (12)
 ;---------------------------------
-:lem_scroll
+:lem1802_scroll
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
@@ -153,7 +155,7 @@
 	sub C, SCREEN_WIDTH
 	jsr memcpy
 	set I, 12
-	jsr lem_clearLine
+	jsr lem1802_clearLine
 	
 	set I, POP
 	set C, POP
@@ -167,14 +169,14 @@
 ;Colonne dans J , 1 < J < 32
 ;Adresse de du texte dans A
 ;--------------------------------
-:lem_printf
+:lem1802_printf
 	set PUSH, B
 	set PUSH, X
 	set PUSH, Y
 	set PUSH, I
 	set PUSH, J
 	ife [A], 0
-		set PC, lem_printf_end
+		set PC, lem1802_printf_end
 	ifl I, 1
 		set I, 1
 	ifg I, SCREEN_HEIGHT
@@ -191,18 +193,18 @@
 	set J, A
 	set Y, SCREEN_SIZE
 	add Y, [ecran_actif]
-	:lem_printf_loop0
+	:lem1802_printf_loop0
 		set B, [J]
 		ife I, Y
-			jsr lem_printf_scroll
+			jsr lem1802_printf_scroll
 		ifl B, 0x20
-			set PC, lem_printf_selection
+			set PC, lem1802_printf_selection
 		bor B, [screen_color]
 		sti [I], B
 		ifn [J], 0
-			set PC, lem_printf_loop0
+			set PC, lem1802_printf_loop0
 			
-	:lem_printf_end
+	:lem1802_printf_end
 	set J, POP
 	set I, POP
 	set Y, POP
@@ -210,16 +212,16 @@
 	set B, POP
 	set pc, POP
 		
-:lem_printf_selection
+:lem1802_printf_selection
 	ife B, 0x11
-		set PC, lem_printf_return
+		set PC, lem1802_printf_return
 	ife B, 0x1F
-		set PC, lem_printf_tab
+		set PC, lem1802_printf_tab
 	add J, 1
-	set PC, lem_printf_loop0
+	set PC, lem1802_printf_loop0
 
-:lem_printf_scroll
-	jsr lem_scroll
+:lem1802_printf_scroll
+	jsr lem1802_scroll
 	sub I, SCREEN_WIDTH
 	set PC, POP
 
@@ -227,7 +229,7 @@
 ;un \n sans ajout de blanc
 ;------------------------------
 
-:lem_printf_return
+:lem1802_printf_return
 	set X, I
 	sub X, [ecran_actif]
 	mod X, SCREEN_WIDTH
@@ -236,30 +238,30 @@
 	add J, 1
 	ifl I, Y
 		ifn I, Y
-			set PC, lem_printf_loop0
-	jsr lem_scroll
+			set PC, lem1802_printf_loop0
+	jsr lem1802_scroll
 	sub I, SCREEN_WIDTH
 	
-	set PC, Lem_printf_loop0
+	set PC, lem1802_printf_loop0
 
 ;--------------------------------------
 ;un \t (sans ajout de blanc)
 ;--------------------------------------
-:lem_printf_tab
+:lem1802_printf_tab
 	add I, 3
 	add J, 1
 	ifl I, Y
 		ifn I, Y
-			set PC, lem_printf_loop0
-	jsr lem_scroll
+			set PC, lem1802_printf_loop0
+	jsr lem1802_scroll
 	sub I, SCREEN_WIDTH
 	
-	set PC, lem_printf_loop0
+	set PC, lem1802_printf_loop0
 
 ;-------------------------------------
 ;CLEAR the screen
 ;-------------------------------------
-:lem_clear
+:lem1802_clear
 	set PUSH, A
 
 	set A, [ecran_actif]
@@ -275,7 +277,7 @@
 ;I , ligne
 ;J , colonne
 ;-----------------------------
-:lem_printc
+:lem1802_printc
 	set PUSH, I
 	set PUSH, J
 	set PUSH, C
@@ -311,7 +313,7 @@
 ;      0x0000 Ã  0x0080)
 ; --------------------------------------------
 
-:lem_puts
+:lem1802_puts
 	set PUSH, C
 	set PUSH, I
 	set PUSH, J
@@ -319,11 +321,11 @@
 	set C, [screen_color]
 	add I, [ecran_actif]
 	set J, B
-	:lem_puts_loop0
+	:lem1802_puts_loop0
 		bor [J], C
 		sti [I], [J]
 		ifn [J], 0
-			set PC, lem_puts_loop0
+			set PC, lem1802_puts_loop0
 			
 	set J, POP
 	set I, POP
