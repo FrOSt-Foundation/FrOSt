@@ -25,7 +25,8 @@
 	set A, POP
 	set PC, POP
 
-;b=couleur, aucun controle sur b
+;modifie la couleur des char à afficher.
+;b=couleur, sa valeur n'est pas contrôlée.
 :lem_setColor
 	set [screen_color], B
 	
@@ -65,7 +66,7 @@
 	
 	set A, 256
 	jsr malloc
-	ife Z, 0xFFFF
+	IF_MALLOC_ERROR
 		set PC, lem_getFont_end
 	set A, 4
 	set B, Z
@@ -81,7 +82,7 @@
 	
 	set A, 16
 	jsr malloc
-	ife Z, 0xFFFF
+	IF_MALLOC_ERROR
 		set PC, lem_getPalette_end
 	set A, 5
 	set B, Z
@@ -112,7 +113,7 @@
 
 ;-----------------------------------------
 ;EFFACE LIGNE
-;Ligne stockÃ©e dans I (de 1 Ã  12)
+;Ligne stockée dans I (de 1 Ã  12)
 ;Si I > 12, I = 12
 ;-----------------------------------------
 :lem_clearLine
@@ -305,7 +306,7 @@
 ;
 ; REGISTRES :
 ; ===========
-;  - B : Pointeur vers la chaÃ®ne
+;  - B : Pointeur vers la chaîne
 ;  - I : Adresse de l'écran où écrire (de
 ;      0x0000 Ã  0x0080)
 ; --------------------------------------------
