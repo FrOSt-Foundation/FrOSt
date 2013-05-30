@@ -53,7 +53,7 @@
 	ifn [nb_keyboards], 0
 		jsr init_keyboards
 	ifn [nb_clocks], 0
-		jsr init_clocks
+		jsr clock_init
 	ifn [nb_floppies], 0
 		jsr init_floppies
 	ifn [nb_sped], 0
