@@ -100,11 +100,11 @@
 	ife A,0
 		set pc,ih_couleur
 	ife A,1
-		jsr scroll_ecran
+		jsr lem_scroll
 	ife A,4
 		set pc,ih_clear_screen
 	ife A,2
-		jsr efface_ligne
+		jsr lem_clearLine
 	ife A,3
 		set pc,ih_getC
 	set [ecran_actif],pop
@@ -127,12 +127,12 @@
 
 :ih_printf
 	set A , B
-	JSR printf
+	JSR lem_printf
 	set [ecran_actif],pop
 	rfi 0
 
 :ih_couleur
-	JSR change_couleur
+	JSR lem_setColor
 	set [ecran_actif],pop
 	rfi 0
 
@@ -142,12 +142,12 @@
 	rfi 0
 
 :ih_printc
-	JSR printc
+	JSR lem_printc
 	set [ecran_actif],pop
 	rfi 0
 
 :ih_clear_screen
-	JSR clear
+	JSR lem_clear
 	set [ecran_actif],pop
 	rfi 0
 

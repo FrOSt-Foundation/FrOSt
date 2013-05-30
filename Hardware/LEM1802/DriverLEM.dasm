@@ -1,0 +1,331 @@
+;J=id ecran
+:lem_init
+	;Rien à  faire, les IDs sont déjà  enregistrées
+	set PC, POP
+
+:lem_resetFont
+	set PUSH, A
+	set PUSH, B
+	
+	set A, 1
+	set B, lem_font_default
+	hwi [id_screen1]
+	
+	set B, POP
+	set A, POP
+	set PC, POP
+
+;b=pointeur font,0=default
+:lem_setFont
+	set PUSH, A
+	
+	set A, 1
+	hwi [id_screen1]
+	
+	set A, POP
+	set PC, POP
+
+;modifie la couleur des char à afficher.
+;b=couleur, sa valeur n'est pas contrôlée.
+:lem_setColor
+	set [screen_color], B
+	
+	set PC, POP
+
+;b=pointeur palette,0=default
+:lem_setPalette
+	set PUSH, A
+	
+	set A, 2
+	hwi [id_screen1]
+	
+	set A, POP
+	set PC, POP
+
+;b=color (0-F)
+:lem_setBorder
+	set PUSH, A
+	
+	set A, 3
+	hwi [id_screen1]
+	
+	set A, POP
+	set PC, POP
+
+;pointeur en b
+:lem_setVram
+	set [ecran_actif], B
+	
+	set PC, lem_updateVram
+
+
+
+;pointeur en z,0xFFFF si plus de place
+:lem_getFont
+	set PUSH, A
+	
+	set A, 256
+	jsr malloc
+	IF_MALLOC_ERROR
+		set PC, lem_getFont_end
+	set A, 4
+	set B, Z
+	hwi [id_screen1]
+	:lem_getFont_end
+	
+	set A, POP
+	set PC, POP
+
+;pointeur en z,0xFFFF si plus de place
+:lem_getPalette
+	set PUSH,A
+	
+	set A, 16
+	jsr malloc
+	IF_MALLOC_ERROR
+		set PC, lem_getPalette_end
+	set A, 5
+	set B, Z
+	hwi [id_screen1]
+	:lem_getPalette_end
+	
+	set A, POP
+	set PC, POP
+
+;pointeur en z
+:lem_getVram
+	set Z, [ecran_actif]
+	
+	set PC, POP
+
+;routine interne
+:lem_updateVram
+	set PUSH, A
+	set PUSH, B
+	
+	set A, 0
+	set B, [ecran_actif]
+	hwi [id_screen1]
+	
+	set B, POP
+	set A, POP
+	set PC, POP
+
+;-----------------------------------------
+;EFFACE LIGNE
+;Ligne stockée dans I (de 1 Ã  12)
+;Si I > 12, I = 12
+;-----------------------------------------
+:lem_clearLine
+	set PUSH, I
+	set PUSH, J
+	
+	ifg I, SCREEN_HEIGHT
+		set I, SCREEN_HEIGHT
+	sub I, 1
+	mul I, SCREEN_WIDTH
+	add I, [ecran_actif]
+	set J, 0
+	:lem_clearLine_loop0
+		sti [I],0
+		ifn J, SCREEN_WIDTH
+			set PC, lem_clearLine_loop0
+
+	set J, POP
+	set I, POP
+	set PC, POP
+
+;---------------------------------
+;SCROLL ECRAN
+;REMONTE TOUT D'UNE LIGNE
+;ET EFFACE DERNIERE LIGNE (12)
+;---------------------------------
+:lem_scroll
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set PUSH, I
+	
+	set A, [ecran_actif]
+	set B, A
+	add B, SCREEN_WIDTH
+	set C, SCREEN_SIZE
+	sub C, SCREEN_WIDTH
+	jsr memcpy
+	set I, 12
+	jsr lem_clearLine
+	
+	set I, POP
+	set C, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+	
+;--------------------------------
+;Afficher une phrase à l'écran
+;Ligne dans I , 1 < I < 12
+;Colonne dans J , 1 < J < 32
+;Adresse de du texte dans A
+;--------------------------------
+:lem_printf
+	set PUSH, B
+	set PUSH, X
+	set PUSH, Y
+	set PUSH, I
+	set PUSH, J
+	ife [A], 0
+		set PC, lem_printf_end
+	ifl I, 1
+		set I, 1
+	ifg I, SCREEN_HEIGHT
+		set I, SCREEN_HEIGHT
+	ifl J, 1
+		set J, 1
+	ifg J, SCREEN_WIDTH
+		set J, SCREEN_WIDTH
+	sub I, 1
+	sub J, 1
+	mul I, SCREEN_WIDTH
+	add I, J
+	add I, [ecran_actif]
+	set J, A
+	set Y, SCREEN_SIZE
+	add Y, [ecran_actif]
+	:lem_printf_loop0
+		set B, [J]
+		ife I, Y
+			jsr lem_printf_scroll
+		ifl B, 0x20
+			set PC, lem_printf_selection
+		bor B, [screen_color]
+		sti [I], B
+		ifn [J], 0
+			set PC, lem_printf_loop0
+			
+	:lem_printf_end
+	set J, POP
+	set I, POP
+	set Y, POP
+	set X, POP
+	set B, POP
+	set pc, POP
+		
+:lem_printf_selection
+	ife B, 0x11
+		set PC, lem_printf_return
+	ife B, 0x1F
+		set PC, lem_printf_tab
+	add J, 1
+	set PC, lem_printf_loop0
+
+:lem_printf_scroll
+	jsr lem_scroll
+	sub I, SCREEN_WIDTH
+	set PC, POP
+
+;------------------------------
+;un \n sans ajout de blanc
+;------------------------------
+
+:lem_printf_return
+	set X, I
+	sub X, [ecran_actif]
+	mod X, SCREEN_WIDTH
+	add I, SCREEN_WIDTH
+	sub I, X
+	add J, 1
+	ifl I, Y
+		ifn I, Y
+			set PC, lem_printf_loop0
+	jsr lem_scroll
+	sub I, SCREEN_WIDTH
+	
+	set PC, Lem_printf_loop0
+
+;--------------------------------------
+;un \t (sans ajout de blanc)
+;--------------------------------------
+:lem_printf_tab
+	add I, 3
+	add J, 1
+	ifl I, Y
+		ifn I, Y
+			set PC, lem_printf_loop0
+	jsr lem_scroll
+	sub I, SCREEN_WIDTH
+	
+	set PC, lem_printf_loop0
+
+;-------------------------------------
+;CLEAR the screen
+;-------------------------------------
+:lem_clear
+	set PUSH, A
+
+	set A, [ecran_actif]
+	jsr efface_memoire
+
+	set A, POP
+	set PC, POP
+
+
+;------------------------------
+;AFFICHER UN CARACTERE
+;CARACTERE DANS C
+;I , ligne
+;J , colonne
+;-----------------------------
+:lem_printc
+	set PUSH, I
+	set PUSH, J
+	set PUSH, C
+	
+	ifl I, 1
+		set I, 1
+	ifg I, SCREEN_HEIGHT
+		set I, SCREEN_HEIGHT
+	ifl J, 1
+		set J, 1
+	ifg J, SCREEN_WIDTH
+		set J, SCREEN_WIDTH
+	sub I, 1
+	sub J, 1
+	mul I, SCREEN_WIDTH
+	add I, J
+	add I, [ecran_actif]
+	bor C, [screen_color]
+	set [I], C
+	
+	set C, POP
+	set J, POP
+	set I, POP
+	set PC, POP
+
+; --------------------------------------------
+; Affiche rapidement une chaine de caractères
+;
+; REGISTRES :
+; ===========
+;  - B : Pointeur vers la chaîne
+;  - I : Adresse de l'écran où écrire (de
+;      0x0000 Ã  0x0080)
+; --------------------------------------------
+
+:lem_puts
+	set PUSH, C
+	set PUSH, I
+	set PUSH, J
+	
+	set C, [screen_color]
+	add I, [ecran_actif]
+	set J, B
+	:lem_puts_loop0
+		bor [J], C
+		sti [I], [J]
+		ifn [J], 0
+			set PC, lem_puts_loop0
+			
+	set J, POP
+	set I, POP
+	set C, POP
+	set PC, POP

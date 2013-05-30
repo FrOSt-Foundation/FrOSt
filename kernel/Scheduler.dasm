@@ -82,7 +82,7 @@
 	
 	set PUSH, B ;On sauvegarde B et on y met à la place l'adresse mémoire contenant l'écran
 	set B, Z
-	jsr set_vram ;On y mappe l'écran.
+	jsr lem_setVram ;On y mappe l'écran.
 	set B, POP
 	set A, POP
 	
