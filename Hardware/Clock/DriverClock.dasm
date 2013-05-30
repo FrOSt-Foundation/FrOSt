@@ -54,6 +54,11 @@
 	set A, POP
 	set PC, POP
 
+; return dans B
+:clock_getSpeed
+	set B, [clock_speed]
+	set PC, POP
+
 :clock_setInterrupt ;b=message des int, 0=off
 	set PUSH, A
 	
