@@ -17,12 +17,12 @@
 	
 	set X, model
 	set Y, endModel
-	jsr sped_setBuffer_data
-	jsr sped_printBuffer
+	jsr sped3_setBuffer_data
+	jsr sped3_printBuffer
 	
 	set X, 270
-	set Y, SPED_ROTATE_WAIT_END
-	jsr sped_rotate
+	set Y, SPED3_ROTATE_WAIT_END
+	jsr sped3_rotate
 	
 	set pc,end
 	
