@@ -57,7 +57,7 @@
 	ifn [nb_floppies], 0
 		jsr init_floppies
 	ifn [nb_sped], 0
-		jsr sped3_reinit
+		jsr sped_reinit
 	set PC, POP
 
 
