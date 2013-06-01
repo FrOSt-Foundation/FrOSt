@@ -170,23 +170,21 @@ set pc,console_readLine_loop
 	ife J, 3
 		set PC, console_readLine_loop
 	set C,0x20
-	int INT_SCROLL
+	int INT_PRINTC
 	sub J, 2 ;set [Z + J] ne marche pas, il y a trop de registres pour devCPU.
 	add B, J ;Donc, on enlève les deux caractères de J en trop, on met l'adresse tampon à zéro, on remet Z normalement puis on rajoute 1 à J (ça évite de faire add J, 2 puis sub J, 1 ^^)
 	set [B], 0
 	sub B, J
 	add J, 1
-
 	set C, 0
 	int INT_GETCOLOR
 	set push,B
-	set B,0
+	set B,0x220
 	jsr lem1802_setColor
-	int INT_SCROLL ;On met un 0.
+	int INT_PRINTC ;On met un 0.
 	set B,pop
 	jsr lem1802_setColor
 	set B,pick 1
-
 	set PC, console_readLine_loop
 	
 	
