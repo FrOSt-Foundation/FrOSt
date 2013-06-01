@@ -36,6 +36,9 @@
 		set I, [SCREEN_HEIGHT]
 		set J,1
 		int 0x1001 ;printc
+		set J,3
+		set C,0x0220 ;un espace avec couleur verte
+		int 0x1001
 		JSR console_readLine
 		set PC, console_loop
 	

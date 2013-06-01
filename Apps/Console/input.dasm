@@ -4,32 +4,36 @@
 ; *************************
 
 :console_readLine	
-	set J, 3 ;Adresse du caractere sur la ligne		
+	set J, 3 ;Adresse du caractere sur la ligne
 	;Initialisation de la mémoire
+	set X,0
 	set B, pick 3
-	int 0x0002
+	int INT_INITMEM
 	set B,pick 2
-	int 2
+	int INT_INITMEM
 	set B,pick 1
-	int 2	
+	int INT_INITMEM
 	:console_readLine_loop
-		int 0x4001 ;Attente que un caractère soit tapé. Celui-ci sera enregistré en C.
+		int INT_WAITKEY_NOTBLOCKING ;Attente que un caractère soit tapé. Celui-ci sera enregistré en C.
 		ife C, 0
 			set pc, console_readLine_loop
 		set PC, console_processChar	
 	
 :console_processChar
-	ife C, 0x11 ;Return
+	ife C, KBD_RETURN ;Return
 		set PC, console_processCommand
-	ife C, 0x10 ;Backspace
+	ife C, KBD_BACKSPACE ;Backspace
 		set PC, console_backspace
+	ifg C,0x79
+		ifl C,0x84
+			set pc,console_arrows
 	ife J, 32 ;Si on est a la fin de la ligne, on ne fait rien ^^
 		set PC, console_readLine_loop
 	ifg C,0x7F
 		set pc,console_readLine_loop
 	;Si aucune des conditions ci-dessus n'est remplie, alors on affiche le caractere.
 	;set I, SCREEN_HEIGHT ;On affichera le caractère à la dernière ligne.
-	int 0x1001 ;printc
+	int INT_PRINTC ;printc
 	
 	sub J, 3 ;On enleve les deux caractères de J nécessaires à faire un affichage correct à l'écran
 	
@@ -39,15 +43,55 @@
 	sub B, J
 	
 	add J, 4 ;Puis on remet ces 2 caractères plus un autre puisque on vient de taper un caratère ^^
-	 
+	set C,0x220
+	int INT_PRINTC
 	set PC, console_readLine_loop
-	
-	
+
+:console_arrows_define
+set X,J
+add X,1
+set pc,pop
+:console_arrows
+set A,C
+sub J,3
+add B,J
+set C,[B]
+ife C,0
+	set C,0x20
+sub B,J
+add J,3
+int INT_PRINTC
+ifg J,X
+	jsr console_arrows_define
+ife A,KBD_ARROW_LEFT
+	sub J,1
+ife A,KBD_ARROW_RIGHT
+	add J,1
+ife J,X
+	sub J,1
+ife J,2
+	add J,1
+sub J,3
+add B,J
+set C,[B]
+ife C,0
+	set C,0x20
+sub B,J
+add J,3
+set B,0x200
+jsr lem1802_setColor
+int INT_PRINTC
+set B,0x2000
+jsr lem1802_setColor
+set B,pick 1
+set pc,console_readLine_loop
 :console_processCommand
 	
 	; --------------
 	; Parser
 	; --------------
+	set C,0x20
+	int INT_PRINTC ;on vire le carré à la fin de la chaîne.
 	
 	;On peek I,J.
 	set I, pick 1
@@ -75,7 +119,7 @@
 	; -------------------
 	:launcher
 	
-	int 0x2001 ;Dans tous les cas, on scrolle
+	int INT_SCROLL ;Dans tous les cas, on scrolle
 	set A, pick 2
 	set I, 0
 	
@@ -104,19 +148,19 @@
 	set B, 0x4000
 	jsr lem1802_setColor
 	
-	int 0x2001 ;Scroll
+	int INT_SCROLL ;Scroll
 	
 	set B, console_unknownCommand
 	set I, SCREEN_HEIGHT
 	set J, 1
-	int 0x1000 ;Printf
+	int INT_PRINTF ;Printf
 	
 	;Affichage de la commande ^^
 	set J, 21
 	set B, pick 3
-	int 0x1000
+	int INT_PRINTF
 	
-	int 0x2001 ;Scroll
+	int INT_SCROLL ;Scroll
 	
 	set B, POP ;On récupère la couleur précédemment sauvegardée
 	jsr lem1802_setColor
@@ -125,7 +169,8 @@
 :console_backspace
 	ife J, 3
 		set PC, console_readLine_loop
-	
+	set C,0x20
+	int INT_SCROLL
 	sub J, 2 ;set [Z + J] ne marche pas, il y a trop de registres pour devCPU.
 	add B, J ;Donc, on enlève les deux caractères de J en trop, on met l'adresse tampon à zéro, on remet Z normalement puis on rajoute 1 à J (ça évite de faire add J, 2 puis sub J, 1 ^^)
 	set [B], 0
@@ -137,11 +182,11 @@
 	set push,B
 	set B,0
 	jsr lem1802_setColor
-	int 0x1001 ;On met un 0.
+	int INT_SCROLL ;On met un 0.
 	set B,pop
 	jsr lem1802_setColor
 	set B,pick 1
-	
+
 	set PC, console_readLine_loop
 	
 	
@@ -155,5 +200,5 @@
 	set PC, B
 	
 :console_endCommand
-	int 0x2001
+	int INT_SCROLL
 	set PC, pop
