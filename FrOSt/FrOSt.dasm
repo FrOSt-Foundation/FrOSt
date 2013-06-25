@@ -12,4 +12,5 @@ set pc, BootSequence
 .include ../CodeATester/debug.dasm
 
 set pc , end
+DAT 0x1234
 :FrOSt_end
