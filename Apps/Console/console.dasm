@@ -4,6 +4,8 @@
 ; *************************
 
 :console
+	int 0x2004
+	
 	set B, 0x2000
 	jsr lem1802_setColor
 	
