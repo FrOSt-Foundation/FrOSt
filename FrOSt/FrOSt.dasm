@@ -12,5 +12,5 @@ set pc, BootSequence
 .include ../CodeATester/debug.dasm
 
 set pc , end
-DAT 0x1234
+DAT 0x1234 ;Utilisé par le binToHex (http://azertyfun.tk/projects/binToHex.php), permet de reconnaître la fin de l'OS.
 :FrOSt_end
