@@ -1,0 +1,107 @@
+; *************************
+; Project: FrOSt
+; File: format.dasm
+; *************************
+
+; ================
+; FFAT16_format
+; ------------
+;
+; Formats the disk in FFAT-16
+;
+; Return :
+; --------
+; OK : 0x0000 in Z
+; Error : Any other value (see following)
+; ================
+
+; ===============
+; Error codes
+; ===============
+; 0x0001 : Malloc error
+; 0x0002 : No lector
+; 0x0003 : No floppy
+; 0x0004 : Error while writing
+
+:FFAT16_format
+	set PUSH, Y
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set PUSH, Z
+	
+	set B, 512
+	int INT_MALLOC ;On alloue un bloc en mémoire, que l'on va remplir puis écrire sur la floppy
+	ife Z, MALLOC_ERROR
+		set Y, 0x0001
+	ife Z, MALLOC_ERROR
+		set PC, FFAT16_format_error
+		
+	set [0xFFB0], Z
+	
+	;On déplace le default content (cf ./DAT.dasm) vers la mémoire allouée ci-dessus
+	set A, defaultContent
+	set B, defaultContent_end
+	set C, Z
+	:FFAT16_format_loop0
+		set [C], [A]
+		add A, 1
+		add C, 1
+		ifn A, B
+			set PC, FFAT16_format_loop0
+			
+	;Si pas de disque, erreur
+	ife [id_floppy1], 0
+		set Y, 0x0002
+	ife [id_floppy1], 0
+		set PC, FFAT16_format_error_freeMem
+	
+	;On vérifie que le lecteur est en STATE_READY (disque présent, en écriture et que le lecteur n'est pas busy)
+	set A, 0
+	HWI [id_floppy1]
+	ifn B, 1
+		set Y, 0x0003
+	ifn B, 1
+		set PC, FFAT16_format_error_freeMem
+		
+	
+	;On écrit sur le disque
+	set A, 3
+	set X, 0
+	set Y, Z
+	hwi [id_floppy1]
+	
+	ifn B, 1 ;If error
+		set Y, 0x0004
+	ifn B, 1 ;If error
+		set PC, FFAT16_format_error_freeMem
+	
+	jsr FFAT16_waitFinish ;Wait until write finished
+	
+	set Z, POP
+	;On libère la mémoire allouée précédemment
+	set B, Z
+	int INT_FREE
+	set Z, 0x0000
+	
+	
+	set C, POP
+	set B, POP
+	set A, POP
+	set Y, POP
+	
+	set PC, POP
+
+:FFAT16_format_error_freeMem ;Appelé quand il faut aussi libérer la mémoire ^^
+	set B, PEEK
+	jsr INT_FREE
+:FFAT16_format_error
+	set Z, POP
+	set C, POP
+	set B, POP
+	set A, POP
+	
+	;set Z, Y
+	set Y, POP
+	
+	set PC, POP

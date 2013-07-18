@@ -1,0 +1,11 @@
+; *************************
+; Project: FrOSt
+; File: util.dasm
+; *************************
+:FFAT16_waitFinish
+	set A, 0
+	:FFAT16_waitFinish_loop0
+		hwi [id_floppy1]
+		ife B, 0x0003 ;If STATE_BUSY
+		set PC, FFAT16_waitFinish_loop0
+	set PC, POP
