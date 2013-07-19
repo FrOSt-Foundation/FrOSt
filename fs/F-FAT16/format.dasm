@@ -28,7 +28,6 @@
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
-	set PUSH, Z
 	
 	set B, 512
 	int INT_MALLOC ;On alloue un bloc en mémoire, que l'on va remplir puis écrire sur la floppy
@@ -36,8 +35,6 @@
 		set Y, 0x0001
 	ife Z, MALLOC_ERROR
 		set PC, FFAT16_format_error
-		
-	set [0xFFB0], Z
 	
 	;On déplace le default content (cf ./DAT.dasm) vers la mémoire allouée ci-dessus
 	set A, defaultContent
@@ -77,13 +74,11 @@
 		set PC, FFAT16_format_error_freeMem
 	
 	jsr FFAT16_waitFinish ;Wait until write finished
-	
-	set Z, POP
+
 	;On libère la mémoire allouée précédemment
 	set B, Z
 	int INT_FREE
 	set Z, 0x0000
-	
 	
 	set C, POP
 	set B, POP
@@ -101,7 +96,7 @@
 	set B, POP
 	set A, POP
 	
-	;set Z, Y
+	set Z, Y
 	set Y, POP
 	
 	set PC, POP

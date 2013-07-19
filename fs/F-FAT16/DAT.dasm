@@ -11,6 +11,8 @@
 :FAT_identify DAT "FFAT16  ", 0
 :FAT_identify2 DAT "FFAT-16 ", 0
 
+:FFAT16_valid DAT FALSE ;Booléen. Mis à TRUE si le disque est reconnu comme VALID à l'init
+
 ;Contenu par défaut d'un disque FrOSt. Voir http://azertyfun.tk/private/FAT16_FrOStSpecs.html.
 :defaultContent
 DAT 512 ;Nombre de mots par bloc (doit être 512)

@@ -168,6 +168,8 @@
 	set B, Z
 	int INT_FREE
 	
+	set [FFAT16_valid], TRUE
+	
 	set Y, 0
 	set PC, POP
 	
