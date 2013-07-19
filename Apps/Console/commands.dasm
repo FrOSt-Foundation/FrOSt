@@ -179,3 +179,19 @@
 	jsr lem1802_setVram
 	jsr clock_setSpeed
 	set PC,end
+	
+:launch_format
+	set B, msg_confirmFormat
+	int INT_PRINTF
+	
+	:launch_format_loop0
+		int INT_WAITKEY_NOTBLOCKING
+		ifn C, 0
+			ifn C, 0x79
+				set PC, POP
+		ife C, 0
+			set PC, launch_format_loop0
+		
+	jsr FFAT16_format
+		
+	set PC, POP

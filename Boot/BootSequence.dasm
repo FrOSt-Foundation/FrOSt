@@ -2,14 +2,14 @@
 	JSR init_memoire
 	JSR detection_and_init_periphs
 	JSR init_interrupthandler
-	;set A,console
-	;set B, console_titre
-	;set C, 1
-	;set push,end
-	;set push,A
-	set A, debug
-	set B, debug_text
+	set A,console
+	set B, console_titre
 	set C, 1
+	set push,end
+	set push,A
+	;set A, debug
+	;set B, debug_text
+	;set C, 1
 	set pc,sched_AddProc
 
 ;---------------------------------------------
