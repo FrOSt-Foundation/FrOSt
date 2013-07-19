@@ -4,6 +4,8 @@
 ; *************************
 
 :console
+	jsr FFAT16_init
+	
 	int 0x2004
 	
 	set B, 0x2000

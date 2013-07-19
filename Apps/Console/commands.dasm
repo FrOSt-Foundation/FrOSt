@@ -195,3 +195,103 @@
 	jsr FFAT16_format
 		
 	set PC, POP
+	
+:launch_diskinf
+	set B, msg_diskInf
+	int INT_PRINTF
+	
+	set [0xFFB0], volumeName
+	
+	set B, volumeName
+	set I, 8
+	set J, 15
+	int INT_PRINTF
+	
+	; SERIAL NUMBER
+	; -------------
+	
+	set A, [serialNumber]
+	set B, 16
+	set C, mem_print
+	jsr dump
+	
+	set B, mem_print
+	set I, 9
+	set J, 17
+	int INT_PRINTF
+	
+	set A, serialNumber
+	add A, 1
+	set A, [A]
+	set B, 16
+	set C, mem_print
+	jsr dump
+	
+	set B, mem_print
+	set I, 9
+	set J, 22
+	int INT_PRINTF
+	
+	; FAT COPIES NB
+	; -------------
+	jsr launch_diskinf_clearBuffer
+	
+	set A, [FAT_nb]
+	set B, 10
+	set C, mem_print
+	jsr dump
+	
+	set B, mem_print
+	set I, 10
+	set J, 14
+	int INT_PRINTF
+	
+	; FAT SIZE
+	; --------
+	jsr launch_diskinf_clearBuffer
+	
+	set A, [FAT_size]
+	set B, 10
+	set C, mem_print
+	jsr dump
+	
+	set B, mem_print
+	set I, 11
+	set J, 13
+	int INT_PRINTF
+	
+	; ROOT ENTRIES NB
+	; ---------------
+	jsr launch_diskinf_clearBuffer
+	set [0xFFB0], [rootEntries_nb]
+	set A, [rootEntries_nb]
+	set B, 10
+	set C, mem_print
+	jsr dump
+	
+	set B, mem_print
+	set I, 12
+	set J, 18
+	int INT_PRINTF
+	
+	set PC, POP
+	
+	:launch_diskinf_clearBuffer
+		set PUSH, I
+		set PUSH, J
+		set PUSH, A
+	
+		set I, mem_print
+		set A, I
+		add A, 5
+	
+		:launch_diskinf_clearBuffer_loop0
+			STI [I], 0
+			ifn I, A
+				set PC, launch_diskinf_clearBuffer_loop0
+		
+		set A, POP
+		set J, POP
+		set I, POP
+		set PC, POP
+		
