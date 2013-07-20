@@ -52,6 +52,6 @@
 ; FFAT16_getRootEntries
 ; Retourne en Z le nombre d'entrées du répertoire racine
 ; =====================
-:FFAT16_getFATCopies
+:FFAT16_getRootEntries
 	set Z, [rootEntries_nb]
 	set PC, POP
