@@ -2,10 +2,56 @@
 ; Project: FrOSt
 ; File: util.dasm
 ; *************************
+
+; =====================
+; FFAT16_waitFinish
+; Attend que le lecteur de disque aie fini l'opération en cours (lecture/écriture)
+; =====================
+
 :FFAT16_waitFinish
 	set A, 0
 	:FFAT16_waitFinish_loop0
 		hwi [id_floppy1]
 		ife B, 0x0003 ;If STATE_BUSY
 		set PC, FFAT16_waitFinish_loop0
+	set PC, POP
+
+; =====================
+; FFAT16_getName
+; Retourne en Z un pointeur vers le nom du disque
+; =====================
+:FFAT16_getName
+	set Z, volumeName
+	set PC, POP
+
+; =====================
+; FFAT16_getSerialNumber
+; Retourne en Z un pointeur vers le numéro de série (2 mots)
+; =====================
+:FFAT16_getSerialNumber
+	set Z, serialNumber
+	set PC, POP
+
+; =====================
+; FFAT16_getFATSize
+; Retourne en Z la taille de la FAT
+; =====================
+:FFAT16_getFATSize
+	set Z, [FAT_size]
+	set PC, POP
+
+; =====================
+; FFAT16_getFATCopies
+; Retourne en Z le nombre de copies de la FAT
+; =====================
+:FFAT16_getFATCopies
+	set Z, [FAT_nb]
+	set PC, POP
+
+; =====================
+; FFAT16_getRootEntries
+; Retourne en Z le nombre d'entrées du répertoire racine
+; =====================
+:FFAT16_getFATCopies
+	set Z, [rootEntries_nb]
 	set PC, POP
