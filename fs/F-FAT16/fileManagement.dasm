@@ -19,186 +19,30 @@
 ; ====================
 
 
-; ====================
-; FFAT16_newFile
-; --------------
-; Crée un nouveau fichier (équivalent de touch, mais permet une taille spécifiée).
-;
-; Return :
-; --------
-; EX : Error code (see above)
+; ================================
+; FFAT16_listFiles
 ; 
-; Arguments :
-; -----------
-; B : Taille (en secteurs). Doit être compris entre 1 et 1000. Si dossier, doit être 1 (logique non ?).
-; C : Ptr vers char* fileName (8 mots, remplir avec des espaces)
-; X : Ptr vers char* extension (3 mots)
-; Y : Bool dossier. Si true, sera considéré comme un dossier.
-; Z : Dossier parent. 0 pour indiquer la racine (/). Indiquer le numéro de secteur.
-; ====================
+; Return
+; ------
+; Y : Nombre de fichiers
+; Z : Pointeur vers tableau dynamiquement alloué (=> NE PAS OUBLIE LE FREE !) contenant des pointeurs vers des strings (noms de fichiers). //POINTERCEPTION
+; ================================
 
-:FFAT16_newFile
-	jsr push_regs
-	set EX, 0
+:FFAT16_listFiles
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set PUSH, I
+	set PUSH, J
+	set PUSH, X
 	
-	;On vérifie que le disque est valide
-	ife [FFAT16_valid], FALSE
-		set EX, 0x0007
-	ifn EX, 0
-		set PC, POP
 	
-	;On vérifie que B est correct
-	ifl B, 1
-		set EX, 0x0004
-	ifg B, 1000
-		set EX, 0x0004
-	ife Y, 1
-		ifn B, 1
-			set EX, 0x0004
-	ifn EX, 0
-		set PC, POP
 	
-	set [FFAT16_B], B
-	set [FFAT16_C], C
-	set [FFAT16_X], X
-	set [FFAT16_Y], Y
-	set [FFAT16_Z], Z
-		
-	;On copie la FAT dans la RAM
-	set B, [FAT_size]
-	mul B, 512
-	
-	int INT_MALLOC
-	ife Z, MALLOC_ERROR
-		set EX, 0x0006
-	ifn EX, 0
-		set PC, POP
-	
-	;On vide le secteur
-	set I, Z
-	set J, Z
-	add J, 512
-	:FFAT16_newFile_loop0
-		set [I], 0
-		add I, 1
-		ifn I, J
-			set PC, FFAT16_newFile_loop0
-	
-	;On lit dans la RAM autant tous les secteurs (renseignés dans FAT_SIZE)
-	set I, 0
-	:FFAT16_newFile_loop1
-		set A, 2
-		
-		set X, 2
-		add X, I
-		
-		set Y, I
-		mul Y, 512
-		add Y, Z
-		
-		;Y est maintenant égal à malloc + secteur actuel
-		hwi [id_floppy1]
-		jsr FFAT16_waitFinish
-		add I, 1
-		ifn I, [FAT_size]
-			set PC, FFAT16_newFile_loop1
-	
-	;On trouve le premier emplacement suffisamment grand disponible
-	set I, Z
-	sub I, 1
-	:FFAT16_newFile_loop2
-		add I, 1
-		ifn [I], 0x0000
-			set PC, FFAT16_newFile_loop2
-		set [0xFFB0], I
-		set [0xFFB1], [I]
-		set PUSH, I
-		set J, 0
-		:FFAT16_newFile_loop2_subLoop0
-		add I, 1
-		add J, 1
-		ife J, [FFAT16_B]
-			set PC, FFAT16_newFile_breakLoop2_1
-		ifn [I], 0
-			set PC, FFAT16_newFile_loop2
-		set PC, FFAT16_newFile_loop2_subLoop0
-	:FFAT16_newFile_breakLoop2_1
+	set X, POP
+	set J, POP
 	set I, POP
+	set C, POP
+	set B, POP
+	set A, POP
 	
-	;On écrit les infos dans la FAT
-	set B, [FFAT16_B]
-	ife B, 1
-		set [I], 0xFFFF
-	ife B, 1
-		set PC, FFAT16_newFile_breakLoop3
-	:FFAT16_newFile_loop3
-		STI [I], B
-		sub B, 1
-		ife B, 0
-			set [I], 0xFFFF
-		ifn B, 0
-			set PC, FFAT16_newFile_loop3
-	:FFAT16_newFile_breakloop3
-	
-	;À partir d'ici, on a terminé le remplissage de la FAT. On peut la réécrire sur le disque et libérer la mémoire.
-	set I, 0
-	:FFAT16_newFile_loop4
-		set A, 3
-		
-		set X, 2
-		add X, I
-		
-		set Y, I
-		mul Y, 512
-		add Y, Z
-		
-		hwi [id_floppy1]
-		add I, 1
-		ifn I, [FAT_size]
-			set PC, FFAT16_newFile_loop4
-	
-	;On lit le répertoire root
-	set B, Z
-	int INT_FREE
-	
-	set B, [rootEntries_nb]
-	div B, 16
-	mul B, 512
-	;B = nombres de secteurs pris par le rep root.
-	
-	int INT_MALLOC
-	ife Z, MALLOC_ERROR
-		set EX, 0x0006
-	ifn EX, 0
-		set PC, POP
-	
-	set [0xFFB0], Z
-	
-	set I, 0
-	set J, [rootEntries_nb]
-	div J, 16
-	:FFAT16_newFile_loop6
-		set A, 2
-		
-		set X, [FAT_size]
-		add X, I
-		add X, 2
-		
-		set Y, I
-		mul Y, 512
-		add Y, Z
-		
-		hwi [id_floppy1]
-		
-		ifn I, J
-			set PC, FFAT16_newFile_loop6
-	
-	set B, Z
-	int INT_FREE
-		
-	jsr pop_regs
 	set PC, POP
-	
-; ====================
-; 
-; ====================
