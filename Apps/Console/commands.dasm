@@ -111,10 +111,73 @@
 	set PC, POP
 	
 :launch_touch
-	set B, msg_todo
-	int 0x1000
+	set B, 3
+	int INT_MALLOC
+	set PUSH, Z
+		set I, Y
+		set J, Y
+		add J, 13
+		:launch_touch_loop0
+			add I, 1
+			ife I, J
+				set PC, launch_touch_tooLongFileName
+			ifn [I], 0x2e
+				set PC, launch_touch_loop0
+		;I = adresse du point
+		set [I], 0
+		add I, 1
+		STI [Z], [I]
+		STI [Z], [I]
+		STI [Z], [I]
+	set B, 1
+	set C, Y
+	set X, Z
+	set Y, 0
+	set Z, 0
+	jsr FFAT16_newFile
+	ifn EX, 0
+		set PC, launch_touch_displayError
+	
+	set Z, POP
+	set B, Z
+	int INT_FREE
+	
+	jsr FFAT16_init
 	
 	set PC, POP
+	
+	:launch_touch_displayError
+		jsr launch_clearBuffer
+		set B, msg_error
+		int INT_PRINTF
+		
+		set A, EX
+		set B, 16
+		set C, mem_print
+		jsr dump
+		
+		set B, mem_print
+		set I, 12
+		set J, 15
+		int INT_PRINTF
+		
+		set Z, POP
+		set B, Z
+		int INT_FREE
+		
+		set PC, POP
+		
+	:launch_touch_tooLongFileName
+		set Z, POP
+		set B, Z
+		int INT_FREE
+		
+		set B, msg_tooLongFileName
+		set I, 12
+		set J, 1
+		int INT_PRINTF
+		set PC, POP
+		
 	
 :launch_cat
 	set B, msg_todo
@@ -234,7 +297,7 @@
 	
 	; FAT COPIES NB
 	; -------------
-	jsr launch_diskinf_clearBuffer
+	jsr launch_clearBuffer
 	
 	set A, [FAT_nb]
 	set B, 10
@@ -248,7 +311,7 @@
 	
 	; FAT SIZE
 	; --------
-	jsr launch_diskinf_clearBuffer
+	jsr launch_clearBuffer
 	
 	set A, [FAT_size]
 	set B, 10
@@ -262,7 +325,7 @@
 	
 	; ROOT ENTRIES NB
 	; ---------------
-	jsr launch_diskinf_clearBuffer
+	jsr launch_clearBuffer
 	set [0xFFB0], [rootEntries_nb]
 	set A, [rootEntries_nb]
 	set B, 10
@@ -276,7 +339,7 @@
 	
 	set PC, POP
 	
-	:launch_diskinf_clearBuffer
+	:launch_clearBuffer
 		set PUSH, I
 		set PUSH, J
 		set PUSH, A
@@ -285,10 +348,10 @@
 		set A, I
 		add A, 5
 	
-		:launch_diskinf_clearBuffer_loop0
+		:launch_clearBuffer_loop0
 			STI [I], 0
 			ifn I, A
-				set PC, launch_diskinf_clearBuffer_loop0
+				set PC, launch_clearBuffer_loop0
 		
 		set A, POP
 		set J, POP

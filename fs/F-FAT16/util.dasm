@@ -9,11 +9,17 @@
 ; =====================
 
 :FFAT16_waitFinish
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
 	set A, 0
 	:FFAT16_waitFinish_loop0
 		hwi [id_floppy1]
 		ife B, 0x0003 ;If STATE_BUSY
 		set PC, FFAT16_waitFinish_loop0
+	set C, POP
+	set B, POP
+	set A, POP
 	set PC, POP
 
 ; =====================

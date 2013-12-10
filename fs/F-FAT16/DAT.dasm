@@ -5,7 +5,7 @@
 
 :FAT_nb DAT 0
 :FAT_size DAT 0
-:rootEntries_nb DAT 0
+:rootEntries_nb DAT 0 ;Devrait être un multiple de 16
 :serialNumber DAT 0, 0 ;Prend deux mots (par exemple, 0x1234, 0x5678 est un numéro de série)
 :volumeName DAT "           ", 0 ;Chaîne contenant le nom de volume (human-readable)
 :FAT_identify DAT "FFAT16  ", 0
@@ -17,7 +17,7 @@
 :defaultContent
 DAT 512 ;Nombre de mots par bloc (doit être 512)
 DAT 1 ;Nombre de FAT, 1 suffit (peut être plus si jamais la floppy risque d'être soumise aux radiations)
-DAT 10 ;On veut 10 dossiers racines maximum.
+DAT 32 ;On veut 32 fichiers root maximum (2 blocs)
 DAT 1440 ;Nombre de blocs dans le disque, doit être 1440
 DAT 1 ;La FAT occupera 1 bloc (laargement suffisant pour stocker tous les fichiers nécessaires)
 DAT 18 ;Nombres de bloc par track, doit être 18.
@@ -25,3 +25,11 @@ DAT 0xF057, 0x1337 ;Numéro de série du disque. Je le nomme F(r)OSt puis 1337 p
 DAT "New FAT dsk" ;Nom de volume human-readable
 DAT "FFAT-16 " ;Identifiant du FS. Doit être FFAT16 ou FFAT-16 et rempli avec des espaces.
 :defaultContent_end
+
+;Emplacements RAM dédiés au file manager. Y'a pas assez de registres pour tout gérer :p
+:FFAT16_A DAT 0
+:FFAT16_B DAT 0
+:FFAT16_C DAT 0
+:FFAT16_X DAT 0
+:FFAT16_Y DAT 0
+:FFAT16_Z DAT 0
