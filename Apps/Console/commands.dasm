@@ -320,7 +320,7 @@
 	
 	set B, mem_print
 	set I, 11
-	set J, 13
+	set J, 12
 	int INT_PRINTF
 	
 	; ROOT ENTRIES NB
@@ -334,7 +334,7 @@
 	
 	set B, mem_print
 	set I, 12
-	set J, 18
+	set J, 16
 	int INT_PRINTF
 	
 	set PC, POP
