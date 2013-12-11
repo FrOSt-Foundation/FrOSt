@@ -8,14 +8,9 @@
 ; ------------
 ; Voici la liste des codes d'erreur potentiellement retournés par le file manager :
 ; 0x0000 : Pas de problème
-; 0x0001 : Handle incorrect
-; 0x0002 : Fichier inexistant
-; 0x0003 : Numéro de secteur incorrect
-; 0x0004 : Valeure incorrecte (par exemple, argument out of range)
-; 0x0005 : Disk error (disque en lecture seule, erreur matérielle par exemple)
-; 0x0006 : Erreur de malloc
-; 0x0007 : Le disque n'est pas formaté en FFAT-16.
-; 0xFFFF : Toute autre erreur.
+; 0x0001 : Pas de disque ou disque non compatible
+; 0x0003 : Erreur de malloc
+; 0x0004 : Erreur de lecture
 ; ====================
 
 
@@ -24,11 +19,14 @@
 ; 
 ; Return
 ; ------
+; EX : Error code
 ; Y : Nombre de fichiers
-; Z : Pointeur vers tableau dynamiquement alloué (=> NE PAS OUBLIE LE FREE !) contenant des pointeurs vers des strings (noms de fichiers). //POINTERCEPTION
+; Z : Pointeur vers tableau dynamiquement alloué (=> NE PAS OUBLIER LE FREE !) contenant des strings. On sait qu'on arrive à la fin du tableau quand on est à Z + J * 14. On passe au string suivant tous les 14 chars. À manipuler avec précaution pour éviter les erreurs 0:)
 ; ================================
 
 :FFAT16_listFiles
+	IF_FALSE [FFAT16_valid]
+		set EX, 1
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
@@ -36,7 +34,62 @@
 	set PUSH, J
 	set PUSH, X
 	
+	set B, 512
+	int INT_MALLOC
+	IF_MALLOC_ERROR
+		jsr FFAT16_listFiles_error
 	
+	set A, 2
+	set X, 1
+	set Y, Z
+	hwi [id_floppy1]
+	ifn B, 1 ;Si erreur
+		set EX, 0x0004
+	ifn B, 1 ;Si erreur
+		set PC, POP
+	
+	jsr FFAT16_waitFinish
+	
+	jsr FFAT16_listFiles_getFilesNumber ;Retourne le nombre de fichiers en J et en Y. On ne touche pas à Y (return code)
+	
+	set X, Z ;Dorénavant, adresse de la FAT = X, adresse des noms de fichiers = Z
+	set PUSH, Z ;On sauvegarde Z car on va faire un second malloc
+		;On alloue 14*nombre de fichiers(taille d'un nom de fichier = 14)
+		set B, 16
+		mul B, J
+		int INT_MALLOC
+		IF_MALLOC_ERROR
+			set PC, FFAT16_listFiles_mallocError1
+		
+		set PUSH, Z ;On le sauvegarde car il va être modifié pendant la loop
+		
+		set I, 0
+		add X, 2 ;On veut commencer à l'adresse du string, les deux premiers mots étant réservés pour indiquer la taille de fichier et le secteur de début.
+		; Ici, on copie les noms de fichiers vers le tableau les contenant.
+		; On fait J tours de boucle (un pour chaque fichier).
+		; À chaque tour de boucle, on copie le nom de fichier dans le tableau de strings et on ajoute zéro à ce même tableau.
+		;
+		; Ici :
+		; J = Nombre de fichiers
+		; I = Nombre de tours parcourus
+		; X = Adresse FAT décalée de deux
+		; Z = Adresse tableau
+		:FFAT16_listFiles_loop0
+			set C, 14 ;Le nombre de mots pour chaque string
+			set B, X
+			set A, Z
+			jsr memcpy ;On copie quatorze mot depuis X vers Z.
+			add X, 16
+			add Z, 14
+			add I, 1
+			ifn I, J
+				set PC, FFAT16_listFiles_loop0
+	set Z, POP
+	
+	set B, POP ;Était Z mais on optimise un peu, et surtout on veut garder Z intact car il contient l'adresse du tableau.
+	int INT_FREE
+	
+	;jsr end
 	
 	set X, POP
 	set J, POP
@@ -45,4 +98,31 @@
 	set B, POP
 	set A, POP
 	
+	set PC, POP
+
+:FFAT16_listFiles_mallocError1
+	set Z, POP
+	set B, Z
+	int INT_FREE
+:FFAT16_listFiles_mallocError
+	set EX, 0x0003
+:FFAT16_listFiles_error
+	set X, POP
+	set J, POP
+	set I, POP
+	set C, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+	
+:FFAT16_listFiles_getFilesNumber
+	set I, Z
+	set J, 0
+:FFAT16_listFiles_getFilesNumber_loop0
+		ifn [I], 0
+			add J, 1
+		add I, 16
+		ifn [I], 0
+			jsr FFAT16_listFiles_getFilesNumber_loop0
+	set Y, J
 	set PC, POP

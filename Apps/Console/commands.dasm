@@ -63,6 +63,60 @@
 	jsr FFAT16_listFiles
 	;TODO : Afficher tout ça et ne pas oublier le free de mémoire
 	
+	set B, msg_ls
+	set J, 0
+	int INT_PRINTF
+	
+	set A, Y
+	set B, 10
+	set C, mem_print
+	jsr dump
+	
+	set B, mem_print
+	set J, 22
+	int INT_PRINTF
+	
+	set PUSH, Z
+		set X, Z
+		;Allocation d'un buffer de 15 mots (14 pour le nom de fichier et 1 pour la fin de chaine)
+		set B, 15
+		int INT_MALLOC
+		IF_MALLOC_ERROR
+			set PC, launch_ls_break0
+		set PUSH, Z
+		add Z, 14
+		set [Z], 0
+		set Z, PEEK
+		;À ce stade :
+		; X = adresse du tableau
+		; Y = Nombre de fichiers
+		; Z = Adresse du buffer
+		set PUSH, 0
+		:launch_ls_loop0
+			int INT_SCROLL
+			set B, X
+			set A, Z
+			set C, 14
+			jsr memcpy
+			set B, Z
+			set I, 12
+			set J, 0
+			int INT_PRINTF
+			
+			add X, 14
+			
+			set J, POP
+			add J, 1
+			set PUSH, J
+			ifn J, Y
+				set PC, launch_ls_loop0
+		set J, POP
+		set B, POP
+		int INT_FREE
+	:launch_ls_break0
+	set B, POP
+	int INT_FREE
+	
 	set PC, POP
 	
 :launch_cd
