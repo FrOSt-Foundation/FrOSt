@@ -11,25 +11,19 @@
 ; 0x0002 = Pas de floppy
 ; 0x0003 = Erreur de malloc
 ; 0x0004 = Erreur de lecture
-; 0x0005 = Il n'y a pas 512 mots par secteur
-; 0x0006 = Nombre de FATs = 0
-; 0x0007 = Nombre de root entries = 0
-; 0x0008 = Il n'y a pas 1440 blocs par disque
-; 0x0009 = La taille de la FAT est 0.
-; 0x000A = Il n'y a pas 18 blocs par track
-; 0x000B = La chaine d'identification n'est pas correcte (!FFAT-16 et !FFAT16)
+; 0x0005B = La chaine d'identification n'est pas correcte (!FFAT16)
 
 :FFAT16_init
 	;Checking disk drive
 	ife [id_floppy1], 0 ;Si il n'y a pas de lecteur de floppy
-		set Y, 0x0001
+		set EX, 0x0001
 	ife [id_floppy1], 0 ;Si il n'y a pas de lecteur de floppy
 		set PC, POP
 	
 	set A, 0
 	hwi [id_floppy1] ;Si il n'y a pas de floppy dans le lecteur
 	ife B, 0x0
-		set Y, 0x0002
+		set EX, 0x0002
 	ife B, 0x0
 		set PC, POP
 		
@@ -38,7 +32,7 @@
 	int INT_MALLOC
 	
 	ife Z, MALLOC_ERROR ;Si impossible d'allouer de la mémoire
-		set Y, 0x0003
+		set EX, 0x0003
 	ife Z, MALLOC_ERROR ;Si impossible d'allouer de la mémoire
 		set PC, POP
 	
@@ -48,142 +42,50 @@
 	set Y, Z
 	hwi [id_floppy1]
 	ifn B, 1 ;Si erreur
-		set Y, 0x0004
+		set EX, 0x0004
 	ifn B, 1 ;Si erreur
 		set PC, POP
 		
 	jsr FFAT16_waitFinish
 	
-	jsr FFAT16_checkCompatible
-	
-:FFAT16_checkCompatible
+	;Vérification de la présence de 0xAAAA et 0xBBBB (identifie comme FFAT-16 compatible)
 	set I, Z
-	ifn [i], 512 ;Si il n'y a pas 512 mots par secteur, on arrête ici
-		set A, 0x0005
-	ifn [i], 512 ;Si il n'y a pas 512 mots par secteur, on arrête ici
-		set PC, FFAT16_checkCompatible_error
-
-	add I, 1
-	ifn [I], 0 ;Si le nombre de FAT != 0, on initialise FAT_nb
-		set [FAT_nb], [I]
-	ife [I], 0 ;Sinon, erreur
-		set A, 0x0006
-	ife [I], 0 ;Sinon, erreur
-		set PC, FFAT16_checkCompatible_error
 	
+	ifn [I], 0xFF16
+		jsr FFAT16_notCompatible
 	add I, 1
-	ifn [I], 0 ;Si le nombre d'entrées root != 0, on initalise rootEntries_nb
-		set [rootEntries_nb], [I]
-	ife [I], 0 ;Sinon, erreur
-		set A, 0x0007
-	ife [I], 0 ;Sinon, erreur
-		set PC, FFAT16_checkCompatible_error
+	
+	ifn [I], 0xFF16
+		jsr FFAT16_notCompatible
+	
+	
+	;Enregistrement du numéro de série
+	add I, 1
+	set [serialNumber], [I]
 	
 	add I, 1
-	ifn [I], 1440 ;Si il n'y a pas 1440 blocs par disque, ce n'est pas un disque reconnu
-		set A, 0x0008
-	ifn [I], 1440 ;Si il n'y a pas 1440 blocs par disque, ce n'est pas un disque reconnu
-		set PC, FFAT16_checkCompatible_error
+	set [serialNumber2], [I]
 	
 	add I, 1
-	ifn [I], 0 ;Si le nombre de blocs occupé par la FAT != 0, on initialise FAT_size
-		set [FAT_size], [I]
-	ife [I], 0 ;Sinon, erreur
-		set A, 0x0009
-	ife [I], 0 ;Sinon, erreur
-		set PC, FFAT16_checkCompatible_error
 	
-	add I, 1
-	ifn [I], 18 ;Si pas 18 blocs par track, erreur
-		set A, 0x000A
-	ifn [I], 18 ;Si pas 18 blocs par track, erreur
-		set PC, FFAT16_checkCompatible_error
+	set B, I
+	set A, volumeName
+	set C, 15
+	jsr memcpy
 	
-	add I, 1
-	set J, serialNumber
-	sti [J], [I]
-	sti [J], [I]
+	set [FFAT16_valid], 1
 	
-	set X, I
-	add X, 11
-	set J, volumeName
-	:FFAT16_checkCompatible_loop0
-		sti [J], [I]
-		ifn I, X
-			set PC, FFAT16_checkCompatible_loop0
-			
-	;On alloue 9 mots en RAM où stocker l'identifiant du système de fichiers (doit être "FAT16   " ou "FAT-16  ")
-	set PUSH, Z
-		set B, 9
-		int INT_MALLOC
-		IF_MALLOC_ERROR
-			set PC, FFAT16_checkCompatible_mallocError
-		
-		set X, I
-		add X, 8
-		
-		;Ajout de 0 à la fin de le chaîne en RAM.
-		set J, Z
-		add J, 8
-		set [J], 0
-		
-		
-		set J, Z
-		:FFAT16_checkCompatible_loop1
-		sti [J], [I]
-		ifn I, X
-			set PC, FFAT16_checkCompatible_loop1
-			
-		;On vérifie que la chaîne est bien "FFAT16  " ou "FFAT-16 ".
-		set PUSH, Z
-			set A, FAT_identify
-			set B, Z
-			jsr strcmp
-			ife Z, 0
-				set PC, FFAT16_checkCompatible_break0
-			
-			;On teste avec la deuxième chaine si la première n'est pas correcte
-			set Z, PEEK
-			set A, FAT_identify2
-			set B, Z
-			jsr strcmp
-			ife Z, 0
-				set PC, FFAT16_checkCompatible_break0
-			
-			;Si on arrive ici, la chaîne n'est pas la bonne
-			set Z, POP
-			set B, Z
-			int INT_FREE
-			set A, 0x000B
-			set PC, FFAT16_checkCompatible_error
-			
-		:FFAT16_checkCompatible_break0
-		set Z, POP
-		
-		set B, Z
-		int INT_FREE
-	set Z, POP
-	
-	;Si on arrive ici, le disque est compatible ! YEAH !
 	set B, Z
 	int INT_FREE
 	
-	set [FFAT16_valid], TRUE
-	
-	set Y, 0
 	set PC, POP
 	
-		
-	:FFAT16_checkCompatible_error
-		set B, Z
-		int INT_FREE
-		
-		set Y, A ;De façon très bizarre et sans raison apparente, ```set Z, (valeur)``` fait complètement bugger le truc :/
-		
-		set PC, POP
-		
-	:FFAT16_checkCompatible_mallocError
-		set Z, POP
-		set Y, 0x0003
-		
-		set PC, POP
+:FFAT16_notCompatible
+	set B, Z
+	int INT_FREE
+	
+	set EX, 0x0005
+	
+	set A, POP
+	
+	set PC, POP

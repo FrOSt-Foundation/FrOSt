@@ -49,6 +49,4 @@ DAT 0x1F, "format", 0x1F, "diskinf", 0
 :msg_testprog DAT "Lancement du programme de test.", 0
 :msg_errNoArgs DAT "Erreur : argument requis", 0
 :msg_confirmFormat DAT "Voulez-vous vraiment formater le disque ? (y/n)", 0
-:msg_diskInf DAT "Volume name :", 0x11, "Serial number :", 0x11, "FAT copies :", 0x11, "FAT Size :", 0x11, "Root entries :", 0
-:msg_error DAT "Error. Code :", 0
-:msg_tooLongFileName DAT "Nom de fichier trop long (> 13)", 0
+:msg_diskInf DAT "FrOSt Compatible :", 0x11, "Volume name :", 0x11, "Serial number :", 0

@@ -3,27 +3,17 @@
 ; File: DAT.dasm
 ; *************************
 
-:FAT_nb DAT 0
-:FAT_size DAT 0
-:rootEntries_nb DAT 0 ;Devrait être un multiple de 16
-:serialNumber DAT 0, 0 ;Prend deux mots (par exemple, 0x1234, 0x5678 est un numéro de série)
-:volumeName DAT "           ", 0 ;Chaîne contenant le nom de volume (human-readable)
-:FAT_identify DAT "FFAT16  ", 0
-:FAT_identify2 DAT "FFAT-16 ", 0
+:serialNumber DAT 0 ;Prend deux mots (par exemple, 0x1234, 0x5678 est un numéro de série)
+:serialNumber2 DAT 0 
+:volumeName DAT "               ", 0 ;Chaîne contenant le nom de volume (human-readable)
 
 :FFAT16_valid DAT FALSE ;Booléen. Mis à TRUE si le disque est reconnu comme VALID à l'init
 
-;Contenu par défaut d'un disque FrOSt. Voir http://azertyfun.tk/private/FAT16_FrOStSpecs.html.
+;Contenu par défaut d'un disque FrOSt.
 :defaultContent
-DAT 512 ;Nombre de mots par bloc (doit être 512)
-DAT 1 ;Nombre de FAT, 1 suffit (peut être plus si jamais la floppy risque d'être soumise aux radiations)
-DAT 32 ;On veut 32 fichiers root maximum (2 blocs)
-DAT 1440 ;Nombre de blocs dans le disque, doit être 1440
-DAT 1 ;La FAT occupera 1 bloc (laargement suffisant pour stocker tous les fichiers nécessaires)
-DAT 18 ;Nombres de bloc par track, doit être 18.
+DAT 0xFF16, 0xFF16 ;Identifiant du FS..
 DAT 0xF057, 0x1337 ;Numéro de série du disque. Je le nomme F(r)OSt puis 1337 pour ceux qui ont l'esprit lent o/
-DAT "New FAT dsk" ;Nom de volume human-readable
-DAT "FFAT-16 " ;Identifiant du FS. Doit être FFAT16 ou FFAT-16 et rempli avec des espaces.
+DAT "FFAT-16 disk   "
 :defaultContent_end
 
 ;Emplacements RAM dédiés au file manager. Y'a pas assez de registres pour tout gérer :p

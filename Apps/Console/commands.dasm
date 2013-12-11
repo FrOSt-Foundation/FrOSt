@@ -201,10 +201,17 @@
 	set B, msg_diskInf
 	int INT_PRINTF
 	
-	set [0xFFB0], volumeName
+	; COMPATIBLE
+	; ----------
+	set C, '0'
+	IF_TRUE [FFAT16_VALID]
+		set C, '1'
+	set I, 10
+	set J, 20
+	int 0x1001
 	
 	set B, volumeName
-	set I, 8
+	set I, 11
 	set J, 15
 	int INT_PRINTF
 	
@@ -217,7 +224,7 @@
 	jsr dump
 	
 	set B, mem_print
-	set I, 9
+	set I, 12
 	set J, 17
 	int INT_PRINTF
 	
@@ -229,70 +236,9 @@
 	jsr dump
 	
 	set B, mem_print
-	set I, 9
+	set I, 12
 	set J, 22
 	int INT_PRINTF
 	
-	; FAT COPIES NB
-	; -------------
-	jsr launch_clearBuffer
-	
-	set A, [FAT_nb]
-	set B, 10
-	set C, mem_print
-	jsr dump
-	
-	set B, mem_print
-	set I, 10
-	set J, 14
-	int INT_PRINTF
-	
-	; FAT SIZE
-	; --------
-	jsr launch_clearBuffer
-	
-	set A, [FAT_size]
-	set B, 10
-	set C, mem_print
-	jsr dump
-	
-	set B, mem_print
-	set I, 11
-	set J, 12
-	int INT_PRINTF
-	
-	; ROOT ENTRIES NB
-	; ---------------
-	jsr launch_clearBuffer
-	set [0xFFB0], [rootEntries_nb]
-	set A, [rootEntries_nb]
-	set B, 10
-	set C, mem_print
-	jsr dump
-	
-	set B, mem_print
-	set I, 12
-	set J, 16
-	int INT_PRINTF
-	
 	set PC, POP
-	
-	:launch_clearBuffer
-		set PUSH, I
-		set PUSH, J
-		set PUSH, A
-	
-		set I, mem_print
-		set A, I
-		add A, 5
-	
-		:launch_clearBuffer_loop0
-			STI [I], 0
-			ifn I, A
-				set PC, launch_clearBuffer_loop0
-		
-		set A, POP
-		set J, POP
-		set I, POP
-		set PC, POP
 		

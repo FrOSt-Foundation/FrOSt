@@ -37,27 +37,3 @@
 :FFAT16_getSerialNumber
 	set Z, serialNumber
 	set PC, POP
-
-; =====================
-; FFAT16_getFATSize
-; Retourne en Z la taille de la FAT
-; =====================
-:FFAT16_getFATSize
-	set Z, [FAT_size]
-	set PC, POP
-
-; =====================
-; FFAT16_getFATCopies
-; Retourne en Z le nombre de copies de la FAT
-; =====================
-:FFAT16_getFATCopies
-	set Z, [FAT_nb]
-	set PC, POP
-
-; =====================
-; FFAT16_getRootEntries
-; Retourne en Z le nombre d'entrées du répertoire racine
-; =====================
-:FFAT16_getRootEntries
-	set Z, [rootEntries_nb]
-	set PC, POP
