@@ -6,7 +6,7 @@
 ; ====================
 ; Error codes
 ; ------------
-; Voici la liste des codes d'erreur potentiellement retournés par le file manager :
+; Voici la liste des codes d'erreur potentiellement retournés :
 ; 0x0000 : Pas de problème
 ; 0x0001 : Pas de disque ou disque non compatible
 ; 0x0003 : Erreur de malloc

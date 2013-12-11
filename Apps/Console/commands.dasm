@@ -189,11 +189,35 @@
 	set PC, POP
 	
 :launch_touch
-	set B, msg_todo
-	int 0x1000
+	jsr push_regs
+	set B, 1
+	set C, Y
+	jsr FFAT16_newFile
 	
+	ifn EX, 0
+		set PC, launch_touch_error
+	
+	jsr pop_regs
 	set PC, POP
+	
+	:launch_touch_error
+		set PUSH, EX
+		set B, msg_errCode
+		set J, 0
+		int INT_PRINTF
 		
+		set A, POP
+		set B, 10
+		set C, mem_print
+		jsr dump
+		
+		set B, mem_print
+		set J, 15
+		int INT_PRINTF
+		
+		jsr pop_regs
+		
+		set PC, POP
 	
 :launch_cat
 	set B, msg_todo
