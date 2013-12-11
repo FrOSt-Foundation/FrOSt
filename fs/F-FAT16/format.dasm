@@ -81,7 +81,7 @@
 	set B, Z
 	int INT_FREE
 	
-	;On vide le contenu de la FAT et du root directory
+	;On vide le contenu de la FAT
 	set B, 512
 	int INT_MALLOC
 	ife Z, MALLOC_ERROR
@@ -124,7 +124,6 @@
 	set B, Z
 	jsr INT_FREE
 :FFAT16_format_error
-	set Z, POP
 	set C, POP
 	set B, POP
 	set A, POP
