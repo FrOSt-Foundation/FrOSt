@@ -1,0 +1,8 @@
+; *************************
+; Project: FrOSt
+; File: newFile.dasm
+; *************************
+
+:FFAT16_newFile
+
+	set PC, POP

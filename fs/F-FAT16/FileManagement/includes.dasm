@@ -1,0 +1,7 @@
+; *************************
+; Project: FrOSt
+; File: includes.dasm
+; *************************
+
+.include listFiles.dasm
+.include newFile.dasm
