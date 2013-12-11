@@ -51,3 +51,4 @@ DAT 0x1F, "format", 0x1F, "diskinf", 0
 :msg_confirmFormat DAT "Voulez-vous vraiment formater le disque ? (y/n)", 0
 :msg_diskInf DAT "FrOSt Compatible :", 0x11, "Volume name :", 0x11, "Serial number :", 0
 :msg_ls DAT "Nombre de fichiers :", 0
+:msg_errCode DAT "Code erreur :", 0

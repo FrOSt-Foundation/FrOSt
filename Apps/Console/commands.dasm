@@ -60,8 +60,12 @@
 		set PC, POP
 	
 :launch_ls
+	jsr push_regs
 	jsr FFAT16_listFiles
 	;TODO : Afficher tout ça et ne pas oublier le free de mémoire
+	
+	ifn EX, 0
+		set PC, launch_ls_error
 	
 	set B, msg_ls
 	set J, 0
@@ -117,7 +121,27 @@
 	set B, POP
 	int INT_FREE
 	
+	jsr pop_regs
 	set PC, POP
+	
+	:launch_ls_error
+		set PUSH, EX
+		set B, msg_errCode
+		set J, 0
+		int INT_PRINTF
+		
+		set A, POP
+		set B, 10
+		set C, mem_print
+		jsr dump
+		
+		set B, mem_print
+		set J, 15
+		int INT_PRINTF
+		
+		jsr pop_regs
+		
+		set PC, POP
 	
 :launch_cd
 	set B, msg_todo

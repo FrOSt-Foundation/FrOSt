@@ -11,7 +11,7 @@
 ; 0x0002 = Pas de floppy
 ; 0x0003 = Erreur de malloc
 ; 0x0004 = Erreur de lecture
-; 0x0005B = La chaine d'identification n'est pas correcte (!FFAT16)
+; 0x0005 = La chaine d'identification n'est pas correcte (!FFAT16)
 
 :FFAT16_init
 	;Checking disk drive

@@ -11,6 +11,7 @@
 ; 0x0001 : Pas de disque ou disque non compatible
 ; 0x0003 : Erreur de malloc
 ; 0x0004 : Erreur de lecture
+; 0x0006 : Pas de fichiers
 ; ====================
 
 
@@ -25,8 +26,11 @@
 ; ================================
 
 :FFAT16_listFiles
+	set EX, 0
 	IF_FALSE [FFAT16_valid]
 		set EX, 1
+	ife EX, 1
+		set PC, POP
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
@@ -51,6 +55,11 @@
 	jsr FFAT16_waitFinish
 	
 	jsr FFAT16_listFiles_getFilesNumber ;Retourne le nombre de fichiers en J et en Y. On ne touche pas à Y (return code)
+	
+	ife J, 0
+		set EX, 6
+	ife EX, 6
+		set PC, FFAT16_listFiles_break0
 	
 	set X, Z ;Dorénavant, adresse de la FAT = X, adresse des noms de fichiers = Z
 	set PUSH, Z ;On sauvegarde Z car on va faire un second malloc
@@ -89,7 +98,7 @@
 	set B, POP ;Était Z mais on optimise un peu, et surtout on veut garder Z intact car il contient l'adresse du tableau.
 	int INT_FREE
 	
-	;jsr end
+	:FFAT16_listFiles_break0
 	
 	set X, POP
 	set J, POP
