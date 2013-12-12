@@ -1,9 +1,19 @@
 ;--------------------------------------------------------
-;DUMP print the content of A in [C] in base B. Need at most 4 words
+;DUMP print the content of A in [C] in base B. Needs 4 words
 ;doesn't modify any of the regs
 ;--------------------------------------------------------
 :dump
-	set push,I
+	;On vide le contenu du buffer
+	set PUSH, I
+	set PUSH, J
+	set I, 0
+	set J, C
+	:dump_loop0
+		sti [J], 0
+		ifn I, 4
+			set PC, dump_loop0
+	set J, POP
+	
 	set I,B
 	set push,A
 	set push,B
