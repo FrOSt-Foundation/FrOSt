@@ -143,12 +143,6 @@
 		
 		set PC, POP
 	
-:launch_cd
-	set B, msg_todo
-	int 0x1000
-	
-	set PC, POP
-	
 :launch_run
 	set B, msg_todo
 	int 0x1000
