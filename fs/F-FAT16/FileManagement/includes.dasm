@@ -5,3 +5,5 @@
 
 .include listFiles.dasm
 .include newFile.dasm
+.include deleteFile.dasm
+.include getFileByName.dasm

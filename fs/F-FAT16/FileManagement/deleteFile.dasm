@@ -1,0 +1,8 @@
+; *************************
+; Project: FrOSt
+; File: deleteFile.dasm
+; *************************
+
+:FFAT16_deleteFile
+	;TODO
+	set PC, POP
