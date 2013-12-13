@@ -2,3 +2,159 @@
 ; Project: FrOSt
 ; File: getFileByName.dasm
 ; *************************
+
+; =======================
+; FFAT16_getFileByName
+; Arguments :
+; -----------
+; B : Pointeur vers le nom de fichier.
+; Retourne :
+; ----------
+; EX : 0 si pas d'erreur, sinon code d'erreur
+; Y : Le nombre de clusters du fichier
+; Z : Le cluster de début du fichier.
+; =======================
+
+:FFAT16_getFileByName
+	set EX, 0
+	jsr push_regs
+	
+	set PUSH, B
+	
+	set B, 15
+	int INT_MALLOC
+	IF_MALLOC_ERROR
+		set PC, FFAT16_getFileByName_error0
+		
+	set X, Z ;On veut sauvegarder le Z en X car on aura besoin de deux emplacements mémoire pour comparer les strings, et un pour la FAT
+	
+	add Z, 14
+	set [Z], 0 ;On ajoute le end-string
+	
+	set B, 15
+	int INT_MALLOC
+	IF_MALLOC_ERROR
+		set PC, FFAT16_getFileByName_error0
+	
+	set Y, Z
+	
+	;On ajoute le end-string
+	add Z, 14
+	set [Z], 0
+	
+	set B, POP
+	
+	set PUSH, X
+		set C, B
+		jsr FFAT16_formatFileName ;On transforme le nom de fichier en nom de fichier F-FAT16.
+		set X, 1
+		jsr FFAT16_readSector
+		jsr FFAT16_waitFinish
+	set X, POP
+	
+	set PUSH, Y
+		jsr FFAT16_getFilesNumber
+		set J, Y
+	set Y, POP
+	
+	ife J, 0
+		set PC, FFAT16_getFileByName_error2
+	
+	; À ce stade:
+	; J = Nombre de fichiers
+	; X = string argument formaté
+	; Y = emplacement pour comparer les strings
+	; Z = secteur de la FAT
+	
+	; Désormais, on va trouver le fichier correspondant en comparant les noms de fichier un à un.
+	;
+	; Algorithme :
+	; ------------
+	; Z += 2;
+	; for(I = 0; I <= J; I++) {
+	; 	memcpy(Z, Y, 14);
+	; 	Z += 16;
+	;	if(strcmp(X, Y) != 0)
+	; 		//Exit loop
+	; }
+	; if(I > J)
+	; 	//Fichier inexistant, on quitte avec EX = 0x0008
+	; //Le fichier recherché est le Ie fichier
+	set PUSH, Z
+	add Z, 2
+	set I, 0
+	add J, 1 ;On ne peut pas faire inférieur ou égal, donc on ajoute 1 pour feinter
+	:FFAT16_getFileByName_loop0
+		set B, Z
+		set A ,Y
+		set C, 14
+		jsr memcpy
+		set PUSH, Z
+			set A, X
+			set B, Y
+			jsr strcmp
+		set B, Z
+		set Z, POP
+		add I, 1
+		ifn B, 0 ;Si la comparaison est vraie
+			set PC, FFAT16_getFileByName_break0
+			
+		add Z, 16
+		ifl I, J
+			set PC, FFAT16_getFileByName_loop0
+		
+		:FFAT16_getFileByName_break0
+		sub J, 1 ;On remet J à sa valeur initiale (on a ajouté 1 plus haut)
+		ifg I, J
+			set PC, FFAT16_getFileByName_error1
+		
+		jsr end
+		
+		;On a trouvé le fichier, c'est la I-ème entrée FAT
+		mul I, 16
+		add I, PEEK ;On trouve l'entrée FAT (I * 16 + offset)
+		
+		set Y, [I]
+		add I, 1
+		set Z, [I]
+	
+	:FFAT16_getFileByName_end
+	;On libère toute la mémoire
+	set B, POP
+	int INT_FREE
+	set B, X
+	int INT_FREE
+	set B, Y
+	int INT_FREE
+	
+	jsr pop_regs
+	set EX, 0
+	set PC, POP
+	
+:FFAT16_getFileByName_error0
+	set B, POP
+	jsr POP_REGS
+	set EX, 0x0003
+	set PC, POP
+:FFAT16_getFileByName_error1
+	set B, POP
+	int INT_FREE
+	set B, X
+	int INT_FREE
+	set B, Y
+	int INT_FREE
+	
+	jsr pop_regs
+	set EX, 0x0008
+	set PC, POP
+:FFAT16_getFileByName_error2
+	set B, Z
+	int INT_FREE
+	set B, X
+	int INT_FREE
+	set B, Y
+	int INT_FREE
+	
+	jsr pop_regs
+	set EX, 0x0006
+	set PC, POP

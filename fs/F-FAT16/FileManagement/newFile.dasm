@@ -19,13 +19,7 @@
 ; ====================
 ; Error codes
 ; ------------
-; Voici la liste des codes d'erreur potentiellement retournés :
-; 0x0000 : Pas de problème
-; 0x0001 : Pas de disque ou disque non compatible
-; 0x0003 : Erreur de malloc
-; 0x0004 : Erreur de lecture/écriture
-; 0x0006 : Pas de fichiers
-; 0x0007 : Disque plein
+; Voir wiki github
 ; ====================
 
 :FFAT16_newFile
@@ -35,29 +29,16 @@
 	ife EX, 1
 		set PC, POP
 	jsr push_regs
-	
-	set PUSH, B ;Malloc modifie B, on le sauvegarde car c'est un argument
-	set B, 512
-	int INT_MALLOC
-	IF_MALLOC_ERROR
-		jsr FFAT16_newFile_mallocError
-	
-	set A, 2
 	set X, 1
-	set Y, Z
-	hwi [id_floppy1]
-	ifn B, 1 ;Si erreur
-		set EX, 0x0004
-	ifn B, 1 ;Si erreur
-		set PC, FFAT16_newFile_error
+	jsr FFAT16_readSector
 	
 	jsr FFAT16_waitFinish
 	
-	jsr FFAT16_newFile_findFirstFreeFATEntry
+	jsr FFAT16_findFirstFreeFATEntry
 	ife EX, 0x0007
 		set PC, FFAT16_newFile_error
 	
-	set B, PEEK ;On récupère B sauvé un peu plus haut, mais on en aura besoin plus tard.
+	set PUSH, B
 	
 	;X est désormais la première entrée libre et Y le premier secteur libre.
 	set [X], B
@@ -65,30 +46,7 @@
 	set [X], Y
 	add X, 1
 	
-	
-	; Algorithm :
-	; for(I = 0; I != 14; I++) {
-	; 	if(C != 0)
-	; 		[X] = [C];
-	; 	else
-	; 		[X] = ' ';
-	; 	X++;
-	;	if(C != 0)
-	; 		C++;
-	; }
-	set I, 0
-	:FFAT16_newFile_loop0
-		ifn [C], 0
-			set [X], [C]
-		ife [C], 0
-			set [X], 0x20
-		add X, 1
-		ifn [C], 0
-			add C, 1
-		add I, 1
-		ifn I, 14
-			set PC, FFAT16_newFile_loop0
-	;jsr end
+	jsr FFAT16_formatFileName
 	
 	set PUSH, X
 	set PUSH, Y
@@ -149,61 +107,4 @@
 	set EX, 0x0003
 :FFAT16_newFile_error
 	jsr pop_regs
-	set PC, POP
-
-;Retourne la première entrée FAT libre en X et le premier secteur libre en Y
-;Z must be adress to sector loaded in RAM
-:FFAT16_newFile_findFirstFreeFATEntry
-	set X, Z
-	set J, 496
-	add J, Z
-	:FFAT16_newFile_findFirstFreeFATEntry_loop0
-		ife [X], 0
-			set PC, FFAT16_newFile_findFirstFreeFATEntry_break0
-		ifg X, J
-			set PC, FFAT16_newFile_findFirstFreeFATEntry_break0
-		add X, 16
-		set PC, FFAT16_newFile_findFirstFreeFATEntry_loop0
-	
-	:FFAT16_newFile_findFirstFreeFATEntry_break0
-	ifg X, 496
-		set EX, 0x0007
-		
-	;On cherche le premier secteur libre.
-	; Algorithme :
-	; ------------
-	; for(Y = 1; Y < 1440; ++Y) {
-	; 	for(J = Z + 1; J < Z + 511; J += 16) {
-	; 		if([J] == Y)
-	;			//Recommencer au début du premier for
-	;		else {
-	;			if([J] + [J-1] > Y && Y > [J]) //Si on est entre le cluster de début et le cluster de fin d'un fichier, il n'est pas libre même si pas explicitement mentionné.
-	;				//Recommencer au début du premier for
-	; 		}
-	; 	}
-	; }
-	set Y, 1
-	set A, Z
-	add A, 511 ; A = (Z + 511)
-	:FFAT16_newFile_findFirstFreeFATEntry_loop1
-		add Y, 1
-		set J, Z
-		add J, 1
-		:FFAT16_newFile_findFirstFreeFATEntry_loop2
-			ife [J], Y
-				set PC, FFAT16_newFile_findFirstFreeFATEntry_loop1
-				
-			set B, [J]
-			sub J, 1
-			add B, [J]
-			add J, 1 ;B = [J] + [J + 1]
-			
-			ifg B, Y
-				ifg Y, [J]
-					set PC, FFAT16_newFile_findFirstFreeFATEntry_loop1
-			
-			add J, 16
-			ifl J, A
-				set PC, FFAT16_newFile_findFirstFreeFATEntry_loop2
-	;TROUVÉ !
 	set PC, POP

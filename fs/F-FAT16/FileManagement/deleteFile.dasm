@@ -3,6 +3,25 @@
 ; File: deleteFile.dasm
 ; *************************
 
+; =======================
+; FFAT16_deleteFile
+; Arguments :
+; -----------
+; B : Pointeur vers le nom de fichier.
+; Retourne :
+; ----------
+; EX : 0 si pas d'erreur, sinon code d'erreur
+; =======================
+
 :FFAT16_deleteFile
-	;TODO
+	set EX, 0
+	set PUSH, B
+	
+	set B, Y
+	jsr FFAT16_getFileByName
+	ifn EX, 0
+		set PC, FFAT16_deleteFile_break0
+	
+	:FFAT16_deleteFile_break0
+	set B, POP
 	set PC, POP

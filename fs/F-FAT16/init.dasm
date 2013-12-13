@@ -4,14 +4,9 @@
 ; *************************
 
 ; ===================
-; Error codes (en Z)
+; Error codes :
+; Voir wiki github
 ; ===================
-; 0x0000 = Pas de problème
-; 0x0001 = Pas de lecteur
-; 0x0002 = Pas de floppy
-; 0x0003 = Erreur de malloc
-; 0x0004 = Erreur de lecture
-; 0x0005 = La chaine d'identification n'est pas correcte (!FFAT16)
 
 :FFAT16_init
 	;Checking disk drive
@@ -27,24 +22,8 @@
 	ife B, 0x0
 		set PC, POP
 		
-	;On alloue 512 (un secteur) mots en RAM dans lesquels on lira le premier secteur
-	set B, 512
-	int INT_MALLOC
-	
-	ife Z, MALLOC_ERROR ;Si impossible d'allouer de la mémoire
-		set EX, 0x0003
-	ife Z, MALLOC_ERROR ;Si impossible d'allouer de la mémoire
-		set PC, POP
-	
-	;On lit à l'adresse retournée par MALLOC
-	set A, 2
 	set X, 0
-	set Y, Z
-	hwi [id_floppy1]
-	ifn B, 1 ;Si erreur
-		set EX, 0x0004
-	ifn B, 1 ;Si erreur
-		set PC, POP
+	jsr FFAT16_readSector
 		
 	jsr FFAT16_waitFinish
 	
