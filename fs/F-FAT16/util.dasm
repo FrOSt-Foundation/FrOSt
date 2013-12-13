@@ -174,6 +174,25 @@
 		set EX, 0x0004
 		set PC, FFAT16_readSector_end
 
+; Écrit sur le secteur X ce qui se trouve en RAM en *Y
+:FFAT16_writeSector
+	set PUSH, A
+	set PUSH, B
+	set PUSH, Y
+	
+	set EX, 0
+	set A, 3
+	hwi [id_floppy1]
+
+	ifn B, 1 ;If error
+		set EX, 0x0004
+	
+	set Y, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+	
+
 ; Retourne en Y le nombre de fichiers fourni. Z = Pointeur vers le secteur de FAT.
 ; /!\ Modifie les registres I et J /!\
 ; /!\ N'attend pas que la lecture soit finie /!\
