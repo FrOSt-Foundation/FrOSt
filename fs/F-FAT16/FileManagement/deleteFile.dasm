@@ -15,7 +15,7 @@
 
 :FFAT16_deleteFile
 	set EX, 0
-	set PUSH, B
+	jsr push_regs
 	
 	set B, Y
 	jsr FFAT16_getFileByName
@@ -23,5 +23,7 @@
 		set PC, FFAT16_deleteFile_break0
 	
 	:FFAT16_deleteFile_break0
-	set B, POP
+	
+	jsr pop_regs
+
 	set PC, POP

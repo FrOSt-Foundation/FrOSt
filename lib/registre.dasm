@@ -4,7 +4,7 @@
 ;-------------------------------------------------
 :push_regs
 	set [tmpV],pop
-	set push,Ex
+	;set push,Ex
 	set push,I
 	set push,J
 	set push,X
@@ -28,7 +28,7 @@
 	set X,pop
 	set J,pop
 	set I,pop
-	set Ex,pop
+	;set Ex,pop
 	set PC,[tmpV]
 	
 
