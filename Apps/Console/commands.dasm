@@ -290,6 +290,11 @@
 			set PC, launch_format_loop0
 		
 	jsr FFAT16_format
+	
+	int INT_SCROLL
+	set B, msg_format_warn
+	set J, 0
+	int INT_PRINTF
 		
 	set PC, POP
 	
