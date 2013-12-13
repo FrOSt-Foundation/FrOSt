@@ -66,28 +66,32 @@
 	set Y, POP
 	set X, POP
 	set B, POP
-	set B, Z
-	
-	;set PUSH, Z
-	;	;Il faut désormais effacer le contenu de(s) secteur(s)
-	;	set I, 0
-	;	:FFAT16_newFile_loop2
-	;		set [Z], 0
-	;		add I, 1
-	;		ifl I, 512
-	;			set PC, FFAT16_newFile_loop2
-	;	set I, 0
-	;	:FFAT16_newFile_loop1
-	;		add I, 1
-	;		set A, 3
-	;		set X, I
-	;		set Y, PEEK
-	;		hwi [id_floppy1]
-	;		jsr FFAT16_waitFinish
-	;		ifl I, B
-	;			set PC, FFAT16_newFile_loop1
-	
-	;set B, POP
+
+	set PUSH, Z
+		;Il faut désormais effacer le contenu de(s) secteur(s)
+		set I, 0
+		:FFAT16_newFile_loop0
+			set J, 0
+			:FFAT16_newFile_loop1
+				set [Z], 0
+				add J, 1
+				add Z, 1
+				ifn J, 512
+					set PC, FFAT16_newFile_loop1
+			set Z, PEEK
+			set PUSH, X
+			set PUSH, Y
+				set X, Y
+				set Y, Z
+				jsr FFAT16_writeSector
+				jsr FFAT16_waitFinish
+			set Y, POP
+			set X, POP
+			add Y, 1
+			add I, 1
+			ifn I, B
+				set PC, FFAT16_newFile_loop0
+	set B, POP
 	int INT_FREE
 	
 	jsr pop_regs
