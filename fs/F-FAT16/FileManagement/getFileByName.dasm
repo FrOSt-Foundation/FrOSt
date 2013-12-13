@@ -11,6 +11,7 @@
 ; Retourne :
 ; ----------
 ; EX : 0 si pas d'erreur, sinon code d'erreur
+; X : le fichier rechercher est la Xe entrée FAT
 ; Y : Le nombre de clusters du fichier
 ; Z : Le cluster de début du fichier.
 ; =======================
@@ -27,7 +28,6 @@
 	set PUSH, C
 	set PUSH, I
 	set PUSH, J
-	set PUSH, A
 	
 	set PUSH, B
 	
@@ -128,6 +128,8 @@
 	set B, Y
 	int INT_FREE
 	
+	set X, I
+	
 	sub I, 1
 	mul I, 16
 	add I, Z ;On trouve l'entrée FAT (I * 16 + offset)
@@ -170,7 +172,6 @@
 
 :FFAT16_getFileByName_popRegs
 	set [tmpV], POP
-	set X, POP
 	set J, POP
 	set I, POP
 	set C, POP
