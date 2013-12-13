@@ -15,15 +15,22 @@
 
 :FFAT16_deleteFile
 	set EX, 0
+	
+	IF_FALSE [FFAT16_valid]
+		set EX, 0x0001
+	ife EX, 0x0001
+		set PC, POP
+	
 	jsr push_regs
 	
 	set B, Y
 	jsr FFAT16_getFileByName
 	ifn EX, 0
 		set PC, FFAT16_deleteFile_break0
+		
+	
 	
 	:FFAT16_deleteFile_break0
-	
 	jsr pop_regs
 
 	set PC, POP

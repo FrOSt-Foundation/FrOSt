@@ -17,6 +17,11 @@
 
 :FFAT16_getFileByName
 	set EX, 0
+	IF_FALSE [FFAT16_valid]
+		set EX, 0x0001
+	ife EX, 0x0001
+		set PC, POP
+	
 	jsr push_regs
 	
 	set PUSH, B
