@@ -22,7 +22,12 @@
 	ife EX, 0x0001
 		set PC, POP
 	
-	jsr push_regs
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set PUSH, I
+	set PUSH, J
+	set PUSH, A
 	
 	set PUSH, B
 	
@@ -112,27 +117,26 @@
 		sub J, 1 ;On remet J à sa valeur initiale (on a ajouté 1 plus haut)
 		ifg I, J
 			set PC, FFAT16_getFileByName_error1
-		
-		jsr end
-		
-		;On a trouvé le fichier, c'est la I-ème entrée FAT
-		mul I, 16
-		add I, PEEK ;On trouve l'entrée FAT (I * 16 + offset)
-		
-		set Y, [I]
-		add I, 1
-		set Z, [I]
 	
 	:FFAT16_getFileByName_end
 	;On libère toute la mémoire
-	set B, POP
+	set Z, POP
+	set B, Z
 	int INT_FREE
 	set B, X
 	int INT_FREE
 	set B, Y
 	int INT_FREE
 	
-	jsr pop_regs
+	sub I, 1
+	mul I, 16
+	add I, Z ;On trouve l'entrée FAT (I * 16 + offset)
+		
+	set Y, [I]
+	add I, 1
+	set Z, [I]
+	
+	jsr FFAT16_getFileByName_popRegs
 	set EX, 0
 	set PC, POP
 	
@@ -149,7 +153,7 @@
 	set B, Y
 	int INT_FREE
 	
-	jsr pop_regs
+	jsr FFAT16_getFileByName_popRegs
 	set EX, 0x0008
 	set PC, POP
 :FFAT16_getFileByName_error2
@@ -160,6 +164,17 @@
 	set B, Y
 	int INT_FREE
 	
-	jsr pop_regs
+	jsr FFAT16_getFileByName_popRegs
 	set EX, 0x0006
 	set PC, POP
+
+:FFAT16_getFileByName_popRegs
+	set [tmpV], POP
+	set X, POP
+	set J, POP
+	set I, POP
+	set C, POP
+	set B, POP
+	set A, POP
+	set PC, [tmpV]
+	
