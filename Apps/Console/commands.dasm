@@ -125,9 +125,20 @@
 	set PC, POP
 	
 :launch_run
-	set B, msg_todo
-	int 0x1000
+	jsr push_regs
 	
+	jsr FFAT16_readFile
+	ifn EX, 0
+		set PC, launch_error
+	
+	set I, Z
+	set PUSH, Z
+		jsr Z
+	set B, POP
+	
+	int INT_FREE
+	
+	jsr pop_regs
 	set PC, POP
 
 :launch_mem
