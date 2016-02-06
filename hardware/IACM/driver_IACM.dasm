@@ -8,10 +8,22 @@
 ; Returns:
 ;     - 
 
+:iacm_mode dat 0
+
 :iacm_init
 	set A, 0
 	set B, 0
 	hwi [id_IACM]
+	
+	set A, 3
+	set B, 0x9000
+	set C, 0
+	hwi [id_IACM]
+	
+	set B, 0x9001
+	set C, 1
+	hwi [id_IACM]
+	
 	set PC, POP
 
 ; --------------
@@ -29,6 +41,25 @@
 	hwi [id_IACM]
 	set PC, POP
 
+; --------------
+;  iacm_setmode
+; --------------
+; Description:
+;     - Sets the IACM mode.
+; Arguments:
+;     - B: Mode (1-4)
+; Returns:
+;     
+:iacm_setmode
+	ifg B, 4
+		set PC, POP
+		
+	set PUSH, A
+	set A, 0
+	hwi [id_IACM]
+	set A, POP
+	
+	set PC, POP
 ; --------------
 ;  iacm_shutdown
 ; --------------

@@ -10,9 +10,9 @@
 :init_interruptHandler
 	IAS interrupt_handler
 	set push,A
-	set A,nombre_commandes
+	set A,nCommands
 	sub A,int_ptr
-	set [nombre_ptr],A
+	set [n_ptr],A
 	set A,pop
 	
 	set pc , pop
@@ -26,6 +26,7 @@
 ; msg 0x6000 is for the clock
 ; msg 0x7000 is for the keyboard
 ; msg 0x8000-0x8003 is for the M35FD/M525HD
+; msg 0x9000 is for the IACM
 ; 
 ; msg 0x0000 INT_MALLOC
 ; msg 0x0001 INT_FREE
@@ -50,7 +51,7 @@
 :interrupt_handler
 	set push,A
 	shr A,12
-	ifg A,[nombre_ptr]
+	ifg A,[n_ptr]
 		set pc,ih_bug
 	add A,int_ptr
 	set pc,[A]
@@ -115,7 +116,7 @@
 	set [active_screen],pop
 	rfi 1
 
-:ih_clavier
+:ih_keyboard
 	set A,pop
 	set pc,sched_resumeKey
 	rfi 0
@@ -185,7 +186,7 @@
 	;JSR launch
 	rfi 0
 	
-:ih_disquette
+:ih_floppy
 	set A,pop
 	;set pc,Scheduler
 	rfi 0
@@ -203,3 +204,59 @@
 :ih_stop
 	set A,pop
 	set pc,Finisher
+
+:ih_power
+	set A, POP
+	ife A, 0x9000
+		set PC, ih_power_sleep
+	ife A, 0x9001
+		set PC, ih_power_mode
+	rfi 0
+	
+	:ih_power_sleep
+		set PUSH, A
+		set PUSH, B
+		set PUSH, Z
+		ife [nb_IACMs], 0
+			rfi 0
+		
+		ifn [nb_screens], 0
+			jsr lem1802_getVram
+		set PUSH, Z
+		
+		set B, 0
+		ifn [nb_screens], 0
+			jsr lem1802_setVram
+		
+		set B, 0
+		ifn [nb_clocks], 0
+			jsr clock_setspeed
+		
+		jsr iacm_sleep
+		
+		set B, 1
+		ifn [nb_clocks], 0
+			jsr clock_setspeed
+		
+		set B, POP
+		ifn [nb_screens], 0
+			jsr lem1802_setVram
+		
+		set Z, POP
+		set B, POP
+		set A, POP
+		rfi 0
+	:ih_power_mode
+		set PUSH, A
+		set PUSH, B
+		set A, [iacm_mode]
+		set B, 0
+		ife A, 0
+			set B, 1
+		jsr iacm_setmode
+		set [iacm_mode], B
+		
+		set B, POP
+		set A, POP
+		
+		rfi 0
