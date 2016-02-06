@@ -1,0 +1,109 @@
+;--------------------------------------------------------
+; DUMP prints the content of A in [C] in base B. Needs at most 4 words
+; Doesn't modify any of the registers.
+;--------------------------------------------------------
+:dump
+	;On vide le contenu du buffer
+	set PUSH, I
+	set PUSH, J
+	set I, 0
+	set J, C
+	:dump_loop0
+		sti [J], 0
+		ifn I, 4
+			set PC, dump_loop0
+	set J, POP
+	
+	set I,B
+	set push,A
+	set push,B
+	set push,J
+	set J,0
+	:dump_loop
+		set B,A
+		mod B,I
+		ifg B,9
+			add B,7
+		add B,48
+		set push,B
+		div A,I
+		add J,1
+		ifn A,0
+			set PC,dump_loop
+	:dump_print
+		set [C],pop
+		add C,1
+		sub J,1
+		ifn J,0
+			set PC,dump_print
+		set J,pop
+		set B,pop
+		set A,pop
+		set I,pop
+		set PC,pop
+
+;-----------------------------------------
+; Takes a char* in [A], the base in B and returns the number in Z
+; If 0x then change the base to 16
+; If 0d then change the base to 10
+; If 0b then change the base to 2
+;-----------------------------------------
+:ctoi
+	set push,X
+	set push,I
+	set push,B
+	set push,A
+	set X,SP
+	sub X,1
+	set J,A
+	set Z,0
+	ife [A+1],'x'
+		set pc,ctoi_pre
+	ife [A],0x30
+		ife [A+1],'d'
+			set pc,ctoi_pre
+	ife [A],0x30
+		ife [A+1],'b'
+			set pc,ctoi_pre
+	ife [A+1],'o'
+		set pc,ctoi_pre
+	:ctoi_avance
+	set push,[A]
+	add A,1
+	ifn [A],0
+		set pc,ctoi_avance
+	set push,0
+	add SP,1
+	set I,SP
+	set SP,X
+	:ctoi_boucle
+		ifg peek,0x57
+			;lettre
+			sub peek,0x27
+		sub peek,0x30
+		set A,peek
+		mul Z,B
+	add Z,A
+	ifn SP,I
+		ifn push,I
+			set pc,ctoi_boucle
+	:ctoi_end
+		add X,1
+		set SP,X
+		set A,pop
+		set B,pop
+		set I,pop
+		set X,pop
+		set pc,pop
+	:ctoi_pre
+		add A,1
+		ife [A],'x'
+			set B,16
+		ife [A],'d'
+	set B,10
+		ife [A],'b'
+			set B,2
+		ife [A],'o'
+			set B,8
+		add A,1
+		set pc,ctoi_avance

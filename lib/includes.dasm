@@ -1,4 +1,4 @@
-.include nombre.dasm
-.include registre.dasm
-.include string.dasm
+.include numbers.dasm
+.include registers.dasm
+.include strings.dasm
 .include checksums.dasm

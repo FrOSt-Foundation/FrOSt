@@ -1,0 +1,46 @@
+; --------------
+;  iacm_init
+; --------------
+; Description:
+;     - Inits the IACM. Used by the hardware manager.
+; Arguments:
+;     - 
+; Returns:
+;     - 
+
+:iacm_init
+	set A, 0
+	set B, 0
+	hwi [id_IACM]
+	set PC, POP
+
+; --------------
+;  iacm_sleep
+; --------------
+; Description:
+;     - Puts the DCPU to sleep, until an interruption occurs.
+; Arguments:
+;     - 
+; Returns:
+;     - 
+:iacm_sleep
+	set A, 0
+	set B, 3
+	hwi [id_IACM]
+	set PC, POP
+
+; --------------
+;  iacm_shutdown
+; --------------
+; Description:
+;     - Completely shuts down the DCPU without warning.
+; Arguments:
+;     - 
+; Returns:
+;     - 
+
+:iacm_shutdown
+	set A, 0
+	set B, 4
+	hwi [id_IACM]
+	set PC, POP

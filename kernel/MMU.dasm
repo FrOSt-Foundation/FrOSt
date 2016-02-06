@@ -1,7 +1,7 @@
 ;---------------------------------------------
-;MMU look at the program at [A] until B words are verified or "0xDA1A,0xDA1A,0xDA1A" is found
-;add the offset C to all the adresses
-;DOESN'T VERIFY ANY OTHER COMMAND THAN SET JSR ADD SUB MUL DIV !!
+; MMU looks at the program at [A] until B words are verified or "0xDA1A,0xDA1A,0xDA1A" is found
+; Adds the offset C to all the adresses
+; DOESN'T VERIFY ANY OTHER COMMAND THAN SET JSR ADD SUB MUL DIV !!
 ;---------------------------------------------
 :MMU
 	set push,A

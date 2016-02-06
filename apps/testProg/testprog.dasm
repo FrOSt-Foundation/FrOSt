@@ -1,0 +1,13 @@
+; *************************
+; Project: FrOSt
+; File: testprog.dasm
+; *************************
+:testprog
+	int INT_SCROLL
+	set B, msg_testprog_test
+	int INT_PRINTF
+	
+	sub pc,1
+
+
+:msg_testprog_test DAT "Programme de test lancé", 0

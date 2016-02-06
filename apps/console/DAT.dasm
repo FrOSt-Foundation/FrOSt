@@ -1,0 +1,69 @@
+; *************************
+; Project: FrOSt
+; File: DAT.dasm
+; *************************
+
+:ptr_commands DAT launch_echo, launch_help, launch_about, launch_color, launch_clear, launch_kill, launch_ls, launch_run, launch_mem, launch_mkdir, launch_mv, launch_cp, launch_touch, launch_cat, launch_ps, launch_test, launch_shutdown, launch_format, launch_diskinf, launch_rm, launch_hwlist, launch_sleep, launch_mount
+:txt_commands DAT txt_echo,    txt_help,    txt_about,    txt_color   , txt_clear   , txt_kill,    txt_ls,    txt_run,    txt_mem,    txt_mkdir,    txt_mv,    txt_cp,    txt_touch,    txt_cat,    txt_ps,    txt_test,    txt_shutdown,    txt_format,    txt_diskinf,    txt_rm,    txt_hwlist,    txt_sleep, txt_mount
+
+:txt_commands_end
+:nb_commands DAT 0
+
+;Commands
+:txt_help DAT "help", 0
+:txt_echo DAT "echo", 0
+:txt_about DAT "about", 0
+:txt_color DAT "color", 0
+:txt_clear DAT "clear", 0
+:txt_kill DAT "kill", 0
+:txt_ls DAT "ls", 0
+:txt_run DAT "run", 0
+:txt_mem DAT "mem", 0
+:txt_mkdir DAT "mkdir", 0
+:txt_mv DAT "mv", 0
+:txt_cp DAT "cp", 0
+:txt_touch DAT "touch", 0
+:txt_cat DAT "cat", 0
+:txt_ps DAT "ps", 0
+:txt_test DAT "test", 0
+:txt_shutdown dat "shutdown",0
+:txt_format dat "format", 0
+:txt_diskinf dat "diskinf", 0
+:txt_rm dat "rm", 0
+:txt_hwlist dat "hwlist", 0
+:txt_sleep dat "sleep", 0
+:txt_mount dat "mount", 0
+
+:console_title DAT "Console", 0
+:console_welcomeMessage DAT "Welcome to FrOSt.", 0x11, "Type help if you are lost, use mount to load filesystems.", 0
+:console_errorNotEnoughFreeSpace_text DAT "Error: no memory left in RAM.", 0
+:console_unknownCommand DAT "Unkown command:", 0
+
+:msg_help
+DAT 0x1F, "help", 0x1F, "about", 0x1F, "echo", 0x1F, "color", 0x11
+DAT 0x1F, "clear", 0x1F, "kill", 0x1F, "ls", 0x1F, "rm", 0x1F, "run", 0x11
+DAT 0x1F, "mem", 0x1F, "mkdir", 0x1F, "mv", 0x1F, "cp", 0x1F, "touch" ;End of line so no \n.
+DAT 0x1F, "cat", 0x1F, "ps", 0x1F, "test", 0x1F, "shutdown", 0x11
+DAT 0x1F, "format", 0x1F, "diskinf", 0x1F, "hwlist", 0x11
+DAT 0x1F, "sleep", 0x1F, "mount", 0
+
+:msg_todo DAT "TODO.", 0
+:msg_about DAT "FrOSt v0.1, developped by Alocer, ElectricBanana, Faerie, Franck97, natnat, Yamakaki, Earth75, azertyfun and Vaasref.", 0
+:msg_mem DAT "Free memory:    0x     words", 0
+:msg_testprog DAT "Starting test program.", 0
+:msg_errNoArgs DAT "Error: argument required", 0
+
+:msg_hwlist
+DAT "IACM:                           ", 13
+DAT "LEM1802:                        ", 13
+DAT "Keyboard:                       ", 13
+DAT "Clock:                          ", 13
+DAT "Floppy/disk:                    ", 0
+:msg_hwpresent DAT "Present", 0
+:msg_hwabsent DAT "Absent", 0
+
+:msg_confirmFormat DAT "Are you sure you want to format the disk? (y/n)", 0
+:msg_diskInf DAT "FrOSt Compatible :", 0x11, "Volume name :", 0x11, "Serial number :", 0
+:msg_ls DAT "File number:", 0
+:msg_errCode DAT "Error code:", 0
+:msg_format_warn DAT "You must restart FrOSt to apply changes.", 0
