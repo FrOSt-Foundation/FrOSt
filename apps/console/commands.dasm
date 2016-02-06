@@ -173,7 +173,75 @@
 	set PC, POP
 
 :launch_shutdown
+	ifn [nb_IACMs], 0
+		jsr iacm_shutdown
+
 	set B,0
 	jsr lem1802_setVram
 	jsr clock_setSpeed
 	set PC,end
+
+:launch_sleep
+	ife [nb_IACMs], 0
+		set PC, pop
+	
+	jsr lem1802_getVram
+	set PUSH, Z
+	
+	set B, 0
+	jsr lem1802_setVram
+	
+	set B, 0
+	jsr clock_setspeed
+	
+	jsr iacm_sleep
+	
+	set B, 1
+	jsr clock_setspeed
+	
+	set B, POP
+	jsr lem1802_setVram
+	
+	set PC, POP
+	
+:launch_hwlist
+	set I, 8
+	set J, 1
+	set B, msg_hwlist
+	int INT_PRINTF
+	
+	set I, 8
+	set J, 7
+	set B, msg_hwpresent
+	ife [nb_IACMs], 0
+		set B, msg_hwabsent
+	int INT_PRINTF
+	
+	set I, 9
+	set J, 10
+	set B, msg_hwpresent
+	ife [nb_screens], 0
+		set B, msg_hwabsent
+	int INT_PRINTF
+	
+	set I, 10
+	set J, 11
+	set B, msg_hwpresent
+	ife [nb_keyboards], 0
+		set B, msg_hwabsent
+	int INT_PRINTF
+	
+	set I, 11
+	set J, 8
+	set B, msg_hwpresent
+	ife [nb_clocks], 0
+		set B, msg_hwabsent
+	int INT_PRINTF
+	
+	set I, 12
+	set J, 14
+	set B, msg_hwpresent
+	ife [nb_floppies], 0
+		set B, msg_hwabsent
+	int INT_PRINTF
+	set PC, POP

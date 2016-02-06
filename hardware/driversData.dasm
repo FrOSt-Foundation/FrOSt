@@ -3,6 +3,11 @@
 
 :nb_periph dat 0
 
+; * IACM
+.define IACM_NB_MAX 1
+:nb_IACMs dat 0
+:id_IACM dat 0
+
 ; * Screen
 .define SCREEN_NB_MAX 2
 .define SCREEN_SIZE SCREEN_WIDTH * SCREEN_HEIGHT
@@ -50,6 +55,9 @@
 ; ******* Id du matériel *******
 ; Les id (from doc) sont optenus avec `hw_ID_A + (hw_ID_B << 16)`
 ; avec hw_ID_A et hw_ID_B dans A et B avec HWQ
+.define IACM_ID_A 0xDACC
+.define IACM_ID_B 0x11E0
+
 .define CLOCK_ID_A 0xB402
 .define CLOCK_ID_B 0x12D0
 

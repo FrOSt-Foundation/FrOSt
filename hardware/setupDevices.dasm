@@ -18,6 +18,10 @@
 		ife I, J
 			set PC, end_loop_periph
 		hwq J
+		
+		ife A, IACM_ID_A
+			ife B, IACM_ID_B
+				set PC, hw_addIACM
 
 		ife A, MONITOR_ID_A
 			ife B, MONITOR_ID_B
@@ -58,6 +62,8 @@
 ;     - 
 
 :init_periphs
+	ifn [nb_IACMs], 0
+		jsr IACM_init
 	ifn [nb_screens], 0
 		jsr lem1802_init
 	ifn [nb_keyboards], 0
@@ -74,6 +80,13 @@
 ;  
 ;  Sets local variables of storage and ID
 ; ========================================
+
+:hw_addIACM
+	ife [nb_IACMs], IACM_NB_MAX
+		set PC, PEEK
+	set [nb_IACMs], 1
+	set [id_IACM], J
+	set PC, PEEK
 
 :hw_addScreen
 	ife [nb_screens], SCREEN_NB_MAX ; IFE because we don't have ">="

@@ -9,6 +9,10 @@
 ;     - 
 
 :keyboard_init
+	set B, INT_KEYBOARD
+	jsr keyboard_setInterrupt
+	set PC, POP
+	
 :keyboard_clearBuffer
 	set PUSH, A
 	
