@@ -1,15 +1,10 @@
-; *************************
-; Project: FrOSt
-; File: driversData.dasm
-; Description: Datas RAM utilisés par les drivers, originellement dans kernel/DAT.dasm.
-; *************************
+; ****** HARDWARE VARIABLES ******
+; Holds the IDs and hardware vars.
 
-; ******** Variables du matériel *******
-; contienent les id et variables du hw.
 :nb_periph dat 0
 
-; * Écran
-.define SCREEN_NB_MAX 1
+; * Screen
+.define SCREEN_NB_MAX 2
 .define SCREEN_SIZE SCREEN_WIDTH * SCREEN_HEIGHT
 .define SCREEN_WIDTH 32
 .define SCREEN_HEIGHT 12
@@ -19,34 +14,38 @@
 :id_screen2 dat 0
 :active_screen dat 0 ; utilisé par le scheduler
 
-; * Clavier
+; * Keyboard
 .define KEYBOARD_NB_MAX 2
 :nb_keyboards dat 0
 :msg_keyboards dat 0x7000
 :id_keyboard1 dat 0
 :id_keyboard2 dat 0
 
-; * Horloge
+; * Clock
 .define CLOCK_NB_MAX 1
 :nb_clocks dat 0
 :msg_clock1 dat 0x6000
 :id_clock1 dat 0
 :div_clock1 dat 60
 
-; * Lecteur de disquettes
-.define FLOPPY_NB_MAX 3
+; * Hard drives/floppy drives
+; We add the hard drives as a floppy drives because the only functional difference between them is the spinning mechanism, which we already take care of in setupDevices.
+; A rewrite will be needed if we want to spin the drive up and down anywhere else though...
+.define FLOPPY_NB_MAX 4
 :nb_floppies dat 0
 :id_floppy1 dat 0
 :id_floppy2 dat 0
 :id_floppy3 dat 0
+:id_floppy4 dat 0
 :msg_floppy1 dat 0x8000
 :msg_floppy2 dat 0x8001
-:msg_floppy3 dat 0x8003
+:msg_floppy3 dat 0x8002
+:msg_floppy4 dat 0x8003
 
 ; * SPED-3
-.define SPED_NB_MAX 1
-:nb_sped dat 0
-:id_sped dat 0
+;.define SPED_NB_MAX 1
+;:nb_sped dat 0
+;:id_sped dat 0
 
 ; ******* Id du matériel *******
 ; Les id (from doc) sont optenus avec `hw_ID_A + (hw_ID_B << 16)`
@@ -56,6 +55,9 @@
 
 .define FLOPPY_DRIVE_ID_A 0x24C5
 .define FLOPPY_DRIVE_ID_B 0x4FD5
+
+.define HARD_DRIVE_ID_A 0x7e91
+.define HARD_DRIVE_ID_B 0x1eb3
 
 .define KEYBOARD_ID_A 0x7406
 .define KEYBOARD_ID_B 0x30CF

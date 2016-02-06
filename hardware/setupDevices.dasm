@@ -33,11 +33,11 @@
 
 		ife A, FLOPPY_DRIVE_ID_A
 			ife B, FLOPPY_DRIVE_ID_B
-				set PC, hw_addFloppy
+				set PC, hw_addFloppyDrive
 		
-		ife A, SPED_ID_A
-			ife B, SPED_ID_B
-				set PC, hw_addSped
+		ife A, HARD_DRIVE_ID_A
+			ife B, HARD_DRIVE_ID_B
+				set PC, hw_addHardDrive
 
 		set PC, PEEK ; The device is unknown, we ignore it.
 		
@@ -66,8 +66,6 @@
 		jsr clock_init
 	ifn [nb_floppies], 0
 		jsr init_floppies
-	ifn [nb_sped], 0
-		jsr sped3_reinit
 	set PC, POP
 
 ; ========================================
@@ -106,19 +104,39 @@
 	set PC, PEEK
 
 
-:hw_addFloppy
+:hw_addFloppyDrive
 	ife [nb_floppies], FLOPPY_NB_MAX
 		set PC, PEEK
 	add [nb_floppies], 1
 	ife [nb_floppies], 1
 		set [id_floppy1], J
+	ife [nb_floppies], 2
+		set [id_floppy2], J
+	ife [nb_floppies], 3
+		set [id_floppy3], J
+	ife [nb_floppies], 4
+		set [id_floppy4], J
 	set PC, PEEK
-	
-	
-:hw_addSped
-	ife [nb_sped], SPED_NB_MAX
+
+; We add the hard drive as a floppy because the only functional difference with a floppy is the spinning mechanism, which we already take care of now.
+; A rewrite will be needed if we want to spin the drive up and down anywhere else though...
+:hw_addHardDrive
+	ife [nb_floppies], FLOPPY_NB_MAX
 		set PC, PEEK
-	add [nb_sped], 1
-	ife [nb_sped], 1
-		set [id_sped], J
+	add [nb_floppies], 1
+	ife [nb_floppies], 1
+		set [id_floppy1], J
+	ife [nb_floppies], 2
+		set [id_floppy2], J
+	ife [nb_floppies], 3
+		set [id_floppy3], J
+	ife [nb_floppies], 4
+		set [id_floppy4], J
+	
+	;SPIN_UP
+	set PUSH, A
+	set A, 0x0004
+	hwi [id_floppy1]
+	set A, POP
+	
 	set PC, PEEK

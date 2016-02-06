@@ -25,7 +25,7 @@
 ;
 ; msg 0x6000 is for the clock
 ; msg 0x7000 is for the keyboard
-; msg 0x8000 is for the M35FD
+; msg 0x8000-0x8003 is for the M35FD/M525HD
 ; 
 ; msg 0x0000 INT_MALLOC
 ; msg 0x0001 INT_FREE
