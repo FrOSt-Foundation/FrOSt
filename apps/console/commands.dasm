@@ -6,20 +6,20 @@
 :launch_echo
 	;Priting argument
 	set B, Y
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_help
 	;Printing commands
 	set B, msg_help
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_about
 	set B, msg_about
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
@@ -31,11 +31,11 @@
 	jsr ctoi
 	and Z,0xFF00 ;We only keep what colors
 	set B, Z
-	int 0x2000
+	int INT_CHANGECOLOR
 	set PC, POP
 	
 :launch_clear
-	int 0x2004
+	int INT_CLEARSCREEN
 	set PC, POP
 	
 :launch_kill
@@ -49,31 +49,31 @@
 	;We have the ID of the program to kill. TODO: Implement the rest.
 	
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 	:launch_kill_errNoArgs
 		set B, msg_errNoArgs
 		set J, 1
-		int 0x1000
+		int INT_PRINTF
 		set PC, POP
 	
 :launch_ls
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_cd
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_run
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 
@@ -84,41 +84,41 @@
 	jsr dump
 	
 	set B, msg_mem
-	int 0x1000
+	int INT_PRINTF
 	
 	add J, 18
 	set B, mem_print
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_mkdir
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_mv
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_cp
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_touch
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
 :launch_cat
 	set B, msg_todo
-	int 0x1000
+	int INT_PRINTF
 	
 	set PC, POP
 	
@@ -146,7 +146,7 @@
 		jsr dump
 		
 		set B, mem_print
-		int 0x1000
+		int INT_PRINTF
 		
 		set B, 10
 		add J, 7
@@ -156,11 +156,11 @@
 		jsr dump
 		
 		set B, mem_print
-		int 0x1000
+		int INT_PRINTF
 		
 		set B, [X + 2]
 		add J, 7
-		int 0x1000
+		int INT_PRINTF
 		add Z, 1
 		ifn Z, counter
 			ifn	[Z], 0

@@ -4,7 +4,9 @@
 ; *************************
 
 :console
-	int 0x2004
+	jsr lem1802_displayFrOStLogo
+
+	int INT_CLEARSCREEN
 	
 	set B, 0x2000
 	jsr lem1802_setColor
@@ -12,7 +14,7 @@
 	set B, console_welcomeMessage
 	set I, 1
 	set J, 1
-	int 0x1000 ;printf
+	int INT_PRINTF ;printf
 
 	set A, txt_commands
 	sub A, ptr_commands
@@ -20,15 +22,15 @@
 	set [nb_commands], A
 	
 	set B, 31 ; We allocate 31 words to save the command (32 characters - promt "> " + \0 (so it is considered a string)
-	int 0x0000 ; MALLOC
+	int INT_MALLOC ; MALLOC
 	ife Z, 0xFFFF ; No memory left
 		set PC, console_errorNotEnoughFreeSpace
 	set push,Z
-	int 0x0000 ; MALLOC
+	int INT_MALLOC ; MALLOC
 	ife Z, 0xFFFF ; No memory left
 		set PC, console_errorNotEnoughFreeSpace
 	set push,Z
-	int 0x0000 ; MALLOC
+	int INT_MALLOC ; MALLOC
 	ife Z, 0xFFFF ; No memory left
 		set PC, console_errorNotEnoughFreeSpace
 	set push,Z
@@ -37,18 +39,18 @@
 		set C, '>' ; 0x3e : ">"
 		set I, [SCREEN_HEIGHT]
 		set J,1
-		int 0x1001 ; printc
+		int INT_PRINTC ; printc
 		set J,3
 		set C,0x0220 ; Green space
-		int 0x1001
+		int INT_PRINTC
 		JSR console_readLine
 		set PC, console_loop
 	
 	
 :console_errorNotEnoughFreeSpace ; Generic routine that displays an error and crashes the DCPU.
-	int 0x2004 ; clear_screen
+	int INT_CLEARSCREEN ; clear_screen
 	set B, console_errorNotEnoughFreeSpace_text
 	set I, 1
 	set J, 1
-	int 0x1000 ; printf
+	int INT_PRINTF ; printf
 	set PC, end

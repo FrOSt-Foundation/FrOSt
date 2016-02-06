@@ -222,6 +222,9 @@
 	jsr lem1802_clear
 	set B, lem1802_FrOStLogo_font
 	jsr lem1802_setFont
+	
+	set B, 3
+	jsr lem1802_setBorder
 
 	set I, lem1802_FrOStLogo
 	set J, [active_screen]
@@ -230,16 +233,21 @@
 	:lem1802_displayFrOStLogo_loop1
 		sti [J], [I]
 		add A, 1
-		ifn A, 14
-			set PC, lem1802_displayFrOStLogo_loop1_skip
-		add J, 18
-		set A, 0
-		:lem1802_displayFrOStLogo_loop1_skip
+		ife A, 16
+			set A, 0
 		ifn I, lem1802_FrOStLogo_end
 			set PC, lem1802_displayFrOStLogo_loop1
-
+	
+	; Wait for a while before making the logo disappear
+	set A, 0
+	:lem1802_displayFrOStLogo_loop2
+		add A, 1
+		ifn A, 0xFFFF ;TODO: Tweak it when we know the monitor startup time
+			set PC, lem1802_displayFrOStLogo_loop2
+			
 	set B, 0
 	jsr lem1802_setFont
+	jsr lem1802_setBorder
 
 	set J, POP
 	set I, POP
