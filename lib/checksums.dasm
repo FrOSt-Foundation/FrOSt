@@ -3,13 +3,13 @@
 ; File: checksum.dasm
 ; *************************
 
-; Bien entendu ces checksum sont simples, et il est facile d'obtenir une collision complete, mais c'est un début, et reste utilisable tant que le besoin de sécurité n'est pas trop grand.
+; Of course these are simple checksum algorithms, it's really easy to get a complete collision, but it's the start and is reusable as long as the security needs are not too big.
 
-; Checksum pour la petite précision, ne faisant que ajouter les octets
-; X = début de plage [X] inclus
-; Y = fin de plage [Y] exclu
+; Checksum for small precision, only adds the words
+; X = begging of the area ([X] included)
+; Y = end of the area ([Y] excluded)
 ; 
-; A: Sortie de la somme
+; Returns the sum in A
 :checksum_simple
 	set PUSH, X
 
@@ -24,11 +24,11 @@
 	set X, POP
 	set PC, POP
 
-; Checksum multipliant l'octet ajouté avec son adresse
-; X = début de plage [X] inclus
-; Y = fin de plage [Y] exclu
+; Checksum that mults the added word with its address
+; X = begging of the area ([X] included)
+; Y = end of the area ([Y] excluded)
 ; 
-; A: Sortie de la somme
+; Returns the sum in A
 :checksum_mult
 	set PUSH, X
 	set PUSH, C

@@ -1,12 +1,8 @@
 ;---------------------------------------------
-;Calcule la longueur d'une string
-;Adresse de la string dans A
-;Retour dans Z
+; Calculates the length of a string
+; Address to the string in A
+; Returns length in Z
 ;---------------------------------------------
-;;;FONCTION strlen
-;;;DESCRIPTION longeur d'un string
-;;;ARG A adresse du string
-;;;ARG Z valeur de retour
 :strlen
 	set push,A
 	set push,B
@@ -24,13 +20,8 @@
 		set PC,pop
 
 ;---------------------------------------------
-;STRCMP return 0 in Z if the strings at A and at B are different
+; returns 0 in Z if the strings *A and *B are different
 ;---------------------------------------------
-;;;FONCTION strcmp
-;;;DESCRIPTION Compare deux string
-;;;ARG A string 1
-;;;ARG B string 2
-;;;ARG Z vaut 0 si les deux string sont identiques
 :strcmp
 	set push,A
 	set push,B
@@ -44,7 +35,7 @@
 		ifn [A],0
 			ifn [B],0
 				ife [A],[B]
-					set PC,peek ;plus rapide que set PC,sc
+					set PC,peek ; Faster than set PC, sc
 	ife [A],[B]
 		set Z,1
 	set B,pop
@@ -54,8 +45,8 @@
 	set PC,pop
 
 ;----------------------------------------------
-;STRCAT add the string B after A
-;By Yamakaky
+; STRCAT adds the string B after A
+; By Yamakaky
 ;----------------------------------------------
 :strcat
 	set push,Z
@@ -77,8 +68,8 @@
 	set PC,pop
 
 ;----------------------------------------------
-;STRCHR search char B in string A, return adress in Z, 0 otherwise
-;By Yamakaky
+; STRCHR searches char B in string A, returns address in Z, 0 otherwise
+; By Yamakaky
 ;----------------------------------------------
 :strchr
 	set push,A
@@ -90,7 +81,7 @@
 	add A,1
 	ifn [A],0
 		ifn [A],B
-			set PC,peek ;plus rapide que set PC,sh
+			set PC,peek ; Faster than set PC, sh
 	ife [A],B
 		set Z,A
 	set B,pop
@@ -100,15 +91,15 @@
 	set PC,pop
 
 ;-----------------------------------------------
-;STRPBRK search in the string A the first occurence
-;of the characters pushed on the stack
-;B is the number of characters on the stack
-;return a pointer on the first occurence in Z
-;set B with 
+; STRPBRK searches in the string A the first occurence of the characters pushed on the stack
+; B is the number of characters on the stack
+; Return a pointer to the first occurence in Z
+; set B with 
+;-----------------------------------------------
 :strpbrk_pc dat 0
 :strpbrk_c_save dat 0
 :strpbrk_a_save dat 0
-;-----------------------------------------------
+
 :strpbrk	
 	set [strpbrk_pc],pop
 	set [strpbrk_c_save],c
@@ -135,8 +126,7 @@
 		set pc,[strpbrk_pc]
 
 ;-----------------------------------------------
-;STRSTR find a string B in a string A return 0 in Z if not found
-;return the adress of the second string in Z otherwise
+; STRSTR finds a string *B in string *A, returns 0 in Z if not found, returns the adress of the second string in Z otherwise.
 ;-----------------------------------------------
 :strstr
 	set push,B

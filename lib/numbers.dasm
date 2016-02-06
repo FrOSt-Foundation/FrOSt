@@ -1,6 +1,6 @@
 ;--------------------------------------------------------
-;DUMP print the content of A in [C] in base B. Need at most 4 words
-;doesn't modify any of the regs
+; DUMP prints the content of A in [C] in base B. Needs at most 4 words
+; Doesn't modify any of the registers.
 ;--------------------------------------------------------
 :dump
 	set push,I
@@ -33,10 +33,10 @@
 		set PC,pop
 
 ;-----------------------------------------
-;take a char* in [A], the base in B and return the number in Z
-;Si 0x alors change la base pour 16
-;Si 0d alors change la base pour 10
-;Si 0b alors change la base pour 2
+; Takes a char* in [A], the base in B and returns the number in Z
+; If 0x then change the base to 16
+; If 0d then change the base to 10
+; If 0b then change the base to 2
 ;-----------------------------------------
 :ctoi
 	set push,X

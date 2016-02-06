@@ -1,7 +1,12 @@
-;---------------------------------------------
-;INITIALISATION DE L'IH
-;PAS DE MODIFICATION DES REGISTRES
-;---------------------------------------------
+; --------------
+;  init_interruptHandler
+; --------------
+; Description:
+;     - Inits the interupt handler. No registers modified.
+; Arguments:
+;     - 
+; Returns:
+;     - 
 :init_interruptHandler
 	IAS interrupt_handler
 	set push,A
@@ -12,36 +17,36 @@
 	
 	set pc , pop
 
-;--------------------------------------------------------
-;INTERRUPT HANDLER
-;FAILS IN SILENCE IF ERROR
-;/!\ ASSUMES SP IS CORRECTLY POSITIONNED /!\
-;msg 0x6000 is for the clock
-;msg 0x7000 is for the keyboard
-;msg 0x8000 -> lecteur de disquette
-
-;msg 0x0000 malloc B blocs return in Z
-;msg 0x0001 free the b bloc
-;msg 0x0002 initialize the b bloc
-
-;msg 0x1000 printf B-> string, I-> line, J-> colonne
-
-;msg 0x2000 changer de couleur, couleur dans B
-;msg 0x2001 scroll ecran d'une ligne
-;msg 0x2003 recuperer la couleur actuelle dans B
-
-;msg 0x1001 printc carac dans C, ligne dans I, colone dans J
-
-;msg 0x2002 efface ligne I
-;msg 0x2004 clear ecran
-
-;msg 0x3000 launch a program
-
-;msg 0x4000 ask for the keyboard (blocked) return caracter in C
-;msg 0x4001 ask for the keyboard (non blocked) return caracter in C
-
-;msg 0x5000 stop the execution of a program, return msg in B
-;--------------------------------------------------------
+; ============================================
+; INTERRUPT HANDLER
+; 
+; Fails in silence if error
+; /!\ ASSUMES SP IS CORRECTLY POSITIONNED /!\
+;
+; msg 0x6000 is for the clock
+; msg 0x7000 is for the keyboard
+; msg 0x8000 is for the M35FD
+; 
+; msg 0x0000 INT_MALLOC
+; msg 0x0001 INT_FREE
+; msg 0x0002 INT_INITMEM
+;
+; msg 0x1000 INT_PRINTF
+; msg 0x1001 INT_PRINTC
+;
+; msg 0x2000 INT_CHANGECOLOR
+; msg 0x2001 INT_SCROLL
+; msg 0x2002 INT_CLEARLINE
+; msg 0x2003 INT_GETCOLOR
+; msg 0x2004 INT_CLEARSCREEN
+;
+; msg 0x3000 INT_LAUNCH
+;
+; msg 0x4000 INT_WAITKEY_BLOCKING
+; msg 0x4001 INT_WAITKEY_NONBLOCKING
+;
+; msg 0x5000 INT_KILL
+; ============================================
 :interrupt_handler
 	set push,A
 	shr A,12
