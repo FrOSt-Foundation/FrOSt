@@ -1,0 +1,363 @@
+; ------------------------------------------------------------------------------------------
+;  A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
+; ------------------------------------------------------------------------------------------
+
+.define MEM_BLOCK_FREE 0xFFFF
+
+; ------------
+;  malloc
+; ------------
+; Arguments:
+;     - A: Size
+; Returns:
+;     - Z: Address or MALLOC_ERROR. You can check if an error happened with IF_MALLOC_ERROR.
+
+:malloc
+	set Z, MALLOC_ERROR
+	set push, A
+	add A, 2
+	ifg A, [free_mem]
+		set pc, malloc_error
+	ifl A, 3 ; If size <= 0
+		set pc, malloc_error
+	sub [free_mem],A
+	; Going through memory to check if there is a big enough block
+	set push, I
+	set I, [start_mem]
+	:malloc_loop0
+		ife [I], MEM_BLOCK_FREE
+			set pc, mallock_freeBlock	
+	:malloc_continue
+		add I, [I+1]
+		ifn I, [end_mem]
+			set pc,malloc_loop0
+	:malloc_error
+		set I, pop
+		set A, pop
+		set pc, pop
+
+	; A block is free, checking size
+	:mallock_freeBlock
+		ifg [I+1], A
+				set pc, malloc_newBlock
+		ife [I+1],A
+				set pc, malloc_return
+		set pc,malloc_continue
+
+	;Size is too big, we cut it
+	:malloc_newBlock
+		set push, [I+1]
+		set [I+1], A
+		add I, A
+		set [I], MEM_BLOCK_FREE
+		sub peek, A
+		set [I+1], pop
+		sub I, A
+
+	;on retourne le pointeur apres avoir update l'header
+	:malloc_return
+		set Z,I
+		set [Z],[currently_running]
+		add Z,2
+		set I,pop
+		set A,pop
+		set pc,pop
+
+; ------------
+;  free
+; ------------
+; Arguments:
+;     - A: Address
+; Returns:
+;     - 
+
+:free
+	; We find the right memory block, just in case.
+	set push, B
+	set push, A
+	set A, [start_mem]
+	set B, [start_mem]
+	:free_loop
+		ifg B, peek
+			set pc, free_found
+		set A, B
+		add B, [B+1]
+		set pc, free_loop
+		; Memory block found, we free it.
+
+	:free_found
+		set [A], MEM_BLOCK_FREE
+		add [free_mem], [A+1]
+		ifn [B], MEM_BLOCK_FREE
+			set pc, free_left
+		add [A+1],[B+1]
+
+	:free_left
+		set B,[start_mem]
+		set push,C
+		set C,[start_mem]
+		; We get the left block address
+		:free_left_loop
+			add C, [C+1]
+			ife A, C
+				set pc, free_left_end
+			add B, [B+1]
+			set pc, free_left_loop
+			; We concatenate if we need to
+		:free_left_end
+			ifn [B], MEM_BLOCK_FREE
+				set pc, free_end
+			add [B+1], [A+1]
+
+	:free_end
+		set C, pop
+		set A, pop
+		set B, pop
+		set pc, pop
+
+; ------------
+;  free_program
+; ------------
+; Description:
+;     - Frees all memory blocks allocated by a given program.
+; Arguments:
+;     - A: Program ID
+; Returns:
+;     - 
+
+:free_program
+	set push, A
+	set A,[start_mem]
+	:loop_recherche
+		ife [A],peek
+			jsr free
+		add A,[A+1]
+		ifn A,[end_mem]
+			set pc,loop_recherche
+		set A,pop
+		set pc,pop
+
+; ------------
+;  clear_memory
+; ------------
+; Description:
+;     - Zeroes a given block of memory. IT HAS TO BE ALREADY ALLOCATED!
+; Arguments:
+;     - A: Block address
+; Returns:
+;     - 
+
+:clear_memory
+	; We find the right memory block
+	set push, B
+	set push, A
+	set A, [start_mem]
+	set B, [start_mem]
+	:clear_loop
+		ifg B, peek
+			set pc, clear_found
+		set A, B
+		add B, [B+1]
+		set pc, clear_loop
+	; Memory block found, zeroing...
+	:clear_found
+		set B, SP
+		set SP, A
+		add SP, [A+1]
+		add A, 2
+	:clear_clear
+		set push, 0
+		ifn A, SP
+			set pc, clear_clear
+		; Block entirely zeroed
+		set SP, B
+		set A, pop
+		set B, pop
+		set pc, pop
+
+; ------------
+;  memcpy
+; ------------
+; Description:
+;     - Copies from [B] to [A] for C words.
+; Arguments:
+;     - B: Pointer to the first word in the original bock
+;     - A: Pointer to the first word in the new block
+;     - C: Number of words to copy
+; Returns:
+;     - 
+
+:memcpy
+	set push, I
+	set push, J
+	set push, C
+	set push, C
+	set I, A
+	set J, B
+	add C, B
+	ifl peek, 8
+		set pc, memcpy_loop2
+	mod peek, 8
+	ifn peek, 0
+		set pc, memcpy_loop3
+	:memcpy_loop
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		ifn C, J
+			set pc, memcpy_loop
+		set C, pop
+		set C, pop
+		set J, pop
+		set I, pop
+		set pc, pop
+	:memcpy_loop2
+		sti [I], [J]
+		ifn C, J
+			set pc, memcpy_loop2
+		set C, pop
+		set C, pop
+		set J, pop
+		set I, pop
+		
+		set pc, pop
+
+	:memcpy_loop3
+		sti [I], [J]
+		sub peek, 1
+		ifn peek, 0
+			set pc, memcpy_loop3
+		set pc, memcpy_loop
+
+; ------------
+;  size
+; ------------
+; Description:
+;     - Gets the size of a memory block
+; Arguments:
+;     - A: Memory block
+; Returns:
+;     - B: Block size
+:size
+	; We find the right memory block
+	set push, A
+	set A, [start_mem]
+	set B, [start_mem]
+	:size_loop
+		ifg B, peek
+			set pc, size_found
+		set A, B
+		add B, [B+1]
+		set pc, size_loop
+	;Memory block found, we clear
+	:size_found
+		set B, [A+1]
+		sub B, 2
+		set A, pop
+		set pc, pop
+		
+; ------------
+;  realloc
+; ------------
+; Description:
+;     - Reallocates address A with size B, and copies the data from A to the new address (cuts if A>B).
+;       If the next address is free, we overwrite.
+; Arguments:
+;     - A: Address
+;     - B: Size
+; Returns:
+;     - A: New address or REALLOC_ERROR if error. You can check if an error happened with IF_REALLOC_ERROR.
+
+:realloc
+	set push, C
+	set push, A
+	set A, [start_mem]
+	set C, [start_mem]
+	:realloc_loop
+		ifg C, peek
+			set pc, realloc_found
+		set A, C
+		add C, [C+1]
+		set pc, realloc_loop
+
+	:realloc_found
+		add SP, 1
+		set push, B
+		ifl B, [A+1]
+			set pc, realloc_down
+		ife [C], MEM_BLOCK_FREE
+			set pc, realloc_up
+
+	:realloc_malloc
+		set push, A
+		set push, Z
+		set A, B
+		jsr malloc
+		IF_MALLOC_ERROR
+			set pc, realloc_error
+
+	:realloc_end
+		set C, pick 1
+		set C, [C+1]
+		sub C, 2
+		set B, Z
+		set Z, pop
+		set A, pop
+		add A, 2
+		set push, A
+		set A, B
+		set B, pop
+		jsr memcpy
+
+		set push, A
+		set A, B
+		jsr free
+
+		set A, pop
+		set B, pop
+		set C, pop
+		set pc, pop
+
+	:realloc_error
+		set B, pop
+		set C, pop
+		set A, MALLOC_ERROR
+		set pc, pop
+	:realloc_up
+		ifl [C+1], B
+			set pc, realloc_malloc
+		sub B, [A+1]
+		;B contient la taille necessaire
+		set push, A
+		set push, Z
+		set A, B
+		jsr malloc
+
+		set Z, pop
+		set A, pop
+		add [A+1], B
+		add [A+1], 2
+		
+		set B, pop
+		set C, pop
+		
+		set pc, pop
+
+	:realloc_down
+		set push, A
+		sub [A+1], B
+		add A,[A+1]
+		set [A], [currently_running]
+		set [A+1], B
+		jsr free
+
+		set A, pop
+		set B, pop
+		set C, pop
+	
+		set pc, pop

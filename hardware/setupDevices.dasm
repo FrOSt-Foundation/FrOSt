@@ -1,0 +1,124 @@
+; ------------
+;  malloc
+; ------------
+; Description:
+;     - Detects and initilizes all known peripherals by calling appropriate subroutines.
+; Arguments:
+;     - 
+; Returns:
+;     - 
+
+:setup_devices
+	jsr push_regs
+	hwn I
+	set J, -1
+	set PUSH, loop_periph ; Faster and simpler for later
+	:loop_periph
+		add J, 1
+		ife I, J
+			set PC, end_loop_periph
+		hwq J
+
+		ife A, MONITOR_ID_A
+			ife B, MONITOR_ID_B
+				set PC, hw_addScreen
+
+		ife A, KEYBOARD_ID_A
+			ife B, KEYBOARD_ID_B
+				set PC, hw_addKeyboard
+
+		ife A, CLOCK_ID_A
+			ife B, CLOCK_ID_B
+				set PC, hw_addClock
+
+		ife A, FLOPPY_DRIVE_ID_A
+			ife B, FLOPPY_DRIVE_ID_B
+				set PC, hw_addFloppy
+		
+		ife A, SPED_ID_A
+			ife B, SPED_ID_B
+				set PC, hw_addSped
+
+		set PC, PEEK ; The device is unknown, we ignore it.
+		
+	:end_loop_periph
+		set A, POP ; We remove the label on the stack
+		jsr init_periphs
+		jsr pop_regs
+		set PC, POP
+
+; --------------
+;  init_periphs
+; --------------
+; Description:
+;     - Initializes detected devices and calls the corresponding routines. No register changed.
+; Arguments:
+;     - 
+; Returns:
+;     - 
+
+:init_periphs
+	ifn [nb_screens], 0
+		jsr lem1802_init
+	ifn [nb_keyboards], 0
+		jsr keyboard_init
+	ifn [nb_clocks], 0
+		jsr clock_init
+	ifn [nb_floppies], 0
+		jsr init_floppies
+	ifn [nb_sped], 0
+		jsr sped3_reinit
+	set PC, POP
+
+; ========================================
+;  PRIVATE FONCTIONS
+;  DO NOT CALL FROM ANYWHERE ELSE
+;  
+;  Sets local variables of storage and ID
+; ========================================
+
+:hw_addScreen
+	ife [nb_screens], SCREEN_NB_MAX ; IFE because we don't have ">="
+		set PC, PEEK ; Too many devices
+	add [nb_screens], 1
+	ife [nb_screens], 1
+		set [id_screen1], J
+	ife [nb_screens], 2
+		set [id_screen2], J
+	set PC, PEEK
+
+
+:hw_addKeyboard
+	ife [nb_keyboards], KEYBOARD_NB_MAX
+		set PC, PEEK
+	add [nb_keyboards], 1
+	ife [nb_keyboards], 1
+		set [id_keyboard1], J
+	set PC, PEEK
+
+
+:hw_addClock
+	ife [nb_clocks], CLOCK_NB_MAX
+		set PC, PEEK
+	add [nb_clocks], 1
+	ife [nb_clocks], 1
+		set [id_clock1], J
+	set PC, PEEK
+
+
+:hw_addFloppy
+	ife [nb_floppies], FLOPPY_NB_MAX
+		set PC, PEEK
+	add [nb_floppies], 1
+	ife [nb_floppies], 1
+		set [id_floppy1], J
+	set PC, PEEK
+	
+	
+:hw_addSped
+	ife [nb_sped], SPED_NB_MAX
+		set PC, PEEK
+	add [nb_sped], 1
+	ife [nb_sped], 1
+		set [id_sped], J
+	set PC, PEEK

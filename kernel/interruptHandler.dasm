@@ -1,0 +1,200 @@
+;---------------------------------------------
+;INITIALISATION DE L'IH
+;PAS DE MODIFICATION DES REGISTRES
+;---------------------------------------------
+:init_interruptHandler
+	IAS interrupt_handler
+	set push,A
+	set A,nombre_commandes
+	sub A,int_ptr
+	set [nombre_ptr],A
+	set A,pop
+	
+	set pc , pop
+
+;--------------------------------------------------------
+;INTERRUPT HANDLER
+;FAILS IN SILENCE IF ERROR
+;/!\ ASSUMES SP IS CORRECTLY POSITIONNED /!\
+;msg 0x6000 is for the clock
+;msg 0x7000 is for the keyboard
+;msg 0x8000 -> lecteur de disquette
+
+;msg 0x0000 malloc B blocs return in Z
+;msg 0x0001 free the b bloc
+;msg 0x0002 initialize the b bloc
+
+;msg 0x1000 printf B-> string, I-> line, J-> colonne
+
+;msg 0x2000 changer de couleur, couleur dans B
+;msg 0x2001 scroll ecran d'une ligne
+;msg 0x2003 recuperer la couleur actuelle dans B
+
+;msg 0x1001 printc carac dans C, ligne dans I, colone dans J
+
+;msg 0x2002 efface ligne I
+;msg 0x2004 clear ecran
+
+;msg 0x3000 launch a program
+
+;msg 0x4000 ask for the keyboard (blocked) return caracter in C
+;msg 0x4001 ask for the keyboard (non blocked) return caracter in C
+
+;msg 0x5000 stop the execution of a program, return msg in B
+;--------------------------------------------------------
+:interrupt_handler
+	set push,A
+	shr A,12
+	ifg A,[nombre_ptr]
+		set pc,ih_bug
+	add A,int_ptr
+	set pc,[A]
+	
+:ih_bug
+	set A,pop
+	rfi 1
+
+:ih_ask_k
+	set A,pop
+	and A,0x000F
+	ife A,0
+		set pc,ih_ask_bk
+	ife A,1
+		set pc,ih_ask_nk
+	rfi 1
+
+:ih_mem
+	set A,pop
+	and A,0x000F
+	ife A,0
+		set pc,ih_malloc
+	ife A,1
+		set pc,ih_free
+	ife A,2
+		set pc,ih_clear_memory
+	rfi 1
+
+:ih_print
+	set A,pop
+	set push,[active_screen]
+	set push,A
+	set A,[currently_running]
+	set [active_screen],[A+4]
+	set A,pop
+	and A,0x000F
+	ife A,0
+		set pc,ih_printf
+	ife A,1
+		set pc,ih_printc
+	set [active_screen],pop
+	rfi 1
+
+:ih_screen
+	set A,pop
+	set push,[active_screen]
+	set push,A
+	set A,[currently_running]
+	set [active_screen],[A+4]
+	set A,pop
+	and A,0x000F
+	ife A,0
+		set pc,ih_couleur
+	ife A,1
+		jsr lem1802_scroll
+	ife A,4
+		set pc,ih_clear_screen
+	ife A,2
+		jsr lem1802_clearLine
+	ife A,3
+		set pc,ih_getC
+	set [active_screen],pop
+	rfi 1
+
+:ih_clavier
+	set A,pop
+	set pc,sched_resumeKey
+	rfi 0
+
+:ih_malloc
+	set A , B
+	JSR malloc
+	rfi 0
+
+:ih_free
+	set A , B
+	JSR free
+	rfi 0
+
+:ih_printf
+	set A , B
+	JSR lem1802_printf
+	set [active_screen],pop
+	rfi 0
+
+:ih_couleur
+	JSR lem1802_setColor
+	set [active_screen],pop
+	rfi 0
+
+:ih_getC
+	set B,[screen_color]
+	set [active_screen],pop
+	rfi 0
+
+:ih_printc
+	JSR lem1802_printc
+	set [active_screen],pop
+	rfi 0
+
+:ih_clear_screen
+	JSR lem1802_clear
+	set [active_screen],pop
+	rfi 0
+
+:ih_clear_memory
+	set A , B
+	JSR clear_memory
+	rfi 0
+
+:ih_clock
+	set A,pop
+	set A,process
+	add A,[current_process]
+	ife 0,[currently_running]
+		set A,0
+	ife A,0
+		set pc,schedChanger
+	:ih_clock_loop1
+		add A,1
+		ife A,counter
+			set A,process
+		ife [A],0
+			set pc,ih_clock_loop1
+		set [current_process],A
+		sub [current_process],process
+		set A,[A]
+		set pc,schedChanger
+	
+:ih_launch
+	set A,pop
+	;JSR launch
+	rfi 0
+	
+:ih_disquette
+	set A,pop
+	;set pc,Scheduler
+	rfi 0
+
+:ih_ask_bk
+	set pc,sched_blockKey
+
+:ih_ask_nk
+	JSR keyboard_getNextPressedKey
+	rfi 0
+
+:ih_ask_disk
+	rfi 0
+
+:ih_stop
+	set A,pop
+	set pc,Finisher

@@ -1,0 +1,29 @@
+:bootSequence
+	JSR init_memory
+	JSR setup_devices
+	JSR init_interruptHandler
+	set A,console
+	set B, console_title
+	set C, 1
+	set push,end
+	set push,A
+	;set A, debug
+	;set B, debug_text
+	;set C, 1
+	set pc, sched_addProcess
+
+; ------------------------------------------------------------------------------------------
+; INIT MEMORY HANDLER
+; The memory begin at [start_mem] and ends at [end_mem]
+; A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
+; ------------------------------------------------------------------------------------------
+:init_memory ; Initializes memory
+	set push,A
+	set [start_mem], FrOSt_end
+	set A,[start_mem]
+	set [A], 0xFFFF ;free
+	set [A+1],[end_mem]
+	sub [A+1],[start_mem] ;Total memory
+	set [free_mem],[A+1]
+	set A,pop
+	set pc,pop

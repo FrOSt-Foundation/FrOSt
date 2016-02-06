@@ -1,6 +1,6 @@
 .include DAT.dasm
-.include InterruptHandler.dasm
-.include Loader.dasm
+.include interruptHandler.dasm
+.include loader.dasm
 .include MMU.dasm
-.include Memoire.dasm
-.include Scheduler.dasm
+.include memory.dasm
+.include scheduler.dasm

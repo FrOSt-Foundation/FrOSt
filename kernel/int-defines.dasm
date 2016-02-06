@@ -1,1 +1,1 @@
-; eGit gère pas les liens symboliques, le fichier original est dans /defines.
+; Git doesn't allow symbolic links, original file in /defines.

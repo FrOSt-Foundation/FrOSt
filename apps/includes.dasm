@@ -1,0 +1,6 @@
+; *************************
+; Project: FrOSt
+; File: includes.dasm
+; *************************
+
+.include console/includes.dasm

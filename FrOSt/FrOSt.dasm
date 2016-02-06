@@ -1,16 +1,14 @@
-set pc, BootSequence
+set pc, bootSequence
 
 .include ../defines/includes.dasm
 
-.include ../Boot/includes.dasm
-.include ../Hardware/includes.dasm
+.include ../boot/includes.dasm
+.include ../hardware/includes.dasm
 .include ../kernel/includes.dasm
 .include ../lib/includes.dasm
 .include ../fs/includes.dasm
 
-.include ../Apps/includes.dasm
-.include ../CodeATester/debug.dasm
+.include ../apps/includes.dasm
 
 set pc , end
-DAT 0x1234 ;Utilisé par le binToHex (http://azertyfun.tk/projects/binToHex.php), permet de reconnaître la fin de l'OS.
 :FrOSt_end
