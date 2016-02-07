@@ -42,6 +42,10 @@
 		ife A, HARD_DRIVE_ID_A
 			ife B, HARD_DRIVE_ID_B
 				set PC, hw_addHardDrive
+		
+		ife A, EDC_ID_A
+			ife B, EDC_ID_B
+				set PC, hw_addEDC
 
 		set PC, PEEK ; The device is unknown, we ignore it.
 		
@@ -72,6 +76,8 @@
 		jsr clock_init
 	ifn [nb_floppies], 0
 		jsr init_floppies
+	ifn [nb_EDCs], 0
+		jsr edc_init
 	set PC, POP
 
 ; ========================================
@@ -152,4 +158,13 @@
 	hwi [id_floppy1]
 	set A, POP
 	
+	set PC, PEEK
+
+:hw_addEDC
+	ife [nb_EDCs], EDC_NB_MAX
+		set PC, PEEK
+	add [nb_EDCs], 1
+	ife [nb_EDCs], 1
+		set [id_edc], J
+	set [edc_version], C
 	set PC, PEEK

@@ -379,45 +379,61 @@
 	set PC, POP
 	
 :launch_hwlist
-	set I, 8
+	set A, 0
+	:launch_hwlist_loop1
+		int INT_SCROLL
+		add A, 1
+		ifn A, 5
+			set PC, launch_hwlist_loop1
+		
+
+	set I, 7
 	set J, 1
 	set B, msg_hwlist
 	int INT_PRINTF
 	
-	set I, 8
+	set I, 7
 	set J, 7
 	set B, msg_hwpresent
 	ife [nb_IACMs], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
 	
-	set I, 9
+	set I, 8
 	set J, 10
 	set B, msg_hwpresent
 	ife [nb_screens], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
 	
-	set I, 10
+	set I, 9
 	set J, 11
 	set B, msg_hwpresent
 	ife [nb_keyboards], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
 	
-	set I, 11
+	set I, 10
 	set J, 8
 	set B, msg_hwpresent
 	ife [nb_clocks], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
 	
-	set I, 12
+	set I, 11
 	set J, 14
 	set B, msg_hwpresent
 	ife [nb_floppies], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
+	
+	set I, 12
+	set J, 6
+	set B, msg_hwpresent
+	ife [nb_EDCs], 0
+		set B, msg_hwabsent
+	int INT_PRINTF
+	
 	set PC, POP
 
 :launch_mount

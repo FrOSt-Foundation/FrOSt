@@ -54,11 +54,12 @@ DAT 0x1F, "sleep", 0x1F, "mount", 0
 :msg_errNoArgs DAT "Error: argument required", 0
 
 :msg_hwlist
-DAT "IACM:                           ", 13
-DAT "LEM1802:                        ", 13
-DAT "Keyboard:                       ", 13
-DAT "Clock:                          ", 13
-DAT "Floppy/disk:                    ", 0
+DAT "IACM:", 0x11
+DAT "LEM1802:", 0x11
+DAT "Keyboard:", 0x11
+DAT "Clock:", 0x11
+DAT "Floppy/disk:", 0x11
+DAT "EDC:", 0
 :msg_hwpresent DAT "Present", 0
 :msg_hwabsent DAT "Absent", 0
 

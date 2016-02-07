@@ -7,3 +7,4 @@
 .include HDD/includes.dasm
 .include Clock/includes.dasm
 ;.include SPED-3/includes.dasm
+.include EDC/includes.dasm

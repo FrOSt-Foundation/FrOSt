@@ -9,11 +9,18 @@
 ;     - 
 :init_interruptHandler
 	IAS interrupt_handler
-	set push,A
-	set A,nCommands
-	sub A,int_ptr
-	set [n_ptr],A
-	set A,pop
+	set push, A
+	
+	set A, nCommands
+	sub A, int_ptr
+	set [n_ptr], A
+	
+	ifn [nb_edcs], 0
+		set A, iacm_str_mode_full
+	ifn [nb_edcs], 0
+		jsr edc_puts
+	
+	set A, pop
 	
 	set pc , pop
 
@@ -255,6 +262,11 @@
 			set B, 1
 		jsr iacm_setmode
 		set [iacm_mode], B
+		
+		set A, iacm_str_mode_full
+		ife [iacm_mode], 1
+			set A, iacm_str_mode_reduced
+		jsr edc_puts
 		
 		set B, POP
 		set A, POP
