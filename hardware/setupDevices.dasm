@@ -4,9 +4,9 @@
 ; Description:
 ;     - Detects and initilizes all known peripherals by calling appropriate subroutines.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :setup_devices
 	jsr push_regs
@@ -18,7 +18,7 @@
 		ife I, J
 			set PC, end_loop_periph
 		hwq J
-		
+
 		ife A, IACM_ID_A
 			ife B, IACM_ID_B
 				set PC, hw_addIACM
@@ -38,17 +38,17 @@
 		ife A, FLOPPY_DRIVE_ID_A
 			ife B, FLOPPY_DRIVE_ID_B
 				set PC, hw_addFloppyDrive
-		
+
 		ife A, HARD_DRIVE_ID_A
 			ife B, HARD_DRIVE_ID_B
 				set PC, hw_addHardDrive
-		
+
 		ife A, EDC_ID_A
 			ife B, EDC_ID_B
 				set PC, hw_addEDC
 
 		set PC, PEEK ; The device is unknown, we ignore it.
-		
+
 	:end_loop_periph
 		set A, POP ; We remove the label on the stack
 		jsr init_periphs
@@ -61,9 +61,9 @@
 ; Description:
 ;     - Initializes detected devices and calls the corresponding routines. No register changed.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :init_periphs
 	ifn [nb_IACMs], 0
@@ -83,7 +83,7 @@
 ; ========================================
 ;  PRIVATE FONCTIONS
 ;  DO NOT CALL FROM ANYWHERE ELSE
-;  
+;
 ;  Sets local variables of storage and ID
 ; ========================================
 
@@ -151,13 +151,13 @@
 		set [id_floppy3], J
 	ife [nb_floppies], 4
 		set [id_floppy4], J
-	
+
 	;SPIN_UP
 	set PUSH, A
 	set A, 0x0004
 	hwi [id_floppy1]
 	set A, POP
-	
+
 	set PC, PEEK
 
 :hw_addEDC

@@ -41,7 +41,7 @@
 	set B,pop
 	set B,pop
 	set A,pop
-	
+
 	set PC,pop
 
 ;----------------------------------------------
@@ -64,7 +64,7 @@
 	set B,pop
 	set A,pop
 	set Z,pop
-	
+
 	set PC,pop
 
 ;----------------------------------------------
@@ -87,20 +87,20 @@
 	set B,pop
 	set B,pop
 	set A,pop
-	
+
 	set PC,pop
 
 ;-----------------------------------------------
 ; STRPBRK searches in the string A the first occurence of the characters pushed on the stack
 ; B is the number of characters on the stack
 ; Return a pointer to the first occurence in Z
-; set B with 
+; set B with
 ;-----------------------------------------------
 :strpbrk_pc dat 0
 :strpbrk_c_save dat 0
 :strpbrk_a_save dat 0
 
-:strpbrk	
+:strpbrk
 	set [strpbrk_pc],pop
 	set [strpbrk_c_save],c
 	set c,b
@@ -157,5 +157,5 @@
 		set A,pop
 		set I,pop
 		set B,pop
-		
+
 		set PC,pop

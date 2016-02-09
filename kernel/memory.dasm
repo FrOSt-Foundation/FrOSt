@@ -10,7 +10,7 @@
 ; Arguments:
 ;     - A: Size
 ; Returns:
-;     - Z: Address or MALLOC_ERROR. You can check if an error happened with IF_MALLOC_ERROR.
+;     - Z: Address or MALLOC_ERROR. You can check if an error happened with  ife Z, MALLOC_ERROR.
 
 :malloc
 	set Z, MALLOC_ERROR
@@ -271,7 +271,7 @@
 ;     - A: Address
 ;     - B: Size
 ; Returns:
-;     - A: New address or REALLOC_ERROR if error. You can check if an error happened with IF_REALLOC_ERROR.
+;     - A: New address or REALLOC_ERROR if error. You can check if an error happened with ife A, REALLOC_ERROR.
 
 :realloc
 	set push, C
@@ -298,7 +298,7 @@
 		set push, Z
 		set A, B
 		jsr malloc
-		IF_MALLOC_ERROR
+		 ife Z, MALLOC_ERROR
 			set pc, realloc_error
 
 	:realloc_end

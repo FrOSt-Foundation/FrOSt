@@ -14,57 +14,57 @@
 		set EX, 0x0001
 	ife [id_floppy1], 0 ;Si il n'y a pas de lecteur de floppy
 		set PC, POP
-	
+
 	set A, 0
 	hwi [id_floppy1] ;Si il n'y a pas de floppy dans le lecteur
 	ife B, 0x0
 		set EX, 0x0002
 	ife B, 0x0
 		set PC, POP
-		
+
 	set X, 0
 	jsr FFAT16_readSector
-		
+
 	jsr FFAT16_waitFinish
-	
+
 	;Vérification de la présence de 0xAAAA et 0xBBBB (identifie comme FFAT-16 compatible)
 	set I, Z
-	
+
 	ifn [I], 0xFF16
 		jsr FFAT16_notCompatible
 	add I, 1
-	
+
 	ifn [I], 0xFF16
 		jsr FFAT16_notCompatible
-	
-	
+
+
 	;Enregistrement du numéro de série
 	add I, 1
 	set [serialNumber], [I]
-	
+
 	add I, 1
 	set [serialNumber2], [I]
-	
+
 	add I, 1
-	
+
 	set B, I
 	set A, volumeName
 	set C, 15
 	jsr memcpy
-	
+
 	set [FFAT16_valid], 1
-	
+
 	set B, Z
 	int INT_FREE
-	
+
 	set PC, POP
-	
+
 :FFAT16_notCompatible
 	set B, Z
 	int INT_FREE
-	
+
 	set EX, 0x0005
-	
+
 	set A, POP
-	
+
 	set PC, POP

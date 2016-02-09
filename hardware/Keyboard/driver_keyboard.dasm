@@ -4,24 +4,24 @@
 ; Description:
 ;     - Inits the keyboard. Used by the hardware manager.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :keyboard_init
 	set B, INT_KEYBOARD
 	jsr keyboard_setInterrupt
 	set PC, POP
-	
+
 :keyboard_clearBuffer
 	set PUSH, A
-	
+
 	set A, 0
 	hwi [id_keyboard1]
 
 	set A, POP
 	set PC, POP
-	
+
 ; -----------------------
 ;  keyboard_isKeyPressed
 ; -----------------------
@@ -32,7 +32,7 @@
 ; Returns:
 ;     - C: 1 if key pressed, 0 if not.
 
-:keyboard_isKeyPressed 
+:keyboard_isKeyPressed
 	set PUSH, A
 	set PUSH, B
 
@@ -48,16 +48,16 @@
 ; Description:
 ;     - Store next key typed.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
 ;     - C: next key, or 0 if buffer empty.
 
 :keyboard_getNextPressedKey
 	set PUSH, A
-	
+
 	set A, 1
 	hwi [id_keyboard1]
-	
+
 	set A, POP
 	set PC, POP
 
@@ -69,13 +69,13 @@
 ; Arguments:
 ;     - B: Message
 ; Returns:
-;     - 
+;     -
 
 :keyboard_setInterrupt
 	set PUSH, A
-	
+
 	set A, 3
 	hwi [id_keyboard1]
-	
+
 	set A, POP
 	set PC, POP

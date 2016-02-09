@@ -4,33 +4,33 @@
 ; Description:
 ;     - Inits the EDC. Used by the hardware manager.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :edc_init
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
-	
+
 	set A, 0x0000
 	set B, 0b00011
 	hwi [id_edc]
-	
+
 	set C, [edc_version]
 	shr C, 5
 	and C, 0b11
 	add C, 1
 	set [edc_rows], C
-	
+
 	set C, [edc_version]
 	and C, 0b11111
 	mul C, 4
 	set [edc_columns], C
-	
+
 	mul C, [edc_rows]
 	set [edc_cells], C
-	
+
 	set C, POP
 	set B, POP
 	set A, POP
@@ -44,37 +44,37 @@
 ; Arguments:
 ;     - A: Pointer to null-terminated string. Must not be longer than [edc_cells].
 ; Returns:
-;     - 
+;     -
 
 :edc_puts
 	set PUSH, A
 	set PUSH, B
 	set PUSH, Z
-	
+
 	jsr edc_clear
-	
+
 	jsr strlen
 	ifg Z, [edc_cells]
 		set PC, POP
-	
+
 	:edc_write_loop1
 		set B, [A]
-		
+
 		ife B, 0
 			set PC, edc_write_continue1
-		
+
 		set PUSH, A
-		
+
 		set A, 0x0003
 		hwi [id_edc]
-		
+
 		set A, POP
 		add A, 1
-		
+
 		set PC, edc_write_loop1
-	
+
 	:edc_write_continue1
-	
+
 	set Z, POP
 	set B, POP
 	set A, POP
@@ -88,15 +88,15 @@
 ; Arguments:
 ;     - A: Pointer to null-terminated string. Must not be longer than [edc_cells].
 ; Returns:
-;     - 
+;     -
 :edc_clear
 	set PUSH, A
 	set PUSH, B
-	
+
 	set A, 0x0002
 	set B, 0b11
 	hwi [id_edc]
-	
+
 	set B, POP
 	set A, POP
 	set PC, POP

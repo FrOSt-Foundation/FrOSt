@@ -61,7 +61,7 @@ Nous utilisons actuellement
   (http://www.croes.org/gerald/blog/git-modele-de-branche-efficace/649/)
 * N'hésitez pas à relire et commenter les commits des autres. Le code
   résultant n'en sera que meilleur.
-  
+
 
 #### Normes
 

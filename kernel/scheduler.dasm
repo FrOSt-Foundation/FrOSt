@@ -25,17 +25,17 @@
 ;     - B: Process name.
 ;     - C: 1 if screen is needed, 0 otherwise.
 ; Returns:
-;     - 
+;     -
 
 :sched_addProcess
 	ife [running_process], 4 ; If the process limit is 4, we can't add any other one.
 		set pc, end
 	add [running_process], 1 ; Else, we add one to the number of running processes
-	
+
 	set PUSH, Z
 	set PUSH, [currently_running]
 	set PUSH, A
-	
+
 	; We try to allocate memory
 	set A, 5
 	jsr malloc
@@ -44,64 +44,64 @@
 
 	set A, process
 	sub A, 1 ; We remove 1 so we can ADD A, 1 in the loop. Not very clean, Faërie ^^
-	
+
 	:sched_addProcess_loop1
 		;Until we have not found room for a process
 		add A, 1
 		ifn [A], 0
 			ifn A, counter
 				set pc, sched_addProcess_loop1
-		
+
 	ife A, counter
 		set pc, sched_addProcess_error
-	
+
 	set [A], Z ; We save to processs address to the previously allocated memory.
 	set A, Z ; We redirect the process address to this allocated memory (???)
 	set [A], [counter]
 	add [counter], 1
-	
+
 	set [currently_running], A ; We say that the current process is the one we just created
-		
+
 	set [A + 1], 10 ; The second word is the priority ; we set it to the maximum.
 	add [total_prio], 10
 	set [A + 2], B ; The third word is the pointer tot the process name, we thus set the name argument there
 	set PUSH, A
-	
+
 	; We try to allocate memory.
 	set A, 0x30
 	jsr malloc
 	ife Z, 0xFFFF ; If we can't, crash.
 		set pc, end
-		
+
 	set A, PEEK ; Getting the currently filling process address
 	set [Z + 0x2F], [SP + 1] ; At the end of the allocated memory, we put the address of the process
 	add Z, 0x26 ; Stack address
 	set [A + 3], Z ; We put the pointer to the stack in the program
-	
+
 	ife C, 0 ;If we don't need any screen (C = 0) -> we add a screen-less process
 		set pc, sched_addProcess_noScreen
-		
+
 	; Else we allocated memory for the screen VRAM
 	set A, SCREEN_SIZE
 	jsr malloc
 	ife Z, 0xFFFF ; If MALLOC didn't work, we crash
 		set pc, end
-	
+
 	set PUSH, B ; We save B and put in it the pointer to the VRAM
 	set B, Z
 	jsr lem1802_setVram ; We map the screen there
 	set B, POP
 	set A, POP
-	
+
 	set [A + 4], Z ; We put the VRAN address where we allocated RAM.
 	set A, POP
-	
+
 	; We display the screen
 	set A, [currently_running]
 	set [currently_running], POP
 	set [screen_process], A
 	set Z, POP
-	
+
 	set pc, schedChanger ; We change the program
 
 	:sched_addProcess_error
@@ -135,7 +135,7 @@
 ; Arguments:
 ;     - A: Program ID
 ; Returns:
-;     - 
+;     -
 
 :schedChanger
 	; Saving the current process
@@ -147,7 +147,7 @@
 	set PUSH, I
 	set PUSH, J
 	set PUSH, EX
-	
+
 	set B, A
 	set A, [currently_running]
 	ifn A, 0
@@ -182,7 +182,7 @@
 	set X, POP
 	set C, POP
 	set B, POP
-	
+
 	rfi 0
 
 ; --------------
@@ -191,9 +191,9 @@
 ; Description:
 ;     - Freezes the current program until the keyboard triggers an interrupt.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :sched_blockKey
 	set PUSH, B
@@ -226,9 +226,9 @@
 ; Description:
 ;     - Resumes the program with the screen waiting for a key.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 :sched_resumeKey
 	set A, key_need
 	sub A, 1

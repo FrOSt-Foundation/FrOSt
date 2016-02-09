@@ -6,22 +6,22 @@
 ; Description:
 ;     - Inits the clock. Used by the hardware manager.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :clock_init
 	set PUSH,A
 	set PUSH,B
-	
+
 	set A, 2 ;Enables interrupts with message msg_clock1
 	set B, [msg_clock1]
 	hwi [id_clock1]
-	
+
 	set A, 0 ; Disable clock ticking.
 	set B, 0
 	hwi [id_clock1]
-	
+
 	set B, POP
 	set A, POP
 	set PC, POP
@@ -32,37 +32,37 @@
 ; Description:
 ;     - Get the current clock time.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
 ;     - C: The current clock time.
 
 :clock_getTime
 	set PUSH, A
-	
+
 	set A, 1
 	hwi [id_clock1]
-	
+
 	set A, POP
-	set PC POP
-	
+	set PC, POP
+
 ; --------------
 ;  clock_resetTime
 ; --------------
 ; Description:
 ;     - Resets the clock time.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 
 :clock_resetTime
 	set PUSH, A
 	set PUSH, B
-	
+
 	set B, [clock_speed]
 	set A, 0
 	hwi [id_clock1]
-	
+
 	set B, POP
 	set A, POP
 	set PC, POP
@@ -75,15 +75,15 @@
 ; Arguments:
 ;     - B: speed
 ; Returns:
-;     - 
+;     -
 
-:clock_setSpeed 
+:clock_setSpeed
 	set PUSH, A
-	
+
 	set [clock_speed], B
 	set A, 0
 	hwi [id_clock1]
-		
+
 	set A, POP
 	set PC, POP
 
@@ -93,7 +93,7 @@
 ; Description:
 ;     - Gets the clock speed.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
 ;     - B: Clock speed
 
@@ -109,13 +109,13 @@
 ; Arguments:
 ;     - B: Interrupt message, or 0 to disable
 ; Returns:
-;     - 
+;     -
 
 :clock_setInterrupt
 	set PUSH, A
-	
+
 	set A, 2
 	hwi [id_clock1]
-	
+
 	set A, POP
 	set PC, POP

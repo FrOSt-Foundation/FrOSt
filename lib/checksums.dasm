@@ -8,33 +8,33 @@
 ; Checksum for small precision, only adds the words
 ; X = begging of the area ([X] included)
 ; Y = end of the area ([Y] excluded)
-; 
+;
 ; Returns the sum in A
 :checksum_simple
 	set PUSH, X
 
 	set A, 0
-	
+
 	:checksum_simple_loop1
 		add A, [X]
 		add X, 1
 		ifn X, Y
 			set PC, checksum_simple_loop1
-	
+
 	set X, POP
 	set PC, POP
 
 ; Checksum that mults the added word with its address
 ; X = begging of the area ([X] included)
 ; Y = end of the area ([Y] excluded)
-; 
+;
 ; Returns the sum in A
 :checksum_mult
 	set PUSH, X
 	set PUSH, C
-	
+
 	set A, 0
-	
+
 	:checksum_mult_loop1
 		set C, [X]
 		mul C, X
@@ -42,7 +42,7 @@
 		add X, 1
 		ifn X, Y
 			set PC, checksum_mult_loop1
-	
+
 	set C, POP
 	set X, POP
 	set PC, POP

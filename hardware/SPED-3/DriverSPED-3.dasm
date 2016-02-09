@@ -50,14 +50,14 @@
 ; Y = Adresse de fin du buffer
 :sped3_setBuffer_data
 	set PUSH, Y
-	
+
 	sub Y, X
 	div Y, 2
 	set sped3_buffer_begin, X
 	set sped3_buffer_capacity, Y
-	
+
 	set Y, POP
-	set PC, POP 
+	set PC, POP
 
 ; Définit les variables du buffer du SPED-3
 ; X = Adresse de début du buffer
@@ -65,7 +65,7 @@
 :sped3_setBuffer_point
 	set sped3_buffer_begin, X
 	set sped3_buffer_capacity, Y
-	
+
 	set PC, POP
 
 
@@ -86,7 +86,7 @@
 	set A, 2
 	set X, 0
 	hwi [id_sped]
-	
+
 	set sped3_angle, 0
 
 	; On attend que la rotation se termine.
@@ -100,7 +100,7 @@
 	set A, 1
 	set Y, 0
 	hwi [id_sped]
-	
+
 	set sped3_buffer_begin, 0
 	set sped3_buffer_capacity, 0
 
@@ -117,16 +117,16 @@
 	set PUSH, A
 	set PUSH, X
 	set PUSH, Y
-	
+
 	set Y, X
 	set X, sped3_angle
 	jsr sped3_rotate
-	
+
 	set A, 1
 	set X, sped3_buffer_begin
 	set Y, sped3_buffer_capacity
 	hwi [id_sped]
-	
+
 	set Y, POP
 	set X, POP
 	set A, POP
@@ -137,12 +137,12 @@
 	set PUSH, A
 	set PUSH, X
 	set PUSH, Y
-	
+
 	set A, 1
 	set X, sped3_buffer_begin
 	set Y, sped3_buffer_capacity
 	hwi [id_sped]
-	
+
 	set Y, POP
 	set X, POP
 	set A, POP
@@ -176,14 +176,14 @@
 	set A, 0
 	ifn Y, 0
 		set PC, sped3_rotate_skip1
-		
+
 		hwi [id_sped]
 		ife B, 2
 			set PC, sped3_rotate_skip3
 		set PC, sped3_rotate_skip2
-		
+
 	:sped3_rotate_skip1
-	
+
 	ife Y, 2
 		set PC, sped3_rotate_skip2
 
@@ -193,12 +193,12 @@
 				set PC, sped3_rotate_loop1
 
 	:sped3_rotate_skip2
-	
+
 	set A, 2
 	hwi [id_sped]
-	
+
 	set sped3_angle, X
-	
+
 	ifl Y, 2
 		set PC, sped3_rotate_skip3
 
@@ -209,7 +209,7 @@
 			set PC, sped3_rotate_loop2
 
 	:sped3_rotate_skip3
-	
+
 	set B, POP
 	set A, POP
 	set PC, POP
@@ -221,7 +221,7 @@
 
 	set A, 2
 	hwi [id_sped]
-	
+
 	set sped3_angle, X
 
 	set A, POP

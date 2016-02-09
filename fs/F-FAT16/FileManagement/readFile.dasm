@@ -11,11 +11,11 @@
 
 ; ================================
 ; FFAT16_readFile
-; 
+;
 ; Lit le contenu d'un fichier.
 ; Si taille du fichier > freemem/2 :
 ; Impossible de lire.
-; 
+;
 ; Arguments
 ; ---------
 ; Y : Le nom de fichier
@@ -28,11 +28,11 @@
 
 :FFAT16_readFile
 	set EX, 0
-	IF_FALSE [FFAT16_valid]
+	ife 0, [FFAT16_valid]
 		set EX, 0x0001
 	ifn EX, 0
 		set PC, POP
-	
+
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
@@ -40,32 +40,32 @@
 	set PUSH, J
 	set PUSH, X
 	set PUSH, Y
-	
+
 	set B, Y
 	jsr FFAT16_getFileByName ;Ce qui nous intéresse, c'est le secteur X (Xe entrée FAT)
 	ifn EX, 0
 		set PC, FFAT16_readFile_break0
 	set X, Y
 	set Y, Z
-	
+
 	set A, [free_mem]
 	div A, 2
 	ifg Y, A
 		set PC, FFAT16_readFile_break0
-		
+
 	set B, 512
 	mul B, X
 	int INT_MALLOC
-	IF_MALLOC_ERROR
+	 ife Z, MALLOC_ERROR
 		set EX, 0x0003
 	ifn EX, 0
 		set PC, FFAT16_readFile_break0
-	
+
 	; Désormais :
 	; X = Le nombre de clusters
 	; Y = Le cluster de début
 	; Z = Adresse de la mémoire allouée (512 * nb de clusters)
-	
+
 	set PUSH, Z
 	set PUSH, X
 	set I, 0
@@ -90,7 +90,7 @@
 				set PC, FFAT16_readFile_loop0
 	set X, POP
 	set Z, POP
-	
+
 	:FFAT16_readFile_break0
 	set Y, POP
 	set X, POP
@@ -99,9 +99,9 @@
 	set C, POP
 	set B, POP
 	set A, POP
-	
+
 	set PC, POP
-	
+
 :FFAT16_readFile_error0
 	set X, POP
 	set Y, POP

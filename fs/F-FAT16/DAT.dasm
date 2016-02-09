@@ -4,7 +4,7 @@
 ; *************************
 
 :serialNumber DAT 0 ;Prend deux mots (par exemple, 0x1234, 0x5678 est un numéro de série)
-:serialNumber2 DAT 0 
+:serialNumber2 DAT 0
 :volumeName DAT "               ", 0 ;Chaîne contenant le nom de volume (human-readable)
 
 :FFAT16_valid DAT FALSE ;Booléen. Mis à TRUE si le disque est reconnu comme VALID à l'init

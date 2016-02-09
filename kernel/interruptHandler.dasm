@@ -4,29 +4,29 @@
 ; Description:
 ;     - Inits the interupt handler. No registers modified.
 ; Arguments:
-;     - 
+;     -
 ; Returns:
-;     - 
+;     -
 :init_interruptHandler
 	IAS interrupt_handler
 	set push, A
-	
+
 	set A, nCommands
 	sub A, int_ptr
 	set [n_ptr], A
-	
+
 	ifn [nb_edcs], 0
 		set A, iacm_str_mode_full
 	ifn [nb_edcs], 0
 		jsr edc_puts
-	
+
 	set A, pop
-	
+
 	set pc , pop
 
 ; ============================================
 ; INTERRUPT HANDLER
-; 
+;
 ; Fails in silence if error
 ; /!\ ASSUMES SP IS CORRECTLY POSITIONNED /!\
 ;
@@ -34,7 +34,7 @@
 ; msg 0x7000 is for the keyboard
 ; msg 0x8000-0x8003 is for the M35FD/M525HD
 ; msg 0x9000 is for the IACM
-; 
+;
 ; msg 0x0000 INT_MALLOC
 ; msg 0x0001 INT_FREE
 ; msg 0x0002 INT_INITMEM
@@ -62,7 +62,7 @@
 		set pc,ih_bug
 	add A,int_ptr
 	set pc,[A]
-	
+
 :ih_bug
 	set A,pop
 	rfi 1
@@ -187,12 +187,12 @@
 		sub [current_process],process
 		set A,[A]
 		set pc,schedChanger
-	
+
 :ih_launch
 	set A,pop
 	;JSR launch
 	rfi 0
-	
+
 :ih_floppy
 	set A,pop
 	;set pc,Scheduler
@@ -219,36 +219,36 @@
 	ife A, 0x9001
 		set PC, ih_power_mode
 	rfi 0
-	
+
 	:ih_power_sleep
 		set PUSH, A
 		set PUSH, B
 		set PUSH, Z
 		ife [nb_IACMs], 0
 			rfi 0
-		
+
 		ifn [nb_screens], 0
 			jsr lem1802_getVram
 		set PUSH, Z
-		
+
 		set B, 0
 		ifn [nb_screens], 0
 			jsr lem1802_setVram
-		
+
 		set B, 0
 		ifn [nb_clocks], 0
 			jsr clock_setspeed
-		
+
 		jsr iacm_sleep
-		
+
 		set B, 1
 		ifn [nb_clocks], 0
 			jsr clock_setspeed
-		
+
 		set B, POP
 		ifn [nb_screens], 0
 			jsr lem1802_setVram
-		
+
 		set Z, POP
 		set B, POP
 		set A, POP
@@ -262,13 +262,13 @@
 			set B, 1
 		jsr iacm_setmode
 		set [iacm_mode], B
-		
+
 		set A, iacm_str_mode_full
 		ife [iacm_mode], 1
 			set A, iacm_str_mode_reduced
 		jsr edc_puts
-		
+
 		set B, POP
 		set A, POP
-		
+
 		rfi 0

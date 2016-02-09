@@ -13,7 +13,7 @@
 		ifn I, 4
 			set PC, dump_loop0
 	set J, POP
-	
+
 	set I,B
 	set push,A
 	set push,B

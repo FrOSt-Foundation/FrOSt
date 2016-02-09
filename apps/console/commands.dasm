@@ -7,22 +7,22 @@
 	;Priting argument
 	set B, Y
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_help
 	;Printing commands
 	set B, msg_help
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_about
 	set B, msg_about
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_color
 	set A, Y
 	ife [A],0
@@ -33,11 +33,11 @@
 	set B, Z
 	int INT_CHANGECOLOR
 	set PC, POP
-	
+
 :launch_clear
 	int INT_CLEARSCREEN
 	set PC, POP
-	
+
 :launch_kill
 	set A, Y
 	set B, 10
@@ -45,47 +45,47 @@
 	ife [A], 0
 		set PC, launch_kill_errNoArgs
 	set A, Z
-	
+
 	;We have the ID of the program to kill. TODO: Implement the rest.
-	
+
 	set B, msg_todo
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 	:launch_kill_errNoArgs
 		set B, msg_errNoArgs
 		set J, 1
 		int INT_PRINTF
 		set PC, POP
-	
+
 :launch_ls
 	jsr push_regs
 	jsr FFAT16_listFiles
 	;TODO : Afficher tout ça et ne pas oublier le free de mémoire
-	
+
 	ifn EX, 0
 		set PC, launch_error
 
 	set B, msg_ls
 	set J, 0
 	int INT_PRINTF
-	
+
 	set A, Y
 	set B, 10
 	set C, mem_print
 	jsr dump
-	
+
 	set B, mem_print
 	set J, 22
 	int INT_PRINTF
-	
+
 	set PUSH, Z
 		set X, Z
 		;Allocation d'un buffer de 15 mots (14 pour le nom de fichier et 1 pour la fin de chaine)
 		set B, 15
 		int INT_MALLOC
-		IF_MALLOC_ERROR
+		 ife Z, MALLOC_ERROR
 			set PC, launch_ls_break0
 		set PUSH, Z
 		add Z, 14
@@ -106,9 +106,9 @@
 			set I, 12
 			set J, 0
 			int INT_PRINTF
-			
+
 			add X, 14
-			
+
 			set J, POP
 			add J, 1
 			set PUSH, J
@@ -120,24 +120,24 @@
 	:launch_ls_break0
 	set B, POP
 	int INT_FREE
-	
+
 	jsr pop_regs
 	set PC, POP
-	
+
 :launch_run
 	jsr push_regs
-	
+
 	jsr FFAT16_readFile
 	ifn EX, 0
 		set PC, launch_error
-	
+
 	set I, Z
 	set PUSH, Z
 		jsr Z
 	set B, POP
-	
+
 	int INT_FREE
-	
+
 	jsr pop_regs
 	set PC, POP
 
@@ -146,61 +146,61 @@
 	set B, 16
 	set C, mem_print
 	jsr dump
-	
+
 	set B, msg_mem
 	int INT_PRINTF
-	
+
 	add J, 18
 	set B, mem_print
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_mkdir
 	set B, msg_todo
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_mv
 	set B, msg_todo
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_cp
 	set B, msg_todo
 	int INT_PRINTF
-	
+
 	set PC, POP
-	
+
 :launch_touch
 	jsr push_regs
 	set B, 1
 	set C, Y
 	jsr FFAT16_newFile
-	
+
 	ifn EX, 0
 		set PC, launch_error
-	
+
 	jsr pop_regs
 	set PC, POP
-	
+
 :launch_cat
 	jsr push_regs
 	jsr FFAT16_readFile
-	
+
 	ifn EX, 0
 		set PC, launch_error
-	
+
 	set B, Z
 	int INT_PRINTF
-	
+
 	int INT_FREE
-	
+
 	jsr pop_regs
 	set PC, POP
-	
+
 :launch_ps
 	set Z, process
 	ife [Z], 0
@@ -209,12 +209,12 @@
 	set PUSH, J
 	set I, mem_print
 	set J, 0
-	
+
 	:launch_ps_loop2
 		sti [I], 0
 		ifn 4, J
 			set pc, launch_ps_loop2
-			
+
 	set J, POP
 	set I, POP
 	set B, 10
@@ -223,32 +223,32 @@
 		set X, [Z]
 		set A, [X]
 		jsr dump
-		
+
 		set B, mem_print
 		int INT_PRINTF
-		
+
 		set B, 10
 		add J, 7
 		set A, [X + 1]
-		
+
 		set C, mem_print
 		jsr dump
-		
+
 		set B, mem_print
 		int INT_PRINTF
-		
+
 		set B, [X + 2]
 		add J, 7
 		int INT_PRINTF
 		add Z, 1
 		ifn Z, counter
 			ifn	[Z], 0
-				set pc, launch_ps_loop1	
+				set pc, launch_ps_loop1
 	set PC, POP
 
 :launch_test
-	
-	
+
+
 	set PC, POP
 
 :launch_shutdown
@@ -259,11 +259,11 @@
 	jsr lem1802_setVram
 	jsr clock_setSpeed
 	set PC,end
-	
+
 :launch_format
 	set B, msg_confirmFormat
 	int INT_PRINTF
-	
+
 	:launch_format_loop0
 		int INT_WAITKEY_NOTBLOCKING
 		ifn C, 0
@@ -271,113 +271,113 @@
 				set PC, POP
 		ife C, 0
 			set PC, launch_format_loop0
-		
+
 	jsr FFAT16_format
-	
+
 	int INT_SCROLL
 	set B, msg_format_warn
 	set J, 0
 	int INT_PRINTF
-		
+
 	set PC, POP
-	
+
 :launch_diskinf
 	set B, msg_diskInf
 	int INT_PRINTF
-	
+
 	; COMPATIBLE
 	; ----------
 	set C, '0'
-	IF_TRUE [FFAT16_VALID]
+	ifn 0, [FFAT16_VALID]
 		set C, '1'
 	set I, 10
 	set J, 20
 	int 0x1001
-	
+
 	set B, volumeName
 	set I, 11
 	set J, 15
 	int INT_PRINTF
-	
+
 	; SERIAL NUMBER
 	; -------------
-	
+
 	set A, [serialNumber]
 	set B, 16
 	set C, mem_print
 	jsr dump
-	
+
 	set B, mem_print
 	set I, 12
 	set J, 17
 	int INT_PRINTF
-	
+
 	set A, serialNumber
 	add A, 1
 	set A, [A]
 	set B, 16
 	set C, mem_print
 	jsr dump
-	
+
 	set B, mem_print
 	set I, 12
 	set J, 22
 	int INT_PRINTF
-	
+
 	set PC, POP
 
 :launch_rm
 	jsr push_regs
-	
+
 	set B, Y
 	jsr FFAT16_deleteFile
 	ifn EX, 0
 		set PC, launch_error
-	
+
 	jsr pop_regs
 	SET PC, POP
-	
+
 :launch_error
 		set PUSH, EX
 		set B, msg_errCode
 		set J, 0
 		int INT_PRINTF
-		
+
 		set A, POP
 		set B, 10
 		set C, mem_print
 		jsr dump
-		
+
 		set B, mem_print
 		set J, 15
 		int INT_PRINTF
-		
+
 		jsr pop_regs
 		set PC, POP
 
 :launch_sleep
 	ife [nb_IACMs], 0
 		set PC, pop
-	
+
 	jsr lem1802_getVram
 	set PUSH, Z
-	
+
 	set B, 0
 	jsr lem1802_setVram
-	
+
 	set B, 0
 	jsr clock_setspeed
-	
+
 	jsr iacm_sleep
-	
+
 	set B, 1
 	jsr clock_setspeed
-	
+
 	set B, POP
 	jsr lem1802_setVram
-	
+
 	set PC, POP
-	
+
 :launch_hwlist
 	set A, 0
 	:launch_hwlist_loop1
@@ -385,58 +385,58 @@
 		add A, 1
 		ifn A, 5
 			set PC, launch_hwlist_loop1
-		
+
 
 	set I, 7
 	set J, 1
 	set B, msg_hwlist
 	int INT_PRINTF
-	
+
 	set I, 7
 	set J, 7
 	set B, msg_hwpresent
 	ife [nb_IACMs], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
-	
+
 	set I, 8
 	set J, 10
 	set B, msg_hwpresent
 	ife [nb_screens], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
-	
+
 	set I, 9
 	set J, 11
 	set B, msg_hwpresent
 	ife [nb_keyboards], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
-	
+
 	set I, 10
 	set J, 8
 	set B, msg_hwpresent
 	ife [nb_clocks], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
-	
+
 	set I, 11
 	set J, 14
 	set B, msg_hwpresent
 	ife [nb_floppies], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
-	
+
 	set I, 12
 	set J, 6
 	set B, msg_hwpresent
 	ife [nb_EDCs], 0
 		set B, msg_hwabsent
 	int INT_PRINTF
-	
+
 	set PC, POP
 
 :launch_mount
 	JSR FFAT16_init
-	
+
 	set PC, POP

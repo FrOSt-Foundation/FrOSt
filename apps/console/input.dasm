@@ -1,4 +1,4 @@
-:console_readLine	
+:console_readLine
 	set J, 3 ; Char address on the line
 	; Initializing memory
 	set X,0
@@ -12,8 +12,8 @@
 		int INT_WAITKEY_NOTBLOCKING ; Wait until a character is typed. It will be savec in C.
 		ife C, 0
 			set pc, console_readLine_loop
-		set PC, console_processChar	
-	
+		set PC, console_processChar
+
 :console_processChar
 	ife C, KBD_RETURN ; Return
 		set PC, console_processCommand
@@ -29,14 +29,14 @@
 	; If none of the above conditions is met, then we display the char.
 	;set I, SCREEN_HEIGHT ; We will display the character at the last line.
 	int INT_PRINTC ; printc
-	
+
 	sub J, 3 ; We remove the two chars from J needed to display correctly on the screen
-	
+
 	;set [Z + J], C doesn't work, too many registers for DevCPU.
 	add B, J
 	set [B], C
 	sub B, J
-	
+
 	add J, 4 ; Then we put those 2 chars plus another one since we just typed one
 	set C,0x220
 	int INT_PRINTC
@@ -81,13 +81,13 @@ jsr lem1802_setColor
 set B,pick 1
 set pc,console_readLine_loop
 :console_processCommand
-	
+
 	; --------------
 	; Parse
 	; --------------
 	set C,0x20
 	int INT_PRINTC ; We remoce the square at the end of the string
-	
+
 	; We peek I,J.
 	set I, pick 1
 	set J,pick 2
@@ -96,7 +96,7 @@ set pc,console_readLine_loop
 		sti [J],[I]
 		ifg [I], 0x21 ;If we find a space, \t or \n or \0, we exit the loop
 			set PC, console_processCommand_loop
-	
+
 	:console_processCommand_endLoop
 	add I, 1
 	set J,pick 3
@@ -113,54 +113,54 @@ set pc,console_readLine_loop
 	; Launcher
 	; -------------------
 	:launcher
-	
+
 	int INT_SCROLL ; In any case, we scroll
 	set A, pick 2
 	set I, 0
-	
+
 	:launch_loop
 		set B, [txt_commands + I]
 		; We compare the command in A and the one in B
 		jsr strcmp
-		
+
 		;If it is the right command, we launch the corresponding routine savec in the pointer array.
 		ife Z, 1
 			set PC, console_launch
-		
+
 		add I, 1
 		ifl I, [nb_commands]
 			set PC, launch_loop
-			
-			
-		
+
+
+
 	; ----------------
 	; Unknown command
 	; ----------------
-	
+
 	int INT_GETCOLOR
 	set PUSH, B ;We save the current color of the screen
-	
+
 	set B, 0x4000
 	jsr lem1802_setColor
-	
+
 	int INT_SCROLL ; scroll
-	
+
 	set B, console_unknownCommand
 	set I, SCREEN_HEIGHT
 	set J, 1
 	int INT_PRINTF ; printf
-	
+
 	; Displaying the command
 	set J, 21
 	set B, pick 3
 	int INT_PRINTF
-	
+
 	int INT_SCROLL ; scroll
-	
+
 	set B, POP ; We restore the previously saved color
 	jsr lem1802_setColor
 	set PC, pop
-	
+
 :console_backspace
 	ife J, 3
 		set PC, console_readLine_loop
@@ -181,8 +181,8 @@ set pc,console_readLine_loop
 	jsr lem1802_setColor
 	set B,pick 1
 	set PC, console_readLine_loop
-	
-	
+
+
 :console_launch
 	set B, [ptr_commands + I]
 	set push,console_endCommand
@@ -191,7 +191,7 @@ set pc,console_readLine_loop
 	set I, SCREEN_HEIGHT
 	set J, 1
 	set PC, B
-	
+
 :console_endCommand
 	int INT_SCROLL
 	set PC, pop

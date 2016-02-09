@@ -18,42 +18,42 @@
 
 :FFAT16_getFileByName
 	set EX, 0
-	IF_FALSE [FFAT16_valid]
+	ife 0, [FFAT16_valid]
 		set EX, 0x0001
 	ife EX, 0x0001
 		set PC, POP
-	
+
 	set PUSH, A
 	set PUSH, B
 	set PUSH, C
 	set PUSH, I
 	set PUSH, J
-	
+
 	set PUSH, B
-	
+
 	set B, 15
 	int INT_MALLOC
-	IF_MALLOC_ERROR
+	 ife Z, MALLOC_ERROR
 		set PC, FFAT16_getFileByName_error0
-		
+
 	set X, Z ;On veut sauvegarder le Z en X car on aura besoin de deux emplacements mémoire pour comparer les strings, et un pour la FAT
-	
+
 	add Z, 14
 	set [Z], 0 ;On ajoute le end-string
-	
+
 	set B, 15
 	int INT_MALLOC
-	IF_MALLOC_ERROR
+	 ife Z, MALLOC_ERROR
 		set PC, FFAT16_getFileByName_error0
-	
+
 	set Y, Z
-	
+
 	;On ajoute le end-string
 	add Z, 14
 	set [Z], 0
-	
+
 	set B, POP
-	
+
 	set PUSH, X
 		set C, B
 		jsr FFAT16_formatFileName ;On transforme le nom de fichier en nom de fichier F-FAT16.
@@ -61,21 +61,21 @@
 		jsr FFAT16_readSector
 		jsr FFAT16_waitFinish
 	set X, POP
-	
+
 	set PUSH, Y
 		jsr FFAT16_getFilesNumber
 		set J, Y
 	set Y, POP
-	
+
 	ife J, 0
 		set PC, FFAT16_getFileByName_error2
-	
+
 	; À ce stade:
 	; J = Nombre de fichiers
 	; X = string argument formaté
 	; Y = emplacement pour comparer les strings
 	; Z = secteur de la FAT
-	
+
 	; Désormais, on va trouver le fichier correspondant en comparant les noms de fichier un à un.
 	;
 	; Algorithme :
@@ -108,16 +108,16 @@
 		add I, 1
 		ifn B, 0 ;Si la comparaison est vraie
 			set PC, FFAT16_getFileByName_break0
-			
+
 		add Z, 16
 		ifl I, J
 			set PC, FFAT16_getFileByName_loop0
-		
+
 		:FFAT16_getFileByName_break0
 		sub J, 1 ;On remet J à sa valeur initiale (on a ajouté 1 plus haut)
 		ifg I, J
 			set PC, FFAT16_getFileByName_error1
-	
+
 	:FFAT16_getFileByName_end
 	;On libère toute la mémoire
 	set Z, POP
@@ -127,21 +127,21 @@
 	int INT_FREE
 	set B, Y
 	int INT_FREE
-	
+
 	set X, I
-	
+
 	sub I, 1
 	mul I, 16
 	add I, Z ;On trouve l'entrée FAT (I * 16 + offset)
-		
+
 	set Y, [I]
 	add I, 1
 	set Z, [I]
-	
+
 	jsr FFAT16_getFileByName_popRegs
 	set EX, 0
 	set PC, POP
-	
+
 :FFAT16_getFileByName_error0
 	set B, POP
 	jsr POP_REGS
@@ -154,7 +154,7 @@
 	int INT_FREE
 	set B, Y
 	int INT_FREE
-	
+
 	jsr FFAT16_getFileByName_popRegs
 	set EX, 0x0008
 	set PC, POP
@@ -165,7 +165,7 @@
 	int INT_FREE
 	set B, Y
 	int INT_FREE
-	
+
 	jsr FFAT16_getFileByName_popRegs
 	set EX, 0x0006
 	set PC, POP
@@ -178,4 +178,3 @@
 	set B, POP
 	set A, POP
 	set PC, [tmpV]
-	
