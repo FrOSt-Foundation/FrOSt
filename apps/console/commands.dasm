@@ -65,7 +65,7 @@
 	;TODO : Afficher tout ça et ne pas oublier le free de mémoire
 
 	ifn EX, 0
-		set PC, launch_error
+		set PC, launch_fserror
 
 	set B, msg_ls
 	set J, 0
@@ -129,7 +129,7 @@
 
 	jsr FFAT16_readFile
 	ifn EX, 0
-		set PC, launch_error
+		set PC, launch_fserror
 
 	set I, Z
 	set PUSH, Z
@@ -181,7 +181,7 @@
 	jsr FFAT16_newFile
 
 	ifn EX, 0
-		set PC, launch_error
+		set PC, launch_fserror
 
 	jsr pop_regs
 	set PC, POP
@@ -191,7 +191,7 @@
 	jsr FFAT16_readFile
 
 	ifn EX, 0
-		set PC, launch_error
+		set PC, launch_fserror
 
 	set B, Z
 	int INT_PRINTF
@@ -332,10 +332,20 @@
 	set B, Y
 	jsr FFAT16_deleteFile
 	ifn EX, 0
-		set PC, launch_error
+		set PC, launch_fserror
 
 	jsr pop_regs
 	SET PC, POP
+
+:launch_fserror
+		set B, FFAT16_msg_err_ptr
+		add B, EX
+		set B, [B]
+		set J, 0
+		int INT_PRINTF
+
+		jsr pop_regs
+		set PC, POP
 
 :launch_error
 		set PUSH, EX

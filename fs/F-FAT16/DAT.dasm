@@ -23,3 +23,16 @@ DAT "FFAT-16 disk   "
 :FFAT16_X DAT 0
 :FFAT16_Y DAT 0
 :FFAT16_Z DAT 0
+
+:FFAT16_msg_err_ptr DAT FFAT16_msg_err_0, FFAT16_msg_err_1, FFAT16_msg_err_2, FFAT16_msg_err_3, FFAT16_msg_err_4, FFAT16_msg_err_5, FFAT16_msg_err_6, FFAT16_msg_err_7, FFAT16_msg_err_8, FFAT16_msg_err_9, FFAT16_msg_err_10
+:FFAT16_msg_err_0  DAT "No error", 0
+:FFAT16_msg_err_1  DAT "No (compatible) disk. Try mount", 0
+:FFAT16_msg_err_2  DAT "No disk", 0
+:FFAT16_msg_err_3  DAT "RAM error", 0
+:FFAT16_msg_err_4  DAT "r/w error", 0
+:FFAT16_msg_err_5  DAT "Disk not FFAT16 compatible", 0
+:FFAT16_msg_err_6  DAT "No files", 0
+:FFAT16_msg_err_7  DAT "Disk full", 0
+:FFAT16_msg_err_8  DAT "No such file", 0
+:FFAT16_msg_err_9  DAT "File too big to be read", 0
+:FFAT16_msg_err_10 DAT "File size too small", 0
