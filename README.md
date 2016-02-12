@@ -1,85 +1,57 @@
 # FrOSt
 
-FrOSt is a free operating system under the free license GNU GPL, made
-by a tiny group of french people.  We worked hard on it, and are proud
-to release it.
+FrOSt is a free operating system under the free license GNU GPL, made by a tiny group of french people.  We worked hard on it, and are proud to release it.
 
-We would be very pleased to know how you use or modify it, and we
-would be very grateful to you if you informed your users what your
-operating system is based on. :) You can also thank us for our job by
-sending us bugreports, fixes, enhancements, t-shirts, money, beer &
-pizza on our [forum](http://frost-0x10c.tk/Forum/index.php).
+We would be very pleased to know how you use or modify it, and we would be very grateful to you if you informed your users what your operating system is based on. :) You can also thank us for our job by sending us bugreports, fixes, enhancements, t-shirts, money, beer & pizza on our [forum](http://frost-0x10c.tk/Forum/index.php).
 
 
-## Qu'est-ce que FrOSt ?
+## What is FrOSt?
 
-FrOSt est un projet communautaire français ayant pour but de créer un
-OS libre français pour le jeu 0x10c de Notch
-
-
-## Comment lancer FrOSt ?
-
-Il faut compiler le fichier FrOSt/FrOSt.dasm, de préférence avec
-DevCPU.
+FrOSt is a community French project which goal is to create a free and Open-Source OS for ~~0x10^c~~ [techcompliant](https://reddit.com/r/techcompliant).
 
 
-## Comment puis-je développer un logiciel pour cet OS ?
+## How to run FrOSt?
 
-Le wiki du projet contient toutes les informations utiles à ce sujet
-
-
-## Comment contribuer
-
-### IDE
-
-Nous utilisons git comme gestionnaire de version (voir plus bas pour
-un tuto).
-
-Nous utilisons actuellement
-[DevCPU](http://0x10c.fr/index.php?threads/nouvel-%C3%A9mulateur-ide-devcpu.989/#post-34568). Marche
-à suivre pour ajouter le projet :
-
-* Cloner le projet sur votre ordi
-* Importer le projet (clic droit > import > existing project into
-  workspace, puis sélectionner le dossier FrOSt)
+You have to assemble the FrOSt/FrOSt.dasm file. You can find a toolchain for that effect [here](https://github.com/azertyfun/DCPU-Toolchain).
 
 
-### Normes de codage
+## How can I develop a program for that OS?
 
-#### Règles générales
-
-* git gère les LF/CRLF, pas de soucis à se faire de ce côté là.
-* __Documentez__ votre code ! Il sera plus facile à maintenir et
-  comprendre par la suite.
-* Faites des commits simples et clairs : une modification par
-  commit. Par exemple, 'Diverses modifications des drivers' peut
-  surement être découpé en plusieurs commits
-* N'hésitez pas à utiliser les branches pour toute modification
-  utilisant plus d'un commit (cf règle précédente). Cela permet aux
-  autres développeurs de mieux comprendre votre travail.
-  [Pour mieux comprendre la gestion des branches.]
-  (http://www.croes.org/gerald/blog/git-modele-de-branche-efficace/649/)
-* N'hésitez pas à relire et commenter les commits des autres. Le code
-  résultant n'en sera que meilleur.
+The wiki contains all the information you need.
 
 
-#### Normes
+## How to contribute
 
-* Toutes les normes, **à respecter impérativement pour toute nouvelle fonctionnalité codée**,
-  se trouvent sur le [wiki](https://github.com/FrOSt-Foundation/FrOSt/wiki/Conventions-de-codage).
+### Development environment
 
-### Branches disponibles :
+We use git as a CVS (obviously).
 
-* master : c'est la branche principale, elle n'est modifiée que pour
-  des releases du projet.
-* indev : c'est une branche de développement, qui ne devrait être
-  utilisée que par ceux qui connaissent.  /!\ Peut ne pas fonctionner,
-  et sera de toute façon plus ou moins bugguée.
-* D'autres branches temporaires peuvent apparaitre
+We used to use DevCPU, and it should still work, but for now we use [DCPU-Toolchain](https://github.com/azertyfun/DCPU-Toolchain).
+You just have to `git clone` the repo somewhere and assemble FrOSt/FrOSt.dasm.
 
 
-## Liens utiles
+### Syntax guidelines
 
-[Dernières spécifications du DCPU-16 et du hardware](http://dcpu.com/)
+#### General rules
 
-[Tuto git](http://git-scm.com/book/fr)
+* git handles EOL character(s) (LF/CRLF), so no problem with that.
+* __Document__ your code ! It will be easier to maintain and understand later.
+* Write simple and clear commit messages : One change per commit. For instance, 'Misc driver changes' can surely be split in multiple commits.
+* Don't be afraid to use `git branch` for any change of more than one commit (cf. precedent rule).
+* Don't be afraid to read and check other people's commits. The code will only be better!
+
+
+#### Norms
+
+* All rules **must be respected** an can be found on the [wiki](https://github.com/FrOSt-Foundation/FrOSt/wiki/Coding-rules).
+
+### Available branches :
+
+* `master` : It's the main branch and is only modified for project releases.
+* `indev` : It's the development branch and must be modified only by people who know it.  /!\ May not work, and will be more or less buggy anyways.
+* Other temporary branches may appear (cf. general rules).
+
+## Useful links
+
+* [Latest hardware specifications](https://github.com/paultech/TC-Specs)
+* [Old DCPU specifications](https://web.archive.org/web/20130817110245/http://dcpu.com)
