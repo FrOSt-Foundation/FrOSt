@@ -1,18 +1,13 @@
-; *************************
-; Project: FrOSt
-; File: newFile.dasm
-; *************************
-
 ; ================================
 ; FFAT16_newFile
 ;
 ; Arguments
 ; ---------
-; B : Taille (en secteurs) du fichier
-; C : Pointeur vers le nom de fichier
+; B : Size (in sectors) of the file
+; C : Pointer to the file name
 ;
-; Return
-; ------
+; Returns
+; -------
 ; EX : Error code
 ; ================================
 

@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: readFile.dasm
-; *************************
-
 ; ====================
 ; Error codes
 ; ------------
@@ -12,18 +7,18 @@
 ; ================================
 ; FFAT16_readFile
 ;
-; Lit le contenu d'un fichier.
-; Si taille du fichier > freemem/2 :
-; Impossible de lire.
+; Reads the content of a file.Lit le contenu d'un fichier.
+; if file size > (free memory) / 2 :
+; Can't read
 ;
 ; Arguments
 ; ---------
-; Y : Le nom de fichier
+; Y : The filename
 ;
-; Return
-; ------
+; Returns
+; -------
 ; EX : Error code
-; Z : Pointeur vers le contenu du fichier alloué en RAM.
+; Z : Pointer to the RAM allocated file content.
 ; ================================
 
 :FFAT16_readFile

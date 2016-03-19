@@ -1,0 +1,90 @@
+; ================================
+; FFAT16_writeToFile
+;
+; Writes a file
+;
+; Arguments
+; ---------
+; B : Filename
+; C : Pointer to file in RAM
+; X : File length in sectors
+;
+; Returns
+; -------
+; EX : Error code
+; ================================
+
+:FFAT16_writeToFile
+    set EX, 0
+    ife 0, [FFAT16_valid]
+        set EX, 0x0001
+    ifn EX, 0
+        set PC, POP
+
+    jsr push_regs
+
+    ;We check if the file exists first
+
+    set PUSH, X
+    jsr FFAT16_getFileByName
+    set X, POP
+
+    ife EX, 8 ; No such file
+        set PC, FFAT16_writeToFile_createFile
+    ife EX, 6 ; No files
+        set PC, FFAT16_writeToFile_createFile
+
+    ifl Y, X ; File smaller than what we want to write
+        set PC, FFAT16_writeToFile_recreateFile
+    :FFAT16_writeToFile_continue0
+
+    ;Do the actual writing, at sector Z
+    set I, 0
+    set PUSH, X
+    set X, Z
+    set Y, C
+    :FFAT16_writeToFile_loop0
+
+        jsr FFAT16_writeSector
+
+        add I, 1
+        add Y, 512
+        add X, 1
+        ifn I, PEEK
+            set PC, FFAT16_writeToFile_loop0
+
+    :FFAT16_writeToFile_error0
+
+    set X, POP
+
+    jsr pop_regs
+    set PC, POP
+
+    :FFAT16_writeToFile_createFile
+        set PUSH, B
+        set PUSH, C
+
+        set C, B
+        set B, X
+        jsr FFAT16_newFile
+
+        set C, POP
+        set B, POP
+
+        ifn EX, 0
+            set PC, FFAT16_writeToFile_error0
+
+          ; We still want to know where the file is located on the drive
+          set PUSH, X
+          jsr FFAT16_getFileByName
+          set X, POP
+
+        set PC, FFAT16_writeToFile_continue0
+
+    :FFAT16_writeToFile_recreateFile
+        jsr FFAT16_deleteFile
+
+        ifn EX, 0
+            set PC, FFAT16_writeToFile_error0
+
+        set PC, FFAT16_writeToFile_createFile

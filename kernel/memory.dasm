@@ -69,7 +69,7 @@
 ; Arguments:
 ;     - A: Address
 ; Returns:
-;     - 
+;     -
 
 :free
 	; We find the right memory block, just in case.
@@ -123,7 +123,7 @@
 ; Arguments:
 ;     - A: Program ID
 ; Returns:
-;     - 
+;     -
 
 :free_program
 	set push, A
@@ -145,7 +145,7 @@
 ; Arguments:
 ;     - A: Block address
 ; Returns:
-;     - 
+;     -
 
 :clear_memory
 	; We find the right memory block
@@ -185,7 +185,7 @@
 ;     - A: Pointer to the first word in the new block
 ;     - C: Number of words to copy
 ; Returns:
-;     - 
+;     -
 
 :memcpy
 	set push, I
@@ -224,7 +224,7 @@
 		set C, pop
 		set J, pop
 		set I, pop
-		
+
 		set pc, pop
 
 	:memcpy_loop3
@@ -260,7 +260,7 @@
 		sub B, 2
 		set A, pop
 		set pc, pop
-		
+
 ; ------------
 ;  realloc
 ; ------------
@@ -342,10 +342,10 @@
 		set A, pop
 		add [A+1], B
 		add [A+1], 2
-		
+
 		set B, pop
 		set C, pop
-		
+
 		set pc, pop
 
 	:realloc_down
@@ -359,5 +359,5 @@
 		set A, pop
 		set B, pop
 		set C, pop
-	
+
 		set pc, pop

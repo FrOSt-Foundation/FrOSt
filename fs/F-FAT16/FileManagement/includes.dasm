@@ -8,3 +8,4 @@
 .include deleteFile.dasm
 .include getFileByName.dasm
 .include readFile.dasm
+.include writeToFile.dasm

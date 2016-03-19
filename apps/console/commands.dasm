@@ -4,11 +4,53 @@
 ; *************************
 
 :launch_echo
+	set B, '>'
+	set A, Y
+	jsr strchr
+	ifn Z, 0
+		set PC, launch_echo_toFile
+
 	;Priting argument
 	set B, Y
 	int INT_PRINTF
 
 	set PC, POP
+
+:launch_echo_toFile
+	set [Z], 0 ;We add a null terminator to the string. Now we have [text], 0, [filename], 0
+
+	set PUSH, Z
+		;We allocate memory for the text
+		set B, 512
+		int INT_MALLOC
+		ife Z, MALLOC_ERROR
+			set PC, launch_echo_toFile_error
+
+		;We copy the text there
+		set B, A
+		set A, Z
+		set C, PEEK
+		sub C, B
+
+		;A = pointer to the allocated RAM buffer
+		;B = pointer to the text
+		;C = length of the text
+		;PEEK = pointer to filename - 1
+		jsr memcpy ;We copy the text to the allocated RAM buffer
+
+		set B, PEEK
+		add B, 1
+		set C, Z
+		set X, 1
+		jsr FFAT16_writeToFile
+
+	set B, Z
+	int INT_FREE
+
+	:launch_echo_toFile_error
+	set Z, POP
+	set PC, POP
+
 
 :launch_help
 	;Printing commands
