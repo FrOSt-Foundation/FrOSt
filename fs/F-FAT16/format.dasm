@@ -95,14 +95,13 @@
 		ifn I, J
 			set PC, FFAT16_format_loop1
 
-	set A, 3
-	set X, 2
+	set X, 1
 	set Y, Z
-	hwi [id_floppy1]
+	JSR FFAT16_writeSector
 
-	ifn B, 1
+	ifn EX, 0
 		set Y, 0x0004
-	ifn B, 1
+	ifn EX, 0
 		set PC, FFAT16_format_error_freeMem
 
 	set B, Z
