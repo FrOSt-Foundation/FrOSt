@@ -1,5 +1,5 @@
 ; ------------
-;  malloc
+;  setup_devices
 ; ------------
 ; Description:
 ;     - Detects and initilizes all known peripherals by calling appropriate subroutines.
