@@ -1,6 +1,6 @@
 ; =====================
 ; FFAT16_waitFinish
-; Attend que le lecteur de disque aie fini l'opération en cours (lecture/écriture)
+; Waits for the disk to finish its current operation (read/write)
 ; =====================
 
 :FFAT16_waitFinish
@@ -19,7 +19,7 @@
 
 ; =====================
 ; FFAT16_getName
-; Retourne en Z un pointeur vers le nom du disque
+; Returns a pointer to the disk name in Z
 ; =====================
 :FFAT16_getName
 	set Z, volumeName
@@ -27,7 +27,7 @@
 
 ; =====================
 ; FFAT16_getSerialNumber
-; Retourne en Z un pointeur vers le numéro de série (2 mots)
+; Returns in Z a pointer to the S/N (two words)
 ; =====================
 :FFAT16_getSerialNumber
 	set Z, serialNumber
@@ -35,7 +35,7 @@
 
 ; =====================
 ; FFAT16_formatFileName
-; Copie la string *C vers *X (14 caractères, rempli par des espaces).
+; Copies *C to *X (14 characters, right-padded with spaces).
 ; =====================
 ; Algorithm :
 ; for(I = 0; I != 14; I++) {
@@ -68,8 +68,8 @@
 	set I, POP
 	set PC, POP
 
-;Retourne la première entrée FAT libre en X et le premier secteur libre en Y
-;Z doit être l'adresse du secteur chargé dans la RAM
+; Returns the first free FAT entry in X and the first free sector in Y
+; Z must be the address to the sector loaded in the RAM
 :FFAT16_findFirstFreeFATEntry
 	set PUSH, A
 	set PUSH, B
@@ -92,16 +92,16 @@
 	ifg X, 496
 		set EX, 0x0007
 
-	;On cherche le premier secteur libre.
-	; Algorithme :
+	; We search for the first free sector
+	; Algorithm :
 	; ------------
 	; for(Y = 1; Y < 1440; ++Y) {
 	; 	for(J = Z + 1; J < Z + 511; J += 16) {
 	; 		if([J] == Y)
-	;			//Recommencer au début du premier for
+	;			// Goto the beggining of the first for
 	;		else {
-	;			if([J] + [J-1] > Y && Y > [J]) //Si on est entre le cluster de début et le cluster de fin d'un fichier, il n'est pas libre même si pas explicitement mentionné.
-	;				//Recommencer au début du premier for
+	;			if([J] + [J-1] > Y && Y > [J]) // If we are between the first and last sector of a file, it's not free even if not explicitely stated.
+	;				// Goto the beggining of the first for
 	; 		}
 	; 	}
 	; }
@@ -137,8 +137,8 @@
 
 	set PC, POP
 
-; Lit le seteur X et retourne un secteur dynamiquement alloué en RAM en Z.
-; NE PAS OUBLIE DE FREE Z
+; Reads the Xth sector and returns a dynamically allocated block of RAM in Z.
+; DON'T FORGET TO FREE Z
 :FFAT16_readSector
 	set PUSH, A
 	set PUSH, B
@@ -169,7 +169,7 @@
 		set EX, 0x0004
 		set PC, FFAT16_readSector_end
 
-; Écrit sur le secteur X ce qui se trouve en RAM en *Y
+; Writes the Xth sector to what's in RAM at *Y
 :FFAT16_writeSector
 	set PUSH, A
 	set PUSH, B
@@ -188,9 +188,9 @@
 	set PC, POP
 
 
-; Retourne en Y le nombre de fichiers fourni. Z = Pointeur vers le secteur de FAT.
-; /!\ Modifie les registres I et J /!\
-; /!\ N'attend pas que la lecture soit finie /!\
+; Returns in Y the number of files. Z = Pointer to the FAT sector.
+; /!\ Modifies the I and J registers /!\
+; /!\ Doesn't wait for the read to finish /!\
 :FFAT16_getFilesNumber
 	set I, Z
 	set J, 0

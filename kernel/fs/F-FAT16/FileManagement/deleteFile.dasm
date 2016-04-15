@@ -1,12 +1,12 @@
-; =======================
-; FFAT16_deleteFile
-; Arguments :
-; -----------
-; B : Pointeur vers le nom de fichier.
-; Retourne :
-; ----------
-; EX : 0 si pas d'erreur, sinon code d'erreur
-; =======================
+; --------------
+;  FFAT16_deleteFile
+; --------------
+; Description:
+;     - Deletes the provided file from disk.
+; Arguments:
+;     - B: Pointer to file name.
+; Returns:
+;     - EX: 0 if no error, else error code
 
 :FFAT16_deleteFile
 	set EX, 0
@@ -19,7 +19,7 @@
 	jsr push_regs
 
 	set B, Y
-	jsr FFAT16_getFileByName ;Ce qui nous intéresse, c'est le secteur X (Xe entrée FAT)
+	jsr FFAT16_getFileByName ; What we are interested in is the Xth sector (Xth FAT entry)
 	ifn EX, 0
 		set PC, FFAT16_deleteFile_break0
 
@@ -28,21 +28,21 @@
 		jsr FFAT16_readSector
 		jsr FFAT16_waitFinish
 	set X, POP
-	;FAT enregistrée en *Z
+	;F AT saved in *Z
 	set C, X
 	sub X, 1
 	mul X, 16
-	add X, Z ;X est désormais l'adresse de l'entrée FAT recherchée
-	jsr FFAT16_getFilesNumber ;Y est le nombre de fichiers
+	add X, Z ; X now holds the addresse of the wanted FAT entry
+	jsr FFAT16_getFilesNumber ; Y holds the number of files
 
-	; Désormais :
-	; C = Cème entrée FAT
-	; X = Adresse de l'entrée FAT
-	; Y = Nombre de fichiers
-	; Z = Adresse de la FAT (pour le free)
-	ifn C, Y ;Si on a supprimé le dernier fichier, on ne veut pas déplacer la dernière entrée FAT à sa place
+	; At that point :
+	; C = Cth FAT entry
+	; X = FAT entry address
+	; Y = Number of files
+	; Z = FAT Address (for the malloc free)
+	ifn C, Y ; If we deleted the last file, we don't want to move the last FAT entry to its new position
 		jsr FFAT16_deleteFile_moveLastFATEntry
-	jsr FFAT16_deleteFile_eraseLastFATEntry ;On supprime la dernière entrée, car dans les deux cas elle est de trop (copiée ailleurs ou c'est ce qu'on veut supprimer)
+	jsr FFAT16_deleteFile_eraseLastFATEntry ; We delete the last entry, because in any case it's one too many (either it's been copied or we want to delete it)
 
 	set EX, 0
 	set X, 1
@@ -68,8 +68,8 @@
 :FFAT16_deleteFile_moveLastFATEntry
 	set PUSH, X
 	jsr FFAT16_findFirstFreeFATEntry
-	sub X, 16 ;On trouve la première entrée FAT libre et on lui soutire 16 : C'est la dernière entrée.
-	;On la copie vers notre emplacement
+	sub X, 16 ; We find the first free FAT entry and we substract 16 to it : It's the last entry.
+	; We move it to its new place
 	set B, X
 	set A, POP
 	set C, 14
@@ -80,9 +80,9 @@
 :FFAT16_deleteFile_eraseLastFATEntry
 	set PUSH, X
 	jsr FFAT16_findFirstFreeFATEntry
-	sub X, 16 ;On trouve la première entrée FAT libre et on lui soutire 16 : C'est la dernière entrée.
+	sub X, 16 ; We find the first free FAT entry and we substract 16 to it : It's the last entry.
 	set I, 0
-	:FFAT16_deleteFile_loop0 ;On efface le contenu de l'entrée FAT
+	:FFAT16_deleteFile_loop0 ; We erase the FAT content
 		sti [X], 0
 		add X, 1
 		ifn I, 16

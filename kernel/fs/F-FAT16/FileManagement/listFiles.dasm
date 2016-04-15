@@ -1,19 +1,13 @@
-; ====================
-; Error codes
-; ------------
-; See wiki
-; ====================
-
-
-; ================================
-; FFAT16_listFiles
-;
-; Return
-; ------
-; EX : Error code
-; Y : Nombre de fichiers
-; Z : Pointeur vers tableau dynamiquement alloué (=> NE PAS OUBLIER LE FREE !) contenant des strings. On sait qu'on arrive à la fin du tableau quand on est à Z + J * 14. On passe au string suivant tous les 14 chars. À manipuler avec précaution pour éviter les erreurs 0:)
-; ================================
+; --------------
+;  FFAT16_listFiles
+; --------------
+; Description:
+;     - Lists files on disk (similar to dir/ls).
+; Arguments:
+;     -
+; Returns:
+;     - EX: 0 if no error, else error code
+;     - Z: Pointer to dynamically allocated table (DON'T FORGET TO FREE IT) containing strings. You know you are at the end of the table when you are at Z + J * 14. Every file is 14 characters long. Please manipulate it with caution to avoid erros 0:)
 
 :FFAT16_listFiles
 	set EX, 0
@@ -33,40 +27,40 @@
 
 	jsr FFAT16_waitFinish
 
-	jsr FFAT16_getFilesNumber ;Retourne le nombre de fichiers en en Y.
+	jsr FFAT16_getFilesNumber ;Return the number of files in Y.
 
 	ife Y, 0
 		set EX, 6
 	ife EX, 6
 		set PC, FFAT16_listFiles_break0
 
-	set X, Z ;Dorénavant, adresse de la FAT = X, adresse des noms de fichiers = Z
-	set PUSH, Z ;On sauvegarde Z car on va faire un second malloc
-		;On alloue 14*nombre de fichiers(taille d'un nom de fichier = 14)
+	set X, Z ; Now, FAT location = X, file names location = Z
+	set PUSH, Z ; We save Z because we need to make another malloc
+		; We allocate 14 * n_files (filename length = 14)
 		set B, 16
 		mul B, Y
 		int INT_MALLOC
 		 ife Z, MALLOC_ERROR
 			set PC, FFAT16_listFiles_mallocError1
 
-		set PUSH, Z ;On le sauvegarde car il va être modifié pendant la loop
+		set PUSH, Z ; We save Z (again) because it will be changed during the loop
 
 		set I, 0
-		add X, 2 ;On veut commencer à l'adresse du string, les deux premiers mots étant réservés pour indiquer la taille de fichier et le secteur de début.
-		; Ici, on copie les noms de fichiers vers le tableau les contenant.
-		; On fait Y tours de boucle (un pour chaque fichier).
-		; À chaque tour de boucle, on copie le nom de fichier dans le tableau de strings et on ajoute zéro à ce même tableau.
+		add X, 2 ;We want to start at the beggining of the string, the first two words being reserved for the file size and first sector.
+		; Here, we copy the filenames to the table.
+		; We do Y loops (one for each file).
+		; At the end of each loop, we copy the filename and add a null terminator.
 		;
-		; Ici :
-		; I = Nombre de tours parcourus
-		; X = Adresse FAT décalée de deux
-		; Y = Nombre de fichiers
-		; Z = Adresse tableau
+		; At this point :
+		; I = Number of loops done
+		; X = FAT beggining + 2
+		; Y = Number of files
+		; Z = Array address
 		:FFAT16_listFiles_loop0
-			set C, 14 ;Le nombre de mots pour chaque string
+			set C, 14 ; String length
 			set B, X
 			set A, Z
-			jsr memcpy ;On copie quatorze mot depuis X vers Z.
+			jsr memcpy ; We copy 14 words from X to Z
 			add X, 16
 			add Z, 14
 			add I, 1
@@ -74,7 +68,7 @@
 				set PC, FFAT16_listFiles_loop0
 	set Z, POP
 
-	set B, POP ;Était Z mais on optimise un peu, et surtout on veut garder Z intact car il contient l'adresse du tableau.
+	set B, POP ; Was Z
 	int INT_FREE
 
 	:FFAT16_listFiles_break0

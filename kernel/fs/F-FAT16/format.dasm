@@ -1,14 +1,12 @@
-; ================
-; FFAT16_format
-; ------------
-;
-; Formats the disk in FFAT-16
-;
-; Return :
-; --------
-; OK : 0x0000 in Z
-; Error : Any other value (see following)
-; ================
+; --------------
+;  FFAT16_format
+; --------------
+; Description:
+;     - Formats the disk to FFAT-16.
+; Arguments:
+;     -
+; Returns:
+;     - Z: 0 if no error, else error code
 
 ; ===============
 ; Error codes
@@ -25,7 +23,7 @@
 	set PUSH, C
 
 	set B, 512
-	int INT_MALLOC ;On alloue un bloc en mémoire, que l'on va remplir puis écrire sur la floppy
+	int INT_MALLOC ; We allocated a memory block, that we will fill then write on the disk
 	ife Z, MALLOC_ERROR
 		set Y, 0x0001
 	ife Z, MALLOC_ERROR
@@ -33,7 +31,7 @@
 
 	set [0xFFB0], Z
 
-	;On déplace le default content (cf ./DAT.dasm) vers la mémoire allouée ci-dessus
+	; We copy the default content (cf ./DAT.dasm) to the previously allocated memory block
 	set A, defaultContent
 	set B, defaultContent_end
 	set C, Z
@@ -44,13 +42,13 @@
 		ifn A, B
 			set PC, FFAT16_format_loop0
 
-	;Si pas de disque, erreur
+	; If no disk present, error
 	ife [id_floppy1], 0
 		set Y, 0x0002
 	ife [id_floppy1], 0
 		set PC, FFAT16_format_error_freeMem
 
-	;On vérifie que le lecteur est en STATE_READY (disque présent, en écriture et que le lecteur n'est pas busy)
+	; We check that the disk is in STATE_READY
 	set A, 0
 	HWI [id_floppy1]
 	ifn B, 1
@@ -59,7 +57,7 @@
 		set PC, FFAT16_format_error_freeMem
 
 
-	;On écrit sur le disque
+	; We write on the disk
 	set X, 0
 	set Y, Z
 	set EX, 0
@@ -67,13 +65,13 @@
 	ifn EX, 0
 		set PC, FFAT16_format_error_freeMem
 
-	jsr FFAT16_waitFinish ;Wait until write finished
+	jsr FFAT16_waitFinish ; We wait until the write is finished
 
-	;On libère la mémoire allouée précédemment
+	; We free the previously allocated memory
 	set B, Z
 	int INT_FREE
 
-	;On vide le contenu de la FAT
+	; We empty the FAT
 	set B, 512
 	int INT_MALLOC
 	ife Z, MALLOC_ERROR
@@ -111,7 +109,7 @@
 
 	set PC, POP
 
-:FFAT16_format_error_freeMem ;Appelé quand il faut aussi libérer la mémoire ^^
+:FFAT16_format_error_freeMem ; Called when memory needs to be deallocated too
 	set B, Z
 	jsr INT_FREE
 :FFAT16_format_error

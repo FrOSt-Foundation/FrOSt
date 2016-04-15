@@ -1,25 +1,13 @@
-; ====================
-; Error codes
-; ------------
-; See wiki
-; ====================
-
-; ================================
-; FFAT16_readFile
-;
-; Reads the content of a file.Lit le contenu d'un fichier.
-; if file size > (free memory) / 2 :
-; Can't read
-;
-; Arguments
-; ---------
-; Y : The filename
-;
-; Returns
-; -------
-; EX : Error code
-; Z : Pointer to the RAM allocated file content.
-; ================================
+; --------------
+;  FFAT16_readFile
+; --------------
+; Description:
+;     - Reads a file from the disk to the RAM. If filesize > (free memory) / 2: Read will fail.
+; Arguments:
+;     - Y: Pointer to file name.
+; Returns:
+;     - EX: 0 if no error, else error code
+;     - Z: Pointer to the RAM allocated file content.
 
 :FFAT16_readFile
 	set EX, 0
@@ -37,7 +25,7 @@
 	set PUSH, Y
 
 	set B, Y
-	jsr FFAT16_getFileByName ;Ce qui nous intéresse, c'est le secteur X (Xe entrée FAT)
+	jsr FFAT16_getFileByName ; What we are interested in, is the Xth sector (Xth FAT entry)
 	ifn EX, 0
 		set PC, FFAT16_readFile_break0
 	set X, Y
@@ -56,10 +44,10 @@
 	ifn EX, 0
 		set PC, FFAT16_readFile_break0
 
-	; Désormais :
-	; X = Le nombre de clusters
-	; Y = Le cluster de début
-	; Z = Adresse de la mémoire allouée (512 * nb de clusters)
+	; At this point :
+	; X = Number of clusters
+	; Y = First cluster
+	; Z = Allocated RAM location (512 * number of clusters)
 
 	set PUSH, Z
 	set PUSH, X
@@ -71,7 +59,7 @@
 				set X, Y
 				add X, I
 				set Y, Z
-				hwi [id_floppy1] ;On n'utilise pas FFAT16_readSector car on ne veut pas allouer de la mémoire, juste écrire dans de la mémoire déjà allouée.
+				hwi [id_floppy1] ; We don't use FFAT16_readSector because we don't want to allocate memory, just read in already allocated memory.
 				ifn B, 1
 					set EX, 0x0004
 				ifn EX, 0

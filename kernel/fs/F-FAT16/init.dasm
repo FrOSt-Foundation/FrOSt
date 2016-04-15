@@ -1,17 +1,12 @@
-; ===================
-; Error codes :
-; Voir wiki github
-; ===================
-
 :FFAT16_init
-	;Checking disk drive
-	ife [id_floppy1], 0 ;Si il n'y a pas de lecteur de floppy
+	; Check of the disk
+	ife [id_floppy1], 0 ; If no drive reader
 		set EX, 0x0001
-	ife [id_floppy1], 0 ;Si il n'y a pas de lecteur de floppy
+	ife [id_floppy1], 0
 		set PC, POP
 
 	set A, 0
-	hwi [id_floppy1] ;Si il n'y a pas de floppy dans le lecteur
+	hwi [id_floppy1]
 	ife B, 0x0
 		set EX, 0x0002
 	ife B, 0x0
@@ -22,7 +17,7 @@
 
 	jsr FFAT16_waitFinish
 
-	;Vérification de la présence de 0xAAAA et 0xBBBB (identifie comme FFAT-16 compatible)
+	; Check of the FrOSt magic number
 	set I, Z
 
 	ifn [I], 0xFF16
@@ -33,7 +28,7 @@
 		jsr FFAT16_notCompatible
 
 
-	;Enregistrement du numéro de série
+	; We save the S/N
 	add I, 1
 	set [serialNumber], [I]
 

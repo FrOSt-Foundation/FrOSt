@@ -1,5 +1,7 @@
-; ****** HARDWARE VARIABLES ******
-; Holds the IDs and hardware vars.
+; --------------
+;  Hardware variables
+; --------------
+; Holds variables from drivers
 
 :nb_periph dat 0
 
@@ -63,9 +65,12 @@
 :edc_columns dat 0
 :edc_cells dat 0
 
-; ******* Id du matériel *******
-; Les id (from doc) sont optenus avec `hw_ID_A + (hw_ID_B << 16)`
-; avec hw_ID_A et hw_ID_B dans A et B avec HWQ
+; --------------
+;  Hardware IDs
+; --------------
+; IDs (from documentation) are `hw_ID_A + (hw_ID_B << 16)`
+; With hw_ID_A and hw_ID_B in A and B with HWQ
+
 .define IACM_ID_A 0xDACC
 .define IACM_ID_B 0x11E0
 

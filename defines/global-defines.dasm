@@ -1,12 +1,12 @@
 ;********************************
-;  Touches spéciales du clavier
+; Special keyboard keys
 ;********************************
 .define KBD_BACKSPACE   0x10
 .define KBD_RETURN      0x11
 .define KBD_INSERT      0x12
 .define KBD_DELETE      0x13
 
-; Les touches ascii sont accessibles avec ', par exemple 'a'.
+; ASCII letters can be accessed with a single quote ('), for instance 'a'.
 
 .define KBD_ARROW_UP      0x80
 .define KBD_ARROW_DOWN    0x81
@@ -18,7 +18,7 @@
 
 
 ;***************************
-;  Caractères d'échapement
+; Escape characters
 ;***************************
 
 .define CHAR_NULL        0x00   ; \0
@@ -31,9 +31,9 @@
 
 
 ;*********************
-;  Valeurs booléenes
+; Boolean values
 ;*********************
-; exemples :
+; Examples :
 ; set [label], FALSE
 ; ifn 0, [label]
 ;     set PC, POP
@@ -42,12 +42,12 @@
 .define FALSE   0
 
 ;************
-;  Couleurs
+;  Colors
 ;************
-; Utilisable avec la palette par défaut
+; Made for default palette
 ; Exemple : set [screen_color], COLOR_BLACK TO_BG
 ;           bor [screen_color], COLOR_WHITE TO_FG
-; ou en plus court :
+; Or, shorter :
 ;           set [screen_color], (COLOR_BLACK TO_BG)|(COLOR_WHITE TO_FG)
 
 .define COLOR_BLACK         0x0
