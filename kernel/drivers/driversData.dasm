@@ -1,69 +1,13 @@
-; --------------
-;  Hardware variables
-; --------------
-; Holds variables from drivers
-
-:nb_periph dat 0
-
-; * IACM
 .define IACM_NB_MAX 1
-:nb_IACMs dat 0
-:id_IACM dat 0
-:iacm_str_mode_full DAT "100% SPD", 0
-:iacm_str_mode_reduced DAT "010% SPD", 0
-
-; * Screen
 .define SCREEN_NB_MAX 2
-.define SCREEN_SIZE 384 ;SCREEN_WIDTH * SCREEN_HEIGHT
-.define SCREEN_WIDTH 32
-.define SCREEN_HEIGHT 12
-:screen_color dat 0xF000
-:nb_screens dat 0
-:id_screen1 dat 0
-:id_screen2 dat 0
-:active_screen dat 0 ; utilisé par le scheduler
-
-; * Keyboard
 .define KEYBOARD_NB_MAX 2
-:nb_keyboards dat 0
-:msg_keyboards dat 0x7000
-:id_keyboard1 dat 0
-:id_keyboard2 dat 0
-
-; * Clock
 .define CLOCK_NB_MAX 1
-:nb_clocks dat 0
-:msg_clock1 dat 0x6000
-:id_clock1 dat 0
-:div_clock1 dat 60
+.define FLOPPY_NB_MAX 4
+.define EDC_NB_MAX 1
 
-; * Hard drives/floppy drives
+; NOTE:
 ; We add the hard drives as a floppy drives because the only functional difference between them is the spinning mechanism, which we already take care of in setupDevices.
 ; A rewrite will be needed if we want to spin the drive up and down anywhere else though...
-.define FLOPPY_NB_MAX 4
-:nb_floppies dat 0
-:id_floppy1 dat 0
-:id_floppy2 dat 0
-:id_floppy3 dat 0
-:id_floppy4 dat 0
-:msg_floppy1 dat 0x8000
-:msg_floppy2 dat 0x8001
-:msg_floppy3 dat 0x8002
-:msg_floppy4 dat 0x8003
-
-; * SPED-3
-;.define SPED_NB_MAX 1
-;:nb_sped dat 0
-;:id_sped dat 0
-
-; * EDC
-.define EDC_NB_MAX 1
-:nb_EDCs dat 0
-:id_edc dat 0
-:edc_version dat 0
-:edc_rows dat 0
-:edc_columns dat 0
-:edc_cells dat 0
 
 ; --------------
 ;  Hardware IDs

@@ -1,0 +1,3 @@
+.define SPED_NB_MAX 1
+:nb_sped dat 0
+:id_sped dat 0

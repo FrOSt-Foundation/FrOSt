@@ -1,0 +1,4 @@
+:nb_clocks dat 0
+:msg_clock1 dat 0x6000
+:id_clock1 dat 0
+:div_clock1 dat 60
