@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: util.dasm
-; *************************
-
 ; =====================
 ; FFAT16_waitFinish
 ; Attend que le lecteur de disque aie fini l'opération en cours (lecture/écriture)

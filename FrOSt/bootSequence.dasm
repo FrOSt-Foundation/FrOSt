@@ -1,0 +1,14 @@
+:bootSequence
+	JSR init_memory
+	JSR setup_devices
+	JSR init_interruptHandler
+
+	set A,console
+	set B, console_title
+	set C, 1
+	set push,end
+	set push,A
+	;set A, debug
+	;set B, debug_text
+	;set C, 1
+	set pc, sched_addProcess

@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: DAT.dasm
-; *************************
-
 :ptr_commands DAT launch_echo, launch_help, launch_about, launch_color, launch_clear, launch_kill, launch_ls, launch_run, launch_mem, launch_mkdir, launch_mv, launch_cp, launch_touch, launch_cat, launch_ps, launch_test, launch_shutdown, launch_format, launch_diskinf, launch_rm, launch_hwlist, launch_sleep, launch_mount
 :txt_commands DAT txt_echo,    txt_help,    txt_about,    txt_color   , txt_clear   , txt_kill,    txt_ls,    txt_run,    txt_mem,    txt_mkdir,    txt_mv,    txt_cp,    txt_touch,    txt_cat,    txt_ps,    txt_test,    txt_shutdown,    txt_format,    txt_diskinf,    txt_rm,    txt_hwlist,    txt_sleep, txt_mount
 
@@ -67,4 +62,4 @@ DAT "EDC:", 0
 :msg_diskInf DAT "FrOSt Compatible :", 0x11, "Volume name :", 0x11, "Serial number :", 0
 :msg_ls DAT "File number:", 0
 :msg_errCode DAT "Error code:", 0
-:msg_format_warn DAT "You must restart FrOSt to apply changes.", 0
+:msg_format_warn DAT "You must remount drives (run mount) to apply changes.", 0

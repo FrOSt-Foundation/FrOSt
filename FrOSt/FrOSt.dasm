@@ -1,12 +1,9 @@
-set pc, bootSequence
+.include bootSequence.dasm
 
 .include ../defines/includes.dasm
 
-.include ../boot/includes.dasm
-.include ../hardware/includes.dasm
 .include ../kernel/includes.dasm
 .include ../lib/includes.dasm
-.include ../fs/includes.dasm
 
 .include ../apps/includes.dasm
 

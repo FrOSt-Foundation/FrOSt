@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: DAT.dasm
-; *************************
-
 :ptr_commands DAT launch_echo, launch_help, launch_about, launch_color, launch_clear, launch_kill, launch_ls, launch_run, launch_mem, launch_mkdir, launch_mv, launch_cp, launch_touch, launch_cat, launch_ps, launch_test, launch_shutdown, launch_format, launch_diskinf, launch_rm
 :txt_commands DAT txt_echo,    txt_help,    txt_about,    txt_color   , txt_clear   , txt_kill,    txt_ls,    txt_run,    txt_mem,    txt_mkdir,    txt_mv,    txt_cp,    txt_touch,    txt_cat,    txt_ps,    txt_test,    txt_shutdown,    txt_format,    txt_diskinf,    txt_rm
 
@@ -30,26 +25,41 @@
 :txt_format dat "format", 0
 :txt_diskinf dat "diskinf", 0
 :txt_rm dat "rm", 0
+:txt_hwlist dat "hwlist", 0
+:txt_sleep dat "sleep", 0
+:txt_mount dat "mount", 0
 
-:console_titre DAT "Console", 0
-:console_welcomeMessage DAT "Bienvenue dans FrOSt.", 0x11, "Tapez help si vous etes perdu.", 0
+:console_title DAT "Console", 0
+:console_welcomeMessage DAT "Bienvenue dans FrOSt.", 0x11, "Tapez help si vous etes perdu, utilisez mount pour charger les systemes de fichiers.", 0
 :console_errorNotEnoughFreeSpace_text DAT "Erreur : plus de memoire libre disponible.", 0
 :console_unknownCommand DAT "Commande inconnue :", 0
 
 :msg_help
 DAT 0x1F, "help", 0x1F, "about", 0x1F, "echo", 0x1F, "color", 0x11
 DAT 0x1F, "clear", 0x1F, "kill", 0x1F, "ls", 0x1F, "rm", 0x1F, "run", 0x11
-DAT 0x1F, "mem", 0x1F, "mkdir", 0x1F, "mv", 0x1F, "cp", 0x1F, "touch" ;Fin de ligne donc pas de \n.
+DAT 0x1F, "mem", 0x1F, "mkdir", 0x1F, "mv", 0x1F, "cp", 0x1F, "touch" ;End of line so no \n.
 DAT 0x1F, "cat", 0x1F, "ps", 0x1F, "test", 0x1F, "shutdown", 0x11
-DAT 0x1F, "format", 0x1F, "diskinf", 0
+DAT 0x1F, "format", 0x1F, "diskinf", 0x1F, "hwlist", 0x11
+DAT 0x1F, "sleep", 0x1F, "mount", 0
 
-:msg_todo DAT "Non-implemente.", 0
+:msg_todo DAT "TODO.", 0
 :msg_about DAT "FrOSt v0.1, developpe par Alocer, ElectricBanana, Faerie, Franck97, natnat, Yamakaki, Earth75, azertyfun et Vaasref.", 0
-:msg_mem DAT "Memoire libre : 0x     mots", 0
-:msg_testprog DAT "Lancement du programme de test.", 0
-:msg_errNoArgs DAT "Erreur : argument requis", 0
-:msg_confirmFormat DAT "Voulez-vous vraiment formater le disque ? (y/n)", 0
+:msg_mem DAT "Mémoire libre : 0x     words", 0
+:msg_testprog DAT "Demarrage du programme de test.", 0
+:msg_errNoArgs DAT "Erreur : argument(s) requis.", 0
+
+:msg_hwlist
+DAT "IACM:", 0x11
+DAT "LEM1802:", 0x11
+DAT "Keyboard:", 0x11
+DAT "Clock:", 0x11
+DAT "Floppy/disk:", 0x11
+DAT "EDC:", 0
+:msg_hwpresent DAT "Present", 0
+:msg_hwabsent DAT "Absent", 0
+
+:msg_confirmFormat DAT "Etes-vous sur de vouloir formatter le disque (y/n)", 0
 :msg_diskInf DAT "FrOSt Compatible :", 0x11, "Volume name :", 0x11, "Serial number :", 0
 :msg_ls DAT "Nombre de fichiers :", 0
-:msg_errCode DAT "Code erreur :", 0
-:msg_format_warn DAT "Vous devrez redemarrer le DCPU pour appliquer les changements.", 0
+:msg_errCode DAT "Code d'erreur :", 0
+:msg_format_warn DAT "Vous devez remonter les disque (lancer mount) pour appliquer les changements.", 0

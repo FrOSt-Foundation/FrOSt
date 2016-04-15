@@ -1,7 +1,7 @@
-; *************************
-; Project: FrOSt
-; File: testprog.dasm
-; *************************
+;
+; This file is used to run quick tests (for kernel testing for instance) without implementing a console program.
+;
+
 :testprog
 	int INT_SCROLL
 	set B, msg_testprog_test

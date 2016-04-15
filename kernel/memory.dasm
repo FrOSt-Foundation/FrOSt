@@ -5,6 +5,27 @@
 .define MEM_BLOCK_FREE 0xFFFF
 
 ; ------------
+;  init_memory
+; ------------
+; Should be called only once! The memory begin at [start_mem] and ends at [end_mem].
+; A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
+; Arguments:
+;     -
+; Returns:
+;     -
+
+:init_memory ; Initializes memory
+	set push,A
+	set [start_mem], FrOSt_end
+	set A,[start_mem]
+	set [A], 0xFFFF ;free
+	set [A+1],[end_mem]
+	sub [A+1],[start_mem] ;Total memory
+	set [free_mem],[A+1]
+	set A,pop
+	set pc,pop
+
+; ------------
 ;  malloc
 ; ------------
 ; Arguments:
@@ -26,7 +47,7 @@
 	set I, [start_mem]
 	:malloc_loop0
 		ife [I], MEM_BLOCK_FREE
-			set pc, mallock_freeBlock	
+			set pc, mallock_freeBlock
 	:malloc_continue
 		add I, [I+1]
 		ifn I, [end_mem]
@@ -174,65 +195,6 @@
 		set A, pop
 		set B, pop
 		set pc, pop
-
-; ------------
-;  memcpy
-; ------------
-; Description:
-;     - Copies from [B] to [A] for C words.
-; Arguments:
-;     - B: Pointer to the first word in the original bock
-;     - A: Pointer to the first word in the new block
-;     - C: Number of words to copy
-; Returns:
-;     -
-
-:memcpy
-	set push, I
-	set push, J
-	set push, C
-	set push, C
-	set I, A
-	set J, B
-	add C, B
-	ifl peek, 8
-		set pc, memcpy_loop2
-	mod peek, 8
-	ifn peek, 0
-		set pc, memcpy_loop3
-	:memcpy_loop
-		sti [I], [J]
-		sti [I], [J]
-		sti [I], [J]
-		sti [I], [J]
-		sti [I], [J]
-		sti [I], [J]
-		sti [I], [J]
-		sti [I], [J]
-		ifn C, J
-			set pc, memcpy_loop
-		set C, pop
-		set C, pop
-		set J, pop
-		set I, pop
-		set pc, pop
-	:memcpy_loop2
-		sti [I], [J]
-		ifn C, J
-			set pc, memcpy_loop2
-		set C, pop
-		set C, pop
-		set J, pop
-		set I, pop
-
-		set pc, pop
-
-	:memcpy_loop3
-		sti [I], [J]
-		sub peek, 1
-		ifn peek, 0
-			set pc, memcpy_loop3
-		set pc, memcpy_loop
 
 ; ------------
 ;  size

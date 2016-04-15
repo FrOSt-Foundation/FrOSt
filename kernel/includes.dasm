@@ -1,3 +1,5 @@
+.include drivers/includes.dasm
+.include fs/includes.dasm
 .include DAT.dasm
 .include interruptHandler.dasm
 .include loader.dasm

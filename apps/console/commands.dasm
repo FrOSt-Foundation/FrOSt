@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: commands.dasm
-; *************************
-
 :launch_echo
 	set B, '>'
 	set A, Y
