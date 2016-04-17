@@ -1,7 +1,7 @@
 :bootSequence
 	JSR init_memory
 	JSR init_interruptHandler
-	JSR setup_devices
+	JSR deviceManager_init
 
 	set A,console
 	set B, console_title

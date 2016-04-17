@@ -4,7 +4,9 @@
 ; Description:
 ;     - Inits the IACM. Used by the hardware manager.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Y: Device version
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     -
 
@@ -13,16 +15,16 @@
 :iacm_init
 	set A, 0
 	set B, 0
-	hwi [id_IACM]
+	hwi [J]
 
 	set A, 3
 	set B, 0x9000
 	set C, 0
-	hwi [id_IACM]
+	hwi [J]
 
 	set B, 0x9001
 	set C, 1
-	hwi [id_IACM]
+	hwi [J]
 
 	set PC, POP
 
@@ -32,13 +34,14 @@
 ; Description:
 ;     - Puts the DCPU to sleep, until an interruption occurs.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     -
 :iacm_sleep
 	set A, 0
 	set B, 3
-	hwi [id_IACM]
+	hwi [J]
 	set PC, POP
 
 ; --------------
@@ -48,6 +51,8 @@
 ;     - Sets the IACM mode.
 ; Arguments:
 ;     - B: Mode (1-4)
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;
 :iacm_setmode
@@ -56,7 +61,7 @@
 
 	set PUSH, A
 	set A, 0
-	hwi [id_IACM]
+	hwi [J]
 	set A, POP
 
 	set PC, POP
@@ -66,12 +71,13 @@
 ; Description:
 ;     - Completely shuts down the DCPU without warning.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     -
 
 :iacm_shutdown
 	set A, 0
 	set B, 4
-	hwi [id_IACM]
+	hwi [J]
 	set PC, POP

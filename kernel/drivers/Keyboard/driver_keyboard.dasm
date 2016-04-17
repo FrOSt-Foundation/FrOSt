@@ -4,7 +4,8 @@
 ; Description:
 ;     - Inits the keyboard. Used by the hardware manager.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     -
 
@@ -13,11 +14,22 @@
 	jsr keyboard_setInterrupt
 	set PC, POP
 
+; -----------------------
+;  keyboard_clearBuffer
+; -----------------------
+; Description:
+;     - Clears the keyboard buffer.
+; Arguments:
+;     - J: Device ID
+;     - (Not used) Z: Device data location
+; Returns:
+;     - C: 1 if key pressed, 0 if not.
+
 :keyboard_clearBuffer
 	set PUSH, A
 
 	set A, 0
-	hwi [id_keyboard1]
+	hwi [J]
 
 	set A, POP
 	set PC, POP
@@ -29,6 +41,8 @@
 ;     - Checks if a specific key has been pressed.
 ; Arguments:
 ;     - B: The key code to check.
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     - C: 1 if key pressed, 0 if not.
 
@@ -37,7 +51,7 @@
 	set PUSH, B
 
 	set A, 2
-	hwi [id_keyboard1]
+	hwi [J]
 
 	set B, POP
 	set A, POP
@@ -48,7 +62,8 @@
 ; Description:
 ;     - Store next key typed.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     - C: next key, or 0 if buffer empty.
 
@@ -56,7 +71,7 @@
 	set PUSH, A
 
 	set A, 1
-	hwi [id_keyboard1]
+	hwi [J]
 
 	set A, POP
 	set PC, POP
@@ -68,6 +83,8 @@
 ;     - Sets the interrupt message for the keyboard
 ; Arguments:
 ;     - B: Message
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     -
 
@@ -75,7 +92,7 @@
 	set PUSH, A
 
 	set A, 3
-	hwi [id_keyboard1]
+	hwi [J]
 
 	set A, POP
 	set PC, POP

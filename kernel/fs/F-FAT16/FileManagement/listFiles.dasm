@@ -23,9 +23,9 @@
 	set PUSH, X
 
 	set X, 1
-	jsr FFAT16_readSector
+	jsr dd_readSector
 
-	jsr FFAT16_waitFinish
+	jsr dd_waitForOperation
 
 	jsr FFAT16_getFilesNumber ;Return the number of files in Y.
 

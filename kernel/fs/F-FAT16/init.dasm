@@ -13,9 +13,9 @@
 		set PC, POP
 
 	set X, 0
-	jsr FFAT16_readSector
+	jsr dd_readSector
 
-	jsr FFAT16_waitFinish
+	jsr dd_waitForOperation
 
 	; Check of the FrOSt magic number
 	set I, Z

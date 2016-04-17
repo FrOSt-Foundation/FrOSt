@@ -1,0 +1,154 @@
+:deviceManager_init
+    jsr push_regs
+
+    hwn I
+    set J, 0
+    :loop_periph
+        hwq J
+        set X, 0
+
+        ife A, CLOCK_ID_A
+            ife B, CLOCK_ID_B
+                set X, DEVICE_CLOCK
+
+        ife A, EDC_ID_A
+            ife B, EDC_ID_B
+                set X, DEVICE_EDC
+
+        ife A, FDD_ID_A
+            ife B, FDD_ID_B
+                set X, DEVICE_DD
+
+        ife A, HDD_ID_A
+            ife B, HDD_ID_B
+                set X, DEVICE_DD
+        ife A, HDD_ID_A
+            ife B, HDD_ID_B
+                jsr __deviceManager_spin_up_HDD
+
+        ife A, IACM_ID_A
+            ife B, IACM_ID_B
+                set X, DEVICE_IACM
+
+        ife A, KEYBOARD_ID_A
+            ife B, KEYBOARD_ID_B
+                set X, DEVICE_KEYBOARD
+
+        ife A, LEM802_ID_A
+            ife B, LEM1800_ID_B
+                set X, DEVICE_SCREEN
+
+        add J, 1
+
+        jsr deviceManager_addDevice
+
+        ife X, 0
+            set PC, loop_periph ; The device is unknown, we ignore it.
+        ifn I, J
+            set PC, loop_periph
+
+    jsr pop_regs
+    set PC, POP
+
+:__deviceManager_spin_up_HDD
+    set PUSH, A
+        set A, 0x0004
+        hwi J
+    set A, POP
+
+    set PC, POP
+
+; Arguments : J id, X DEVICE_*
+
+:deviceManager_addDevice
+    set PUSH, C
+
+    set A, deviceManager_numbers
+    add A, X
+    add [A], 1
+
+    ife [A], 1
+        jsr deviceManager_addDevice_malloc
+    ifn [A], 1
+        jsr deviceManager_addDevice_getalloc
+
+    add Z, [A]
+    set [Z], J
+
+    set A, deviceManager_drivers_dataSize_pointers
+    add A, X
+    set PUSH, [A]
+    ifn [A], 0
+        jsr deviceManager_addDevice_mallocData
+    set [A], POP
+
+    ; Let's run the driver initialization method. J is the device ID, Y is the device version, and Z a pointer to the device data (if needed). These are the only arguments the driver should consider as reliable
+    set Y, POP
+    set A, deviceManager_drivers_pointers
+    add A, X
+    jsr push_regs
+    jsr [A]
+    jsr pop_regs
+
+    set PC, POP
+
+    :deviceManager_addDevice_malloc
+        set B, MAX_DEVICES_PER_DRIVER
+        int INT_MALLOC
+        ife Z, MALLOC_ERROR
+            set PC, end
+
+        set B, deviceManager_pointers
+        add B, X
+        set [B], Z
+
+        set PC, POP
+
+    :deviceManager_addDevice_getalloc
+        set B, deviceManager_pointers
+        add B, X
+        set Z, [B]
+
+        set PC, POP
+
+    :deviceManager_addDevice_mallocData
+        set PUSH, C
+
+        set C, deviceManager_numbers
+        add C, X
+        set B, [A]
+        mul B, [C]
+        ife [C], 1 ; If this is the first device of this type ever detected
+            set PC, deviceManager_addDevice_mallocData_malloc
+        set PC, deviceManager_addDevice_mallocData_realloc
+
+        :deviceManager_addDevice_mallocData_malloc
+            int INT_MALLOC
+            ife Z, MALLOC_ERROR
+                set PC, end
+
+            set C, B
+            set B, deviceManager_drivers_data_pointers
+            add B, X
+            set [B], Z
+
+            set C, POP
+            set PC, POP
+        :deviceManager_addDevice_mallocData_realloc
+            set C, B
+            set B, deviceManager_drivers_data_pointers
+            add B, X
+            set B, [B]
+
+            int INT_REALLOC
+            ife A, MALLOC_ERROR
+                set PC, end
+
+            ; We seed Z to this specific device's data location
+            set Z, A
+            set C, X
+            mul C, PEEK
+            add Z, C
+
+            set C, POP
+            set PC, POP

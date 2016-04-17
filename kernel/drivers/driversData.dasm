@@ -1,43 +1,39 @@
-.define IACM_NB_MAX 1
-.define SCREEN_NB_MAX 2
-.define KEYBOARD_NB_MAX 2
-.define CLOCK_NB_MAX 1
-.define FLOPPY_NB_MAX 4
-.define EDC_NB_MAX 1
+:deviceManager_numbers
+:deviceManager_clocks_number    DAT 0x0
+:deviceManager_edcs_number      DAT 0x0
+:deviceManager_dds_number       DAT 0x0
+:deviceManager_iacms_number     DAT 0x0
+:deviceManager_keyboards_number DAT 0x0
+:deviceManager_screens_number   DAT 0x0
 
-; NOTE:
-; We add the hard drives as a floppy drives because the only functional difference between them is the spinning mechanism, which we already take care of in setupDevices.
-; A rewrite will be needed if we want to spin the drive up and down anywhere else though...
+:deviceManager_pointers
+:deviceManager_clocks_ptr    DAT 0x0
+:deviceManager_edcs_ptr      DAT 0x0
+:deviceManager_dds_ptr       DAT 0x0
+:deviceManager_iacms_ptr     DAT 0x0
+:deviceManager_keyboards_ptr DAT 0x0
+:deviceManager_screens_ptr   DAT 0x0
 
-; --------------
-;  Hardware IDs
-; --------------
-; IDs (from documentation) are `hw_ID_A + (hw_ID_B << 16)`
-; With hw_ID_A and hw_ID_B in A and B with HWQ
+:deviceManager_drivers_pointers
+:deviceManager_clock_driver_ptr    DAT clock_init
+:deviceManager_edc_driver_ptr      DAT edc_init
+:deviceManager_dd_driver_ptr       DAT dd_init
+:deviceManager_iacm_driver_ptr     DAT iacm_init
+:deviceManager_keyboard_driver_ptr DAT keyboard_init
+:deviceManager_lem1802_driver_ptr   DAT lem1802_init
 
-.define IACM_ID_A 0xDACC
-.define IACM_ID_B 0x11E0
+:deviceManager_drivers_dataSize_pointers
+:deviceManager_clock_driver_dataSize DAT 2 ; <CLOCK_SPEED> <INTERRUPT_MESSAGE>
+:deviceManager_edc_driver_dataSize DAT 3 ; <ROWS> <COLUMNS> <CELLS>
+:deviceManager_dd_driver_dataSize DAT 1 ; <INTERRUPT_MESSAGE>
+:deviceManager_iacm_driver_dataSize DAT 0 ; No data
+:deviceManager_keyboard_driver_dataSize DAT 0 ; No data
+:deviceManager_screen_driver_dataSize DAT 1 ; <CURRENT_COLOR>
 
-.define CLOCK_ID_A 0xB402
-.define CLOCK_ID_B 0x12D0
-
-.define FLOPPY_DRIVE_ID_A 0x24C5
-.define FLOPPY_DRIVE_ID_B 0x4FD5
-
-.define HARD_DRIVE_ID_A 0x7e91
-.define HARD_DRIVE_ID_B 0x1eb3
-
-.define KEYBOARD_ID_A 0x7406
-.define KEYBOARD_ID_B 0x30CF
-
-.define MONITOR_ID_A 0xF615
-.define MONITOR_ID_B 0x7349
-
-.define SLEEP_CHAMBER_ID_A 0x1D9D
-.define SLEEP_CHAMBER_ID_B 0x40E4
-
-.define SPED_ID_A 0xBF3C
-.define SPED_ID_B 0x42BA
-
-.define EDC_ID_A 0xE4FF
-.define EDC_ID_B 0x70E3
+:deviceManager_drivers_data_pointers
+:deviceManager_clock_driver_data_ptr DAT 2
+:deviceManager_edc_driver_data_ptr DAT 2
+:deviceManager_dd_driver_data_ptr DAT 2
+:deviceManager_iacm_driver_data_ptr DAT 2
+:deviceManager_keyboard_driver_data_ptr DAT 2
+:deviceManager_screen_driver_data_ptr DAT 2

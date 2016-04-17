@@ -4,7 +4,9 @@
 ; Description:
 ;     - Inits the EDC. Used by the hardware manager.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - Y: Device version
+;     - Z: Device data location
 ; Returns:
 ;     -
 
@@ -15,21 +17,21 @@
 
 	set A, 0x0000
 	set B, 0b00011
-	hwi [id_edc]
+	hwi [J]
 
-	set C, [edc_version]
+	set C, Y
 	shr C, 5
 	and C, 0b11
 	add C, 1
-	set [edc_rows], C
+	set [Z], C
 
-	set C, [edc_version]
+	set C, Y
 	and C, 0b11111
 	mul C, 4
-	set [edc_columns], C
+	set [Z + 1], C
 
-	mul C, [edc_rows]
-	set [edc_cells], C
+	mul C, [Z]
+	set [Z + 2], C
 
 	set C, POP
 	set B, POP
@@ -43,6 +45,8 @@
 ;     - Writes a string to the EDC.
 ; Arguments:
 ;     - A: Pointer to null-terminated string. Must not be longer than [edc_cells].
+;     - J: Device ID
+;     - Z: Device data location
 ; Returns:
 ;     -
 
@@ -54,7 +58,7 @@
 	jsr edc_clear
 
 	jsr strlen
-	ifg Z, [edc_cells]
+	ifg Z, [Z + 2]
 		set PC, POP
 
 	:edc_write_loop1
@@ -66,7 +70,7 @@
 		set PUSH, A
 
 		set A, 0x0003
-		hwi [id_edc]
+		hwi [J]
 
 		set A, POP
 		add A, 1
@@ -95,7 +99,7 @@
 
 	set A, 0x0002
 	set B, 0b11
-	hwi [id_edc]
+	hwi [J]
 
 	set B, POP
 	set A, POP

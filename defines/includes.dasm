@@ -1,3 +1,4 @@
 .include global-defines.dasm
 .include int-defines.dasm
 .include mem-defines.dasm
+.include devices.dasm

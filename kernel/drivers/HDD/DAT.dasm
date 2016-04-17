@@ -1,9 +1,0 @@
-:nb_floppies dat 0
-:id_floppy1 dat 0
-:id_floppy2 dat 0
-:id_floppy3 dat 0
-:id_floppy4 dat 0
-:msg_floppy1 dat 0x8000
-:msg_floppy2 dat 0x8001
-:msg_floppy3 dat 0x8002
-:msg_floppy4 dat 0x8003

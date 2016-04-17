@@ -59,12 +59,12 @@
 				set X, Y
 				add X, I
 				set Y, Z
-				hwi [id_floppy1] ; We don't use FFAT16_readSector because we don't want to allocate memory, just read in already allocated memory.
+				hwi [id_floppy1] ; We don't use dd_readSector because we don't want to allocate memory, just read in already allocated memory.
 				ifn B, 1
 					set EX, 0x0004
 				ifn EX, 0
 					set PC, FFAT16_readFile_error0
-				jsr FFAT16_waitFinish
+				jsr dd_waitForOperation
 			set X, POP
 			set Y, POP
 			add I, 1

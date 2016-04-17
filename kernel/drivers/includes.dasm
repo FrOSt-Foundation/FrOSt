@@ -1,4 +1,4 @@
-.include setupDevices.dasm
+.include deviceManager.dasm
 .include driversData.dasm
 
 .include IACM/includes.dasm

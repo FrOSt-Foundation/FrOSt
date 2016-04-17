@@ -17,9 +17,9 @@
 		set PC, POP
 	jsr push_regs
 	set X, 1
-	jsr FFAT16_readSector
+	jsr dd_readSector
 
-	jsr FFAT16_waitFinish
+	jsr dd_waitForOperation
 
 	jsr FFAT16_findFirstFreeFATEntry
 	ife EX, 0x0007
@@ -47,7 +47,7 @@
 	hwi [id_floppy1]
 	ifn B, 1 ; If error
 		set PC, FFAT16_newFile_error2
-	jsr FFAT16_waitFinish
+	jsr dd_waitForOperation
 
 	set Z, POP
 	set Y, POP
@@ -70,8 +70,8 @@
 			set PUSH, Y
 				set X, Y
 				set Y, Z
-				jsr FFAT16_writeSector
-				jsr FFAT16_waitFinish
+				jsr dd_writeSector
+				jsr dd_waitForOperation
 			set Y, POP
 			set X, POP
 			add Y, 1

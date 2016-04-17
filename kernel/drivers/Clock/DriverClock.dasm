@@ -1,12 +1,12 @@
-:clock_speed 	dat 0x0000
-
 ; --------------
 ;  clock_init
 ; --------------
 ; Description:
 ;     - Inits the clock. Used by the hardware manager.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Y: Device version
+;     - Z: Device data location
 ; Returns:
 ;     -
 
@@ -14,13 +14,17 @@
 	set PUSH,A
 	set PUSH,B
 
-	set A, 2 ;Enables interrupts with message msg_clock1
-	set B, [msg_clock1]
-	hwi [id_clock1]
+	brk 0
+
+	set A, 2 ; Enables interrupts at CLOCK_MESSAGE_RANGE + device ID (each interrupt is unique, though not sequentially from 0)
+	set B, CLOCK_MESSAGE_RANGE
+	add B, J
+	set [Z + 1], B
+	hwi [J]
 
 	set A, 0 ; Disable clock ticking.
 	set B, 0
-	hwi [id_clock1]
+	hwi [J]
 
 	set B, POP
 	set A, POP
@@ -32,7 +36,8 @@
 ; Description:
 ;     - Get the current clock time.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - (Not used) Z: Device data location
 ; Returns:
 ;     - C: The current clock time.
 
@@ -40,7 +45,7 @@
 	set PUSH, A
 
 	set A, 1
-	hwi [id_clock1]
+	hwi [J]
 
 	set A, POP
 	set PC, POP
@@ -51,7 +56,8 @@
 ; Description:
 ;     - Resets the clock time.
 ; Arguments:
-;     -
+;     - J: Device ID
+;     - Z: Device data location
 ; Returns:
 ;     -
 
@@ -59,9 +65,9 @@
 	set PUSH, A
 	set PUSH, B
 
-	set B, [clock_speed]
+	set B, [Z]
 	set A, 0
-	hwi [id_clock1]
+	hwi [J]
 
 	set B, POP
 	set A, POP
@@ -74,31 +80,49 @@
 ;     - Sets the speed of the clock to 60/B ticks per second.
 ; Arguments:
 ;     - B: speed
+;     - J: Device ID
+;     - Z: Device data location
 ; Returns:
 ;     -
 
 :clock_setSpeed
 	set PUSH, A
 
-	set [clock_speed], B
+	set [Z], B
 	set A, 0
-	hwi [id_clock1]
+	hwi [J]
 
 	set A, POP
 	set PC, POP
 
 ; --------------
-;  clock_resetTime
+;  clock_getSpeed
 ; --------------
 ; Description:
 ;     - Gets the clock speed.
 ; Arguments:
-;     -
+;     - (Not used) J: Device ID
+;     - Z: Device data location
 ; Returns:
 ;     - B: Clock speed
 
 :clock_getSpeed
-	set B, [clock_speed]
+	set B, [Z]
+	set PC, POP
+
+; --------------
+;  clock_getInterruptMessage
+; --------------
+; Description:
+;     - Gets the clock interrupt message.
+; Arguments:
+;     - (Not used) J: Device ID
+;     - Z: Device data location
+; Returns:
+;     - B: Interrupt message
+
+:clock_getInterruptMessage
+	set B, [Z + 1]
 	set PC, POP
 
 ; --------------
@@ -108,6 +132,8 @@
 ;     - Sets the interrupt message for the clock
 ; Arguments:
 ;     - B: Interrupt message, or 0 to disable
+;     - J: Device ID
+;     - Z: Device data location
 ; Returns:
 ;     -
 
@@ -115,7 +141,9 @@
 	set PUSH, A
 
 	set A, 2
-	hwi [id_clock1]
+	hwi [J]
+
+	set [Z + 1], B
 
 	set A, POP
 	set PC, POP

@@ -53,8 +53,8 @@
 		set C, B
 		jsr FFAT16_formatFileName ; We transform the filename to a FFAT16 compatible one.
 		set X, 1
-		jsr FFAT16_readSector
-		jsr FFAT16_waitFinish
+		jsr dd_readSector
+		jsr dd_waitForOperation
 	set X, POP
 
 	set PUSH, Y

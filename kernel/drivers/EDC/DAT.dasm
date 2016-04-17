@@ -1,6 +1,3 @@
-:nb_EDCs dat 0
-:id_edc dat 0
-:edc_version dat 0
 :edc_rows dat 0
 :edc_columns dat 0
 :edc_cells dat 0

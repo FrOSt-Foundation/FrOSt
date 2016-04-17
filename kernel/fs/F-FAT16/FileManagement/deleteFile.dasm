@@ -25,8 +25,8 @@
 
 	set PUSH, X
 		set X, 1
-		jsr FFAT16_readSector
-		jsr FFAT16_waitFinish
+		jsr dd_readSector
+		jsr dd_waitForOperation
 	set X, POP
 	;F AT saved in *Z
 	set C, X
@@ -47,10 +47,10 @@
 	set EX, 0
 	set X, 1
 	set Y, Z
-	jsr FFAT16_writeSector
+	jsr dd_writeSector
 	ifn EX, 0
 		set PC, FFAT16_deleteFile_error0
-	jsr FFAT16_waitFinish
+	jsr dd_waitForOperation
 
 	set B, Z
 	int INT_FREE

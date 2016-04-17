@@ -1,4 +1,0 @@
-:nb_keyboards dat 0
-:msg_keyboards dat 0x7000
-:id_keyboard1 dat 0
-:id_keyboard2 dat 0

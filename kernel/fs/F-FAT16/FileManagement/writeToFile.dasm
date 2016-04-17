@@ -45,7 +45,7 @@
     set Y, C
     :FFAT16_writeToFile_loop0
 
-        jsr FFAT16_writeSector
+        jsr dd_writeSector
 
         add I, 1
         add Y, 512

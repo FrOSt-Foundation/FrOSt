@@ -61,11 +61,11 @@
 	set X, 0
 	set Y, Z
 	set EX, 0
-	jsr FFAT16_writeSector
+	jsr dd_writeSector
 	ifn EX, 0
 		set PC, FFAT16_format_error_freeMem
 
-	jsr FFAT16_waitFinish ; We wait until the write is finished
+	jsr dd_waitForOperation ; We wait until the write is finished
 
 	; We free the previously allocated memory
 	set B, Z
@@ -90,7 +90,7 @@
 
 	set X, 1
 	set Y, Z
-	JSR FFAT16_writeSector
+	JSR dd_writeSector
 
 	ifn EX, 0
 		set Y, 0x0004

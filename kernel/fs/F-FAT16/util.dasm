@@ -1,23 +1,4 @@
 ; =====================
-; FFAT16_waitFinish
-; Waits for the disk to finish its current operation (read/write)
-; =====================
-
-:FFAT16_waitFinish
-	set PUSH, A
-	set PUSH, B
-	set PUSH, C
-	set A, 0
-	:FFAT16_waitFinish_loop0
-		hwi [id_floppy1]
-		ife B, 0x0003 ;If STATE_BUSY
-		set PC, FFAT16_waitFinish_loop0
-	set C, POP
-	set B, POP
-	set A, POP
-	set PC, POP
-
-; =====================
 ; FFAT16_getName
 ; Returns a pointer to the disk name in Z
 ; =====================
@@ -136,57 +117,6 @@
 	set A, POP
 
 	set PC, POP
-
-; Reads the Xth sector and returns a dynamically allocated block of RAM in Z.
-; DON'T FORGET TO FREE Z
-:FFAT16_readSector
-	set PUSH, A
-	set PUSH, B
-	set PUSH, Y
-	set EX, 0
-	set B, 512
-	int INT_MALLOC
-	 ife Z, MALLOC_ERROR
-		set PC, FFAT16_readSector_error0
-
-	set A, 2
-	set Y, Z
-	hwi [id_floppy1]
-	ifn B, 1 ;Si erreur
-		set PC, FFAT16_readSector_error1
-
-	:FFAT16_readSector_end
-	set Y, POP
-	set B, POP
-	set A, POP
-	set PC, POP
-
-	:FFAT16_ReadSector_error0
-		set EX, 0x0003
-		set PC, FFAT16_readSector_end
-
-	:FFAT16_ReadSector_error1
-		set EX, 0x0004
-		set PC, FFAT16_readSector_end
-
-; Writes the Xth sector to what's in RAM at *Y
-:FFAT16_writeSector
-	set PUSH, A
-	set PUSH, B
-	set PUSH, Y
-
-	set EX, 0
-	set A, 3
-	hwi [id_floppy1]
-
-	ifn B, 1 ;If error
-		set EX, 0x0004
-
-	set Y, POP
-	set B, POP
-	set A, POP
-	set PC, POP
-
 
 ; Returns in Y the number of files. Z = Pointer to the FAT sector.
 ; /!\ Modifies the I and J registers /!\

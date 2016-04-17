@@ -1,101 +1,165 @@
-; ==============================
-;  TODO: Redo all of this shit.
-; ==============================
+; --------------
+;  dd_init
+; --------------
+; Description:
+;     - Inits the DD. Used by the hardware manager.
+; Arguments:
+;     - (Not used) J: Device ID
+;     - (Not used) Y: Device version
+;     - (Not used) Z: Device data location
+; Returns:
+;     -
 
+:dd_init
 
-:init_floppies
 set pc, pop
-;
-;  TODO
-;
+
+; --------------
+;  dd_isReadOnly
+; --------------
+; Description:
+;     - Checks if disk is read only.
+; Arguments:
+;     - J: Device ID
+;     - (Not used) Z: Device data location
+; Returns:
+;     - Z : TRUE if read only, FALSE otherwise
+
+:dd_isReadOnly
+	set PUSH, A
+
+	set A, 1
+	hwi [J]
+
+	jsr dd_waitForOperation
+
+	set A, 0
+	ife B, 2
+		set A, 1
+
+	set A, POP
+	set PC, POP
 
 
-;---------------------------------------------
-; GetAdresseLecteur  : enregistre l'adresse du lecteur. Ne retourne rien
+; --------------
+;  dd_waitForOperation
+; --------------
+; Description:
+;     - Blocks until the drive has finished reading or writing
+; Arguments:
+;     - J: Device ID
+;     - (Not used) Z: Device data location
+; Returns:
+;     - Z: TRUE if read only, FALSE otherwise
 
-:getAdresseLecteur
-	jsr push_regs
-	:getaddresseLecteur_loop
-		ife [nb_floppies],1
-			set pc,pop
-		add [id_floppy1], 1
-		hwq [id_floppy1]
-		ifn a,0x4cae
- 			set PC, getAddresseLecteur_loop
+:dd_waitForOperation
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
 
-	add [nb_floppies], 1
-	set X, [msg_floppy1]
-	jsr setDisqueInterrupt
-	jsr pop_regs
-	set PC,POP
+	set A, 0
+	:dd_waitForOperation_loop0
+		hwi [J]
+		ife B, 0x0003 ;If STATE_BUSY
+			set PC, dd_waitForOperation_loop0
+		ife B, 0x0004 ; If STATE_PARKED
+			set PC, dd_waitForOperation_loop0
 
-;---------------------------------------------
-;GetDisqueUtilisable : teste si un disque est utilisable dans le lecteur. Retourne B=1 si il y a un disque.
-;                                                                        Sinon 0.
+	set C, POP
+	set B, POP
+	set A, POP
 
-:getDisqueUtilisable
-	SET A, 0
-	HWI [id_floppy1]
-	;Le lecteur retourne 1 si il y a un disque et 2 si il y a un disque protégé -> Si B = 2, on met B à 1
-	IFE B, 0x0002
-	SET B, 1
-	set pc,pop
-
-:getPeripheralConnected ;Si il y a un lecteur de disquettes connecté, retourne 1 dans B. Sinon, retourne 0.
-	set B, 0
-	ifn [id_floppy1], 0
-		set B, 1
-	set pc, pop
+	set PC, POP
 
 
-;---------------------------------------------
-;---------------------------------------------
-;---------------------------------------------
-;GetDisqueProperties : lit les paramettre du disque. retourne B= le nombre de mots par secteur - OBSOLETE, NE MARCHE PAS AVEC LE M35FD
-;                                                            C= le nombre de secteur - OBSOLETE, NE MARCHE PAS AVEC LE M35FD
-;                                                            X= 1 si ont ne peut pas ecrire sur le disque, 0 sinon.
+; --------------
+;  dd_setInterrupt
+; --------------
+; Description:
+;     - Sets the interrupt.
+; Arguments:
+;     - B: Interrupt
+;     - J: Device ID
+;     - Z: Device data location
+; Returns:
+;     -
 
-:getDisqueProperties
-	set a,0x0001
-	hwi [id_floppy1]
-	SET A, 0
-	IFE B, 0x0002
-		SET A, 1
-	set pc,pop
+:dd_setInterrupt
+	set A, 0x0001
+	hwi [J]
 
-;---------------------------------------------
-;OBSOLETE, n'existe pas avec le M35FD
-;GetDisqueFlag : indique si le dique est en mode non-bloquant ou Media-interupt. retourne B= 0 si non-bloquant
-;                                                                                            1 si media-interupt
+	set [Z], B
 
-:getDisqueFlag
-	set a,0x0002
-	hwi [id_floppy1]
-	set pc,pop
+	set PC, POP
 
-;---------------------------------------------
-;SetDisqueInterrupt : Active ou désactive les interruptions.. prend comme paramettre : X = 0 -> Pas d'interruptions
-;                                                                                        X != 0 -> Interruptions avec message X à chaque changement d'état ou erreur;
 
-:setDisqueInterrupt
-	set a,0x0001
-	hwi [id_floppy1]
-	set pc,pop
+; --------------
+;  dd_readSector
+; --------------
+; Description:
+;     - Reads a sector to a malloc'ed block of memory.
+; Arguments:
+;     - J: Device ID
+;     - X: Sector to read
+;     - Z: (Not used) Device data location
+; Returns:
+;     - Z: Dynamically allocated block in Z.
 
-;---------------------------------------------
-;ReadDisque : lit le disque.prend 3 paramettres : X= le secteur initiale de lecture
-;                                                 Y= la premiere adresse d'enregistrement de ces donnes
-;                                                 B = 1 si la lecture est possible et a commencé.
-:readDisque
-	set a,0x0002
-	hwi [id_floppy1]
-	set pc,pop
+:dd_readSector
+	set PUSH, A
+	set PUSH, B
+	set PUSH, Y
+	set EX, 0
+	set B, 512
+	int INT_MALLOC
+	 ife Z, MALLOC_ERROR
+		set PC, dd_readSector_error0
 
-;---------------------------------------------
-;WriteDisque : ecrit sur le disque.prend 3 paramettres :X= le secteur initiale d'ecriture(sur le disque)
-;                                                       Y= l'adresses des donnes a ecrire(sur la ram)
-;                                                       B = 1 si l'écrite est possible et a commencé.
-:writeDisque
-	set a,0x0003
-	hwi [id_floppy1]
-	set pc,pop
+	set A, 2
+	set Y, Z
+	hwi [J]
+	ifn B, 1 ;Si erreur
+		set PC, dd_readSector_error1
+
+	:dd_readSector_end
+	set Y, POP
+	set B, POP
+	set A, POP
+	set PC, POP
+
+	:dd_readSector_error0
+		set EX, 0x0003
+		set PC, dd_readSector_end
+
+	:dd_readSector_error1
+		set EX, 0x0004
+		set PC, dd_readSector_end
+
+; --------------
+;  dd_writeSector
+; --------------
+; Description:
+;     - Writes a sector to the disk.
+; Arguments:
+;     - J: Device ID
+;     - X: Sector to write to
+;     - Y: RAM location
+;     - Z: (Not used) Device data location
+; Returns:
+;     - 
+:dd_writeSector
+	set PUSH, A
+	set PUSH, B
+	set PUSH, Y
+
+	set EX, 0
+	set A, 3
+	hwi [J]
+
+	ifn B, 1 ;If error
+		set EX, 0x0004
+
+	set Y, POP
+	set B, POP
+	set A, POP
+	set PC, POP
