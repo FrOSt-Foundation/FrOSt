@@ -18,7 +18,8 @@
 	hwi [J]
 
 	set A, 3
-	set B, 0x9000
+	set B, INT_IACM
+	add B, J
 	set C, 0
 	hwi [J]
 

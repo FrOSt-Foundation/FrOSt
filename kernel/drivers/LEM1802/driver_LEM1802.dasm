@@ -302,15 +302,15 @@
 	set PUSH, I
 	set PUSH, J
 
-	ifg I, lem1802_HEIGHT
-		set I, lem1802_HEIGHT
+	ifg I, SCREEN_HEIGHT
+		set I, SCREEN_HEIGHT
 	sub I, 1
-	mul I, lem1802_WIDTH
+	mul I, SCREEN_WIDTH
 	add I, [active_screen]
 	set J, 0
 	:lem1802_clearLine_loop0
 		sti [I],0
-		ifn J, lem1802_WIDTH
+		ifn J, SCREEN_WIDTH
 			set PC, lem1802_clearLine_loop0
 
 	set J, POP
@@ -335,9 +335,9 @@
 
 	set A, [active_screen]
 	set B, A
-	add B, lem1802_WIDTH
-	set C, lem1802_SIZE
-	sub C, lem1802_WIDTH
+	add B, SCREEN_WIDTH
+	set C, SCREEN_SIZE
+	sub C, SCREEN_WIDTH
 	jsr memcpy
 	set I, 12
 	jsr lem1802_clearLine
@@ -374,19 +374,19 @@
 		set PC, lem1802_printf_end
 	ifl I, 1
 		set I, 1
-	ifg I, lem1802_HEIGHT
-		set I, lem1802_HEIGHT
+	ifg I, SCREEN_HEIGHT
+		set I, SCREEN_HEIGHT
 	ifl J, 1
 		set J, 1
-	ifg J, lem1802_WIDTH
-		set J, lem1802_WIDTH
+	ifg J, SCREEN_WIDTH
+		set J, SCREEN_WIDTH
 	sub I, 1
 	sub J, 1
-	mul I, lem1802_WIDTH
+	mul I, SCREEN_WIDTH
 	add I, J
 	add I, [active_screen]
 	set J, A
-	set Y, lem1802_SIZE
+	set Y, SCREEN_SIZE
 	add Y, [active_screen]
 	:lem1802_printf_loop0
 		set B, [J]
@@ -418,21 +418,21 @@
 
 :lem1802_printf_scroll
 	jsr lem1802_scroll
-	sub I, lem1802_WIDTH
+	sub I, SCREEN_WIDTH
 	set PC, POP
 
 :lem1802_printf_return
 	set X, I
 	sub X, [active_screen]
-	mod X, lem1802_WIDTH
-	add I, lem1802_WIDTH
+	mod X, SCREEN_WIDTH
+	add I, SCREEN_WIDTH
 	sub I, X
 	add J, 1
 	ifl I, Y
 		ifn I, Y
 			set PC, lem1802_printf_loop0
 	jsr lem1802_scroll
-	sub I, lem1802_WIDTH
+	sub I, SCREEN_WIDTH
 
 	set PC, lem1802_printf_loop0
 
@@ -443,7 +443,7 @@
 		ifn I, Y
 			set PC, lem1802_printf_loop0
 	jsr lem1802_scroll
-	sub I, lem1802_WIDTH
+	sub I, SCREEN_WIDTH
 
 	set PC, lem1802_printf_loop0
 
@@ -481,25 +481,32 @@
 :lem1802_printc
 	set PUSH, I
 	set PUSH, J
+	set PUSH, B
 	set PUSH, C
+
+	set PUSH, 0 ; TODO : active screen
+	set PUSH, LEM1802_GETCOLOR
+	set PUSH, DEVICE_SCREEN
+	int INT_DEVICES
 
 	ifl I, 1
 		set I, 1
-	ifg I, lem1802_HEIGHT
-		set I, lem1802_HEIGHT
+	ifg I, SCREEN_HEIGHT
+		set I, SCREEN_HEIGHT
 	ifl J, 1
 		set J, 1
-	ifg J, lem1802_WIDTH
-		set J, lem1802_WIDTH
+	ifg J, SCREEN_WIDTH
+		set J, SCREEN_WIDTH
 	sub I, 1
 	sub J, 1
-	mul I, lem1802_WIDTH
+	mul I, SCREEN_WIDTH
 	add I, J
 	add I, [active_screen]
-	bor C, [lem1802_color]
+	bor C, B ; B is color
 	set [I], C
 
 	set C, POP
+	set B, POP
 	set J, POP
 	set I, POP
 	set PC, POP
@@ -516,11 +523,17 @@
 ;     -
 
 :lem1802_puts
+	set PUSH, B
 	set PUSH, C
 	set PUSH, I
 	set PUSH, J
 
-	set C, [lem1802_color]
+	set PUSH, 0 ; TODO : active screen
+	set PUSH, LEM1802_GETCOLOR
+	set PUSH, DEVICE_SCREEN
+	int INT_DEVICES
+
+	set C, B
 	add I, [active_screen]
 	set J, B
 	:lem1802_puts_loop0
@@ -532,4 +545,5 @@
 	set J, POP
 	set I, POP
 	set C, POP
+	set B, POP
 	set PC, POP

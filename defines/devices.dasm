@@ -1,0 +1,46 @@
+.define MAX_DEVICES_PER_DRIVER 128
+
+
+.define CLOCK_ID_A         0xB402
+.define CLOCK_ID_B         0x12D0
+
+.define EDC_ID_A           0xE4FF
+.define EDC_ID_B           0x70E3
+
+.define FDD_ID_A           0x24C5
+.define FDD_ID_B           0x4FD5
+
+.define HDD_ID_A           0x7e91
+.define HDD_ID_B           0x1eb3
+
+.define IACM_ID_A          0xDACC
+.define IACM_ID_B          0x11E0
+
+.define KEYBOARD_ID_A      0x7406
+.define KEYBOARD_ID_B      0x30CF
+
+.define LEM802_ID_A        0xF615
+.define LEM1800_ID_B       0x7349
+
+;.define DEVICE_SLEEP_CHAMBER_ID_A 0x1D9D
+;.define DEVICE_SLEEP_CHAMBER_ID_B 0x40E4
+
+;.define DEVICE_SPED_ID_A          0xBF3C
+;.define DEVICE_SPED_ID_B          0x42BA
+
+.define DEVICE_CLOCK     0x0000
+.define DEVICE_EDC       0x0001
+.define DEVICE_DD        0x0002
+.define DEVICE_IACM      0x0003
+.define DEVICE_KEYBOARD  0x0004
+.define DEVICE_SCREEN    0x0005
+;.define DEVICE_SPED3     0x0006
+
+.define CLOCK_GETTIME 0x0000
+.define CLOCK_RESETTIME 0x0001
+.define CLOCK_SETSPEED 0x0002
+.define CLOCK_GETSPEED 0x0003
+.define CLOCK_GETINTERRUPT 0x0004
+.define CLOCK_SETINTERRUPT 0x0005
+
+.define LEM1802_GETCOLOR 0x0000

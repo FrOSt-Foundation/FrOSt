@@ -171,8 +171,11 @@
 	ife B, 0
 		ifn 0, [currently_running]
 			set B, 62
-	set A, 0
-	hwi [id_clock1]
+	set PUSH, B
+	set PUSH, 0
+	set PUSH, CLOCK_SETSPEED
+	set PUSH, DEVICE_CLOCK
+	int INT_DEVICES
 	; Restores the program
 	set EX, POP
 	set J, POP
@@ -257,8 +260,10 @@
 		add [total_prio], [A + 1]
 		set PUSH, C
 		set PUSH, A
-		set A, 1
-		hwi [id_keyboard1]
+		set PUSH, 0
+		set PUSH, KEYBOARD_GETNEXTPRESSEDKEY
+		set PUSH, DEVICE_KEYBOARD
+		int INT_DEVICES
 		set A, peek
 		set A, [A + 3]
 		set [A + 6], C

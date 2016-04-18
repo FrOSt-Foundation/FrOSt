@@ -43,7 +43,8 @@
         jsr deviceManager_addDevice
 
         ife X, 0
-            set PC, loop_periph ; The device is unknown, we ignore it.
+            ifn I, J
+                set PC, loop_periph ; The device is unknown, we ignore it.
         ifn I, J
             set PC, loop_periph
 
@@ -75,7 +76,7 @@
     add Z, [A]
     set [Z], J
 
-    set A, deviceManager_drivers_dataSize_pointers
+    set A, deviceManager_drivers_dataSizes_pointer
     add A, X
     set PUSH, [A]
     ifn [A], 0
@@ -152,3 +153,108 @@
 
             set C, POP
             set PC, POP
+
+
+;
+; A POINTS TO THE USER STACK.
+; Must be pushed to the stack, in order:
+; - Arguments
+; - SP
+; - Device ID
+; - Function
+; - Device type
+;
+
+:deviceManager_interrupt
+    set PUSH, A
+
+    set PUSH, X
+        set X, [A] ; X is now the device type
+        set J, [A + 2] ; J is now the device ID
+        mul J, [deviceManager_drivers_dataSizes_pointer + X] ; -> J is now (device ID * device size)
+        set Z, [deviceManager_drivers_data_pointers + X] ; -> Z is now a pointer to the drive data block
+        add Z, J ; -> Z is now a pointer to the _device_ data block
+        set J, [A + 2] ; -> and J is now the device ID again, everything's fine to call the driver
+    set X, POP
+
+    ife [A], DEVICE_CLOCK
+        set PC, deviceManager_interrupt_clock
+    ife [A], DEVICE_EDC
+        set PC, deviceManager_interrupt_edc
+    ife [A], DEVICE_DD
+        set PC, deviceManager_interrupt_dd
+    ife [A], DEVICE_IACM
+        set PC, deviceManager_interrupt_iacm
+    ife [A], DEVICE_KEYBOARD
+        set PC, deviceManager_interrupt_keyboard
+    ife [A], DEVICE_SCREEN
+        set PC, deviceManager_interrupt_screen
+
+    :deviceManager_interrupt_resume
+
+    set A, POP
+
+    set SP, A ; SP is now how it was when the user called INT
+
+    set A, POP ; Don't forget A was pushed on the stack when INT was called
+
+    ; Current state of the stack is:
+    ; [...] (MSB)
+    ; <Devie ID>
+    ; <Function>
+    ; <Device type>
+    ; <PC>
+    ; [...] (LSB)
+    set 0, POP
+    set 0, POP
+    set 0, POP
+
+    set PC, [SP + 0xFFFD] ; No RFI in this case, we did it manually by handling the stack
+
+    :deviceManager_interrupt_clock
+        ; Ok, this part is sketchy
+        ; We want the driver to have a stack pointer in A that points to the arguments provided by the user. That means we have to add 4 to A.
+        ; However, we also have to use [A + 1] to compare to the functions of the driver.
+        ; We don't want to set a register now, because it's naughty to temper with them (although in an ideal world drivers should only need A, J and Z).
+        ; So we store the function we want to go to in the stack
+        ; And we have to push it and THEN access it via [SP], because if the function doesn't exist (none if the IFE's are executed), we still want to go somewhere.
+
+        set PUSH, deviceManager_interrupt_resume
+        set PUSH, deviceManager_interrupt_resume
+
+        ife [A + 1], CLOCK_GETTIME
+            set [SP], clock_getTime
+        ife [A + 1], CLOCK_RESETTIME
+            set [SP], clock_resetTime
+        ife [A + 1], CLOCK_GETSPEED
+            set [SP], clock_getSpeed
+        ife [A + 1], CLOCK_SETSPEED
+            set [SP], clock_setSpeed
+        ife [A + 1], CLOCK_GETINTERRUPT
+            set [SP], clock_getInterrupt
+        ife [A + 1], CLOCK_SETINTERRUPT
+            set [SP], clock_setInterrupt
+
+        add A, 4 ; We change the stack pointer for the driver.
+
+        set PC, POP ; We go to the desired function. On set PC, POP, it will go to deviceManager_interrupt_resume since we pushed it twice! #sketchy
+
+    :deviceManager_interrupt_edc
+
+        set PC, POP
+
+    :deviceManager_interrupt_dd
+
+        set PC, POP
+
+    :deviceManager_interrupt_iacm
+
+        set PC, POP
+
+    :deviceManager_interrupt_keyboard
+
+        set PC, POP
+
+    :deviceManager_interrupt_screen
+
+        set PC, POP

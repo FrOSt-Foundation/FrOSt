@@ -14,10 +14,8 @@
 	set PUSH,A
 	set PUSH,B
 
-	brk 0
-
 	set A, 2 ; Enables interrupts at CLOCK_MESSAGE_RANGE + device ID (each interrupt is unique, though not sequentially from 0)
-	set B, CLOCK_MESSAGE_RANGE
+	set B, INT_CLOCK
 	add B, J
 	set [Z + 1], B
 	hwi [J]
@@ -79,7 +77,7 @@
 ; Description:
 ;     - Sets the speed of the clock to 60/B ticks per second.
 ; Arguments:
-;     - B: speed
+;     - PUSH: Speed (accessible via [A])
 ;     - J: Device ID
 ;     - Z: Device data location
 ; Returns:
@@ -88,10 +86,11 @@
 :clock_setSpeed
 	set PUSH, A
 
-	set [Z], B
+	set [Z], [A]
 	set A, 0
 	hwi [J]
 
+	set A, POP ; Done twice 'cause we need to pop the argument too
 	set A, POP
 	set PC, POP
 
@@ -121,7 +120,7 @@
 ; Returns:
 ;     - B: Interrupt message
 
-:clock_getInterruptMessage
+:clock_getInterrupt
 	set B, [Z + 1]
 	set PC, POP
 
@@ -131,7 +130,7 @@
 ; Description:
 ;     - Sets the interrupt message for the clock
 ; Arguments:
-;     - B: Interrupt message, or 0 to disable
+;     - PUSH: Interrupt message, or 0 to disable (accessible via [A])
 ;     - J: Device ID
 ;     - Z: Device data location
 ; Returns:
@@ -143,7 +142,8 @@
 	set A, 2
 	hwi [J]
 
-	set [Z + 1], B
+	set [Z + 1], [A]
 
+	set A, POP ; Done twice 'cause we need to pop the argument too
 	set A, POP
 	set PC, POP

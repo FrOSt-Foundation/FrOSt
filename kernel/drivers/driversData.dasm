@@ -22,7 +22,7 @@
 :deviceManager_keyboard_driver_ptr DAT keyboard_init
 :deviceManager_lem1802_driver_ptr   DAT lem1802_init
 
-:deviceManager_drivers_dataSize_pointers
+:deviceManager_drivers_dataSizes_pointer
 :deviceManager_clock_driver_dataSize DAT 2 ; <CLOCK_SPEED> <INTERRUPT_MESSAGE>
 :deviceManager_edc_driver_dataSize DAT 3 ; <ROWS> <COLUMNS> <CELLS>
 :deviceManager_dd_driver_dataSize DAT 1 ; <INTERRUPT_MESSAGE>
@@ -31,9 +31,9 @@
 :deviceManager_screen_driver_dataSize DAT 1 ; <CURRENT_COLOR>
 
 :deviceManager_drivers_data_pointers
-:deviceManager_clock_driver_data_ptr DAT 2
-:deviceManager_edc_driver_data_ptr DAT 2
-:deviceManager_dd_driver_data_ptr DAT 2
-:deviceManager_iacm_driver_data_ptr DAT 2
-:deviceManager_keyboard_driver_data_ptr DAT 2
-:deviceManager_screen_driver_data_ptr DAT 2
+:deviceManager_clock_driver_data_ptr DAT 0
+:deviceManager_edc_driver_data_ptr DAT 0
+:deviceManager_dd_driver_data_ptr DAT 0
+:deviceManager_iacm_driver_data_ptr DAT 0
+:deviceManager_keyboard_driver_data_ptr DAT 0
+:deviceManager_screen_driver_data_ptr DAT 0

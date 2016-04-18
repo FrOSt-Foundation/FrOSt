@@ -15,9 +15,9 @@
 	sub A, int_ptr
 	set [n_ptr], A
 
-	ifn [nb_edcs], 0
+	ifn [deviceManager_edcs_number], 0
 		set A, iacm_str_mode_full
-	ifn [nb_edcs], 0
+	ifn [deviceManager_edcs_number], 0
 		jsr edc_puts
 
 	set A, pop
@@ -30,30 +30,23 @@
 ; Fails in silence if error
 ; /!\ ASSUMES SP IS CORRECTLY POSITIONNED /!\
 ;
-; msg 0x6000 is for the clock
-; msg 0x7000 is for the keyboard
-; msg 0x8000-0x8003 is for the M35FD/M525HD
-; msg 0x9000 is for the IACM
+; msg 0x5000 range is for the clock
+; msg 0x6000 range is for the keyboard
+; msg 0x7000 range is for the M35FD/M525HD
+; msg 0x8000 range is for the IACM
 ;
 ; msg 0x0000 INT_MALLOC
 ; msg 0x0001 INT_FREE
 ; msg 0x0002 INT_INITMEM
 ;
-; msg 0x1000 INT_PRINTF
-; msg 0x1001 INT_PRINTC
+; msg 0x1000 INT_DEVICES
 ;
-; msg 0x2000 INT_CHANGECOLOR
-; msg 0x2001 INT_SCROLL
-; msg 0x2002 INT_CLEARLINE
-; msg 0x2003 INT_GETCOLOR
-; msg 0x2004 INT_CLEARSCREEN
+; msg 0x2000 INT_LAUNCH
 ;
-; msg 0x3000 INT_LAUNCH
+; msg 0x3000 INT_WAITKEY_BLOCKING
+; msg 0x3001 INT_WAITKEY_NONBLOCKING
 ;
-; msg 0x4000 INT_WAITKEY_BLOCKING
-; msg 0x4001 INT_WAITKEY_NONBLOCKING
-;
-; msg 0x5000 INT_KILL
+; msg 0x4000 INT_KILL
 ; ============================================
 :interrupt_handler
 	set push,A
@@ -85,43 +78,17 @@
 		set pc,ih_free
 	ife A,2
 		set pc,ih_clear_memory
+	ife A, 3
+		set PC, ih_realloc
 	rfi 1
 
-:ih_print
-	set A,pop
-	set push,[active_screen]
-	set push,A
-	set A,[currently_running]
-	set [active_screen],[A+4]
-	set A,pop
-	and A,0x000F
-	ife A,0
-		set pc,ih_printf
-	ife A,1
-		set pc,ih_printc
-	set [active_screen],pop
-	rfi 1
+:ih_devices
+	set A, POP
 
-:ih_screen
-	set A,pop
-	set push,[active_screen]
-	set push,A
-	set A,[currently_running]
-	set [active_screen],[A+4]
-	set A,pop
-	and A,0x000F
-	ife A,0
-		set pc,ih_couleur
-	ife A,1
-		jsr lem1802_scroll
-	ife A,4
-		set pc,ih_clear_screen
-	ife A,2
-		jsr lem1802_clearLine
-	ife A,3
-		set pc,ih_getC
-	set [active_screen],pop
-	rfi 1
+	set A, SP
+	add A, 2 ; INT pushes PC and A to the stack, which we don't care about
+
+	set PC, deviceManager_interrupt
 
 :ih_keyboard
 	set A,pop
@@ -136,32 +103,6 @@
 :ih_free
 	set A , B
 	JSR free
-	rfi 0
-
-:ih_printf
-	set A , B
-	JSR lem1802_printf
-	set [active_screen],pop
-	rfi 0
-
-:ih_couleur
-	JSR lem1802_setColor
-	set [active_screen],pop
-	rfi 0
-
-:ih_getC
-	set B,[screen_color]
-	set [active_screen],pop
-	rfi 0
-
-:ih_printc
-	JSR lem1802_printc
-	set [active_screen],pop
-	rfi 0
-
-:ih_clear_screen
-	JSR lem1802_clear
-	set [active_screen],pop
 	rfi 0
 
 :ih_clear_memory
@@ -224,29 +165,29 @@
 		set PUSH, A
 		set PUSH, B
 		set PUSH, Z
-		ife [nb_IACMs], 0
+		ife [deviceManager_iacms_number], 0
 			rfi 0
 
-		ifn [nb_screens], 0
+		ifn [deviceManager_screens_number], 0
 			jsr lem1802_getVram
 		set PUSH, Z
 
 		set B, 0
-		ifn [nb_screens], 0
+		ifn [deviceManager_screens_number], 0
 			jsr lem1802_setVram
 
 		set B, 0
-		ifn [nb_clocks], 0
+		ifn [deviceManager_clocks_number], 0
 			jsr clock_setspeed
 
 		jsr iacm_sleep
 
 		set B, 1
-		ifn [nb_clocks], 0
+		ifn [deviceManager_clocks_number], 0
 			jsr clock_setspeed
 
 		set B, POP
-		ifn [nb_screens], 0
+		ifn [deviceManager_screens_number], 0
 			jsr lem1802_setVram
 
 		set Z, POP
@@ -272,3 +213,10 @@
 		set A, POP
 
 		rfi 0
+
+:ih_realloc
+	set A, B
+	set B, C
+	jsr realloc
+
+	rfi 0
