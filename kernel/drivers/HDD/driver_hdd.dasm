@@ -29,7 +29,7 @@ set pc, pop
 	set PUSH, A
 
 	set A, 1
-	hwi [J]
+	hwi J
 
 	jsr dd_waitForOperation
 
@@ -59,7 +59,7 @@ set pc, pop
 
 	set A, 0
 	:dd_waitForOperation_loop0
-		hwi [J]
+		hwi J
 		ife B, 0x0003 ;If STATE_BUSY
 			set PC, dd_waitForOperation_loop0
 		ife B, 0x0004 ; If STATE_PARKED
@@ -78,7 +78,7 @@ set pc, pop
 ; Description:
 ;     - Sets the interrupt.
 ; Arguments:
-;     - B: Interrupt
+;     - PUSH: Interrupt. Accessible via [A]
 ;     - J: Device ID
 ;     - Z: Device data location
 ; Returns:
@@ -86,7 +86,7 @@ set pc, pop
 
 :dd_setInterrupt
 	set A, 0x0001
-	hwi [J]
+	hwi J
 
 	set [Z], B
 
@@ -99,8 +99,8 @@ set pc, pop
 ; Description:
 ;     - Reads a sector to a malloc'ed block of memory.
 ; Arguments:
+;     - PUSH: Sector to read. Accessible via [A]
 ;     - J: Device ID
-;     - X: Sector to read
 ;     - Z: (Not used) Device data location
 ; Returns:
 ;     - Z: Dynamically allocated block in Z.
@@ -108,20 +108,24 @@ set pc, pop
 :dd_readSector
 	set PUSH, A
 	set PUSH, B
+	set PUSH, X
 	set PUSH, Y
+
 	set EX, 0
 	set B, 512
 	int INT_MALLOC
 	 ife Z, MALLOC_ERROR
 		set PC, dd_readSector_error0
 
+	set X, [A]
 	set A, 2
 	set Y, Z
-	hwi [J]
+	hwi J
 	ifn B, 1 ;Si erreur
 		set PC, dd_readSector_error1
 
 	:dd_readSector_end
+	set X, POP
 	set Y, POP
 	set B, POP
 	set A, POP
@@ -146,7 +150,7 @@ set pc, pop
 ;     - Y: RAM location
 ;     - Z: (Not used) Device data location
 ; Returns:
-;     - 
+;     -
 :dd_writeSector
 	set PUSH, A
 	set PUSH, B
@@ -154,7 +158,7 @@ set pc, pop
 
 	set EX, 0
 	set A, 3
-	hwi [J]
+	hwi J
 
 	ifn B, 1 ;If error
 		set EX, 0x0004

@@ -15,17 +15,17 @@
 :iacm_init
 	set A, 0
 	set B, 0
-	hwi [J]
+	hwi J
 
 	set A, 3
 	set B, INT_IACM
 	add B, J
 	set C, 0
-	hwi [J]
+	hwi J
 
 	set B, 0x9001
 	set C, 1
-	hwi [J]
+	hwi J
 
 	set PC, POP
 
@@ -42,7 +42,7 @@
 :iacm_sleep
 	set A, 0
 	set B, 3
-	hwi [J]
+	hwi J
 	set PC, POP
 
 ; --------------
@@ -62,7 +62,7 @@
 
 	set PUSH, A
 	set A, 0
-	hwi [J]
+	hwi J
 	set A, POP
 
 	set PC, POP
@@ -80,5 +80,5 @@
 :iacm_shutdown
 	set A, 0
 	set B, 4
-	hwi [J]
+	hwi J
 	set PC, POP

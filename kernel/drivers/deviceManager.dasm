@@ -5,7 +5,7 @@
     set J, 0
     :loop_periph
         hwq J
-        set X, 0
+        set X, 0xFFFF
 
         ife A, CLOCK_ID_A
             ife B, CLOCK_ID_B
@@ -38,11 +38,11 @@
             ife B, LEM1800_ID_B
                 set X, DEVICE_SCREEN
 
-        add J, 1
-
         jsr deviceManager_addDevice
 
-        ife X, 0
+        add J, 1
+
+        ife X, 0xFFFF
             ifn I, J
                 set PC, loop_periph ; The device is unknown, we ignore it.
         ifn I, J
@@ -66,15 +66,16 @@
 
     set A, deviceManager_numbers
     add A, X
-    add [A], 1
 
-    ife [A], 1
+    ife [A], 0
         jsr deviceManager_addDevice_malloc
-    ifn [A], 1
+    ifn [A], 0
         jsr deviceManager_addDevice_getalloc
 
     add Z, [A]
     set [Z], J
+
+    add [A], 1
 
     set A, deviceManager_drivers_dataSizes_pointer
     add A, X
@@ -174,7 +175,11 @@
         mul J, [deviceManager_drivers_dataSizes_pointer + X] ; -> J is now (device ID * device size)
         set Z, [deviceManager_drivers_data_pointers + X] ; -> Z is now a pointer to the drive data block
         add Z, J ; -> Z is now a pointer to the _device_ data block
-        set J, [A + 2] ; -> and J is now the device ID again, everything's fine to call the driver
+
+        set J, [deviceManager_pointers + X]
+        add J, [A + 2]
+        set J, [J]
+
     set X, POP
 
     ife [A], DEVICE_CLOCK
@@ -200,7 +205,7 @@
 
     ; Current state of the stack is:
     ; [...] (MSB)
-    ; <Devie ID>
+    ; <Device ID>
     ; <Function>
     ; <Device type>
     ; <PC>
@@ -209,7 +214,11 @@
     set 0, POP
     set 0, POP
 
-    set PC, [SP + 0xFFFD] ; No RFI in this case, we did it manually by handling the stack
+    iaq 1
+
+    brk 0
+
+    set PC, [SP + 0xFFFB] ; No RFI in this case, we did it manually by handling the stack
 
     :deviceManager_interrupt_clock
         ; Ok, this part is sketchy

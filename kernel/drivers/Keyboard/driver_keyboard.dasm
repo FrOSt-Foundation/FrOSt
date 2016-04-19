@@ -29,7 +29,7 @@
 	set PUSH, A
 
 	set A, 0
-	hwi [J]
+	hwi J
 
 	set A, POP
 	set PC, POP
@@ -51,7 +51,7 @@
 	set PUSH, B
 
 	set A, 2
-	hwi [J]
+	hwi J
 
 	set B, POP
 	set A, POP
@@ -71,7 +71,7 @@
 	set PUSH, A
 
 	set A, 1
-	hwi [J]
+	hwi J
 
 	set A, POP
 	set PC, POP
@@ -92,7 +92,7 @@
 	set PUSH, A
 
 	set A, 3
-	hwi [J]
+	hwi J
 
 	set A, POP
 	set PC, POP

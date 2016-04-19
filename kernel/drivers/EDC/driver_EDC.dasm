@@ -17,7 +17,7 @@
 
 	set A, 0x0000
 	set B, 0b00011
-	hwi [J]
+	hwi J
 
 	set C, Y
 	shr C, 5
@@ -44,7 +44,7 @@
 ; Description:
 ;     - Writes a string to the EDC.
 ; Arguments:
-;     - A: Pointer to null-terminated string. Must not be longer than [edc_cells].
+;     - PUSH: Pointer to null-terminated string. Must not be longer than [edc_cells]. (accessible via [A])
 ;     - J: Device ID
 ;     - Z: Device data location
 ; Returns:
@@ -54,6 +54,8 @@
 	set PUSH, A
 	set PUSH, B
 	set PUSH, Z
+
+	set A, [A] ; A is now the pointer. Yup.
 
 	jsr edc_clear
 
@@ -70,7 +72,7 @@
 		set PUSH, A
 
 		set A, 0x0003
-		hwi [J]
+		hwi J
 
 		set A, POP
 		add A, 1
@@ -84,22 +86,24 @@
 	set A, POP
 	set PC, POP
 
+
 ; --------------
 ;  edc_clear
 ; --------------
 ; Description:
 ;     - Writes text to the EDC.
 ; Arguments:
-;     - A: Pointer to null-terminated string. Must not be longer than [edc_cells].
+;     -
 ; Returns:
 ;     -
+
 :edc_clear
 	set PUSH, A
 	set PUSH, B
 
 	set A, 0x0002
 	set B, 0b11
-	hwi [J]
+	hwi J
 
 	set B, POP
 	set A, POP

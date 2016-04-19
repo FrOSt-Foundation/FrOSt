@@ -29,7 +29,7 @@
 
 	set A, 1
 	set B, lem1802_font_default
-	hwi [J]
+	hwi J
 
 	set [Z], 0xF000
 
@@ -53,7 +53,7 @@
 	set PUSH, A
 
 	set A, 1
-	hwi [J]
+	hwi J
 
 	set A, POP
 	set PC, POP
@@ -107,7 +107,7 @@
 	set PUSH, A
 
 	set A, 2
-	hwi [J]
+	hwi J
 
 	set A, POP
 	set PC, POP
@@ -128,7 +128,7 @@
 	set PUSH, A
 
 	set A, 3
-	hwi [J]
+	hwi J
 
 	set A, POP
 	set PC, POP
@@ -171,7 +171,7 @@
 
 	set A, 4
 	set B, Z
-	hwi [J]
+	hwi J
 	:lem1802_getFont_end
 
 	set A, POP
@@ -198,7 +198,7 @@
 
 	set A, 5
 	set B, Z
-	hwi [J]
+	hwi J
 	:lem1802_getPalette_end
 
 	set A, POP
@@ -230,7 +230,7 @@
 
 	set A, 0
 	set B, [active_screen]
-	hwi [J]
+	hwi J
 
 	set B, POP
 	set A, POP
