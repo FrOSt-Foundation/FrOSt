@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: checksum.dasm
-; *************************
-
 ; Of course these are simple checksum algorithms, it's really easy to get a complete collision, but it's the start and is reusable as long as the security needs are not too big.
 
 ; Checksum for small precision, only adds the words

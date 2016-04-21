@@ -1,22 +1,17 @@
-; *************************
-; Project: FrOSt
-; File: DAT.dasm
-; *************************
-
-:serialNumber DAT 0 ;Prend deux mots (par exemple, 0x1234, 0x5678 est un numéro de série)
+:serialNumber DAT 0 ; Two words long (for instance: 0x1234, 0x5678)
 :serialNumber2 DAT 0
-:volumeName DAT "               ", 0 ;Chaîne contenant le nom de volume (human-readable)
+:volumeName DAT "               ", 0 ; Human-readable string containing the volume name
 
-:FFAT16_valid DAT FALSE ;Booléen. Mis à TRUE si le disque est reconnu comme VALID à l'init
+:FFAT16_valid DAT FALSE ; boolean. Set to TRUE if the disk is valid at mount
 
-;Contenu par défaut d'un disque FrOSt.
+; Default content of a FrOSt file
 :defaultContent
-DAT 0xFF16, 0xFF16 ;Identifiant du FS..
-DAT 0xF057, 0x1337 ;Numéro de série du disque. Je le nomme F(r)OSt puis 1337 pour ceux qui ont l'esprit lent o/
-DAT "FFAT-16 disk   "
+DAT 0xFF16, 0xFF16 ; FS id
+DAT 0xF057, 0x1337 ; Disk S/N.
+DAT "FFAT-16 disk   " ; Disk name
 :defaultContent_end
 
-;Emplacements RAM dédiés au file manager. Y'a pas assez de registres pour tout gérer :p
+; ... We don't have enough registers and I was apparently too lazy to use the stack when I wrote this.
 :FFAT16_A DAT 0
 :FFAT16_B DAT 0
 :FFAT16_C DAT 0

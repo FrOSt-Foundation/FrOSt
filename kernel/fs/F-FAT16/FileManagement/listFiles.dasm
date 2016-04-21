@@ -1,0 +1,98 @@
+; --------------
+;  FFAT16_listFiles
+; --------------
+; Description:
+;     - Lists files on disk (similar to dir/ls).
+; Arguments:
+;     -
+; Returns:
+;     - EX: 0 if no error, else error code
+;     - Z: Pointer to dynamically allocated table (DON'T FORGET TO FREE IT) containing strings. You know you are at the end of the table when you are at Z + J * 14. Every file is 14 characters long. Please manipulate it with caution to avoid erros 0:)
+
+:FFAT16_listFiles
+	set EX, 0
+	ife 0, [FFAT16_valid]
+		set EX, 1
+	ife EX, 1
+		set PC, POP
+	set PUSH, A
+	set PUSH, B
+	set PUSH, C
+	set PUSH, I
+	set PUSH, J
+	set PUSH, X
+
+	set X, 1
+	jsr FFAT16_readSector
+
+	jsr FFAT16_waitFinish
+
+	jsr FFAT16_getFilesNumber ;Return the number of files in Y.
+
+	ife Y, 0
+		set EX, 6
+	ife EX, 6
+		set PC, FFAT16_listFiles_break0
+
+	set X, Z ; Now, FAT location = X, file names location = Z
+	set PUSH, Z ; We save Z because we need to make another malloc
+		; We allocate 14 * n_files (filename length = 14)
+		set B, 16
+		mul B, Y
+		int INT_MALLOC
+		 ife Z, MALLOC_ERROR
+			set PC, FFAT16_listFiles_mallocError1
+
+		set PUSH, Z ; We save Z (again) because it will be changed during the loop
+
+		set I, 0
+		add X, 2 ;We want to start at the beggining of the string, the first two words being reserved for the file size and first sector.
+		; Here, we copy the filenames to the table.
+		; We do Y loops (one for each file).
+		; At the end of each loop, we copy the filename and add a null terminator.
+		;
+		; At this point :
+		; I = Number of loops done
+		; X = FAT beggining + 2
+		; Y = Number of files
+		; Z = Array address
+		:FFAT16_listFiles_loop0
+			set C, 14 ; String length
+			set B, X
+			set A, Z
+			jsr memcpy ; We copy 14 words from X to Z
+			add X, 16
+			add Z, 14
+			add I, 1
+			ifn I, Y
+				set PC, FFAT16_listFiles_loop0
+	set Z, POP
+
+	set B, POP ; Was Z
+	int INT_FREE
+
+	:FFAT16_listFiles_break0
+
+	set X, POP
+	set J, POP
+	set I, POP
+	set C, POP
+	set B, POP
+	set A, POP
+
+	set PC, POP
+
+:FFAT16_listFiles_mallocError1
+	set Z, POP
+	set B, Z
+	int INT_FREE
+:FFAT16_listFiles_mallocError
+	set EX, 0x0003
+:FFAT16_listFiles_error
+	set X, POP
+	set J, POP
+	set I, POP
+	set C, POP
+	set B, POP
+	set A, POP
+	set PC, POP

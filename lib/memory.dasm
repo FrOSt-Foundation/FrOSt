@@ -1,0 +1,58 @@
+; ------------
+;  memcpy
+; ------------
+; Description:
+;     - Copies from [B] to [A] for C words.
+; Arguments:
+;     - B: Pointer to the first word in the original bock
+;     - A: Pointer to the first word in the new block
+;     - C: Number of words to copy
+; Returns:
+;     -
+
+:memcpy
+	set push, I
+	set push, J
+	set push, C
+	set push, C
+	set I, A
+	set J, B
+	add C, B
+	ifl peek, 8
+		set pc, memcpy_loop2
+	mod peek, 8
+	ifn peek, 0
+		set pc, memcpy_loop3
+	:memcpy_loop
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		sti [I], [J]
+		ifn C, J
+			set pc, memcpy_loop
+		set C, pop
+		set C, pop
+		set J, pop
+		set I, pop
+		set pc, pop
+	:memcpy_loop2
+		sti [I], [J]
+		ifn C, J
+			set pc, memcpy_loop2
+		set C, pop
+		set C, pop
+		set J, pop
+		set I, pop
+
+		set pc, pop
+
+	:memcpy_loop3
+		sti [I], [J]
+		sub peek, 1
+		ifn peek, 0
+			set pc, memcpy_loop3
+		set pc, memcpy_loop

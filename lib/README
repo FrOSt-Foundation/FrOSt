@@ -1,6 +1,0 @@
-            Dossier lib
-            
-Ce dossier contient des fonctions générales qui peuvent être utilisées partout dans l'OS. Elles sont regroupées par 
-thème dans un fichier. On retrouve par exemple strlen qui retourne la longueur d'un string passé en paramètre, 
-push_regs/pop_regs pour factoriser le code de sauvegarde des registres, et bien d'autres.
-À noter que ces fonctions n'intéragissent avec le hardware que par l'intermédiaire des drivers.

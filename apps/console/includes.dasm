@@ -1,8 +1,3 @@
-; *************************
-; Project: FrOSt
-; File: includes.dasm
-; *************************
-
 .include console.dasm
 .include DAT.dasm
 ; .include DAT_fr.dasm

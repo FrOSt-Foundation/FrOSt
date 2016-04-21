@@ -1,6 +1,1 @@
-; *************************
-; Project: FrOSt
-; File: includes.dasm
-; *************************
-
 .include testprog.dasm

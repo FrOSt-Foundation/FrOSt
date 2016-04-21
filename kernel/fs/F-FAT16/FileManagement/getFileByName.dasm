@@ -1,20 +1,15 @@
-; *************************
-; Project: FrOSt
-; File: getFileByName.dasm
-; *************************
-
-; =======================
-; FFAT16_getFileByName
-; Arguments :
-; -----------
-; B : Pointeur vers le nom de fichier.
-; Retourne :
-; ----------
-; EX : 0 si pas d'erreur, sinon code d'erreur
-; X : le fichier rechercher est la Xe entrée FAT
-; Y : Le nombre de clusters du fichier
-; Z : Le cluster de début du fichier.
-; =======================
+; --------------
+;  FFAT16_getFileByName
+; --------------
+; Description:
+;     - Gets file information from file name.
+; Arguments:
+;     - B: Pointer to file name.
+; Returns:
+;     - EX: 0 if no error, else error code
+;     - X: The file seeked is the Xth FAT entry
+;     - Y: The length of the file in sectors
+;     - Z: The first sector of the file
 
 :FFAT16_getFileByName
 	set EX, 0
@@ -36,10 +31,10 @@
 	 ife Z, MALLOC_ERROR
 		set PC, FFAT16_getFileByName_error0
 
-	set X, Z ;On veut sauvegarder le Z en X car on aura besoin de deux emplacements mémoire pour comparer les strings, et un pour la FAT
+	set X, Z ; We want to save Z in X because we'll need to memory emplacements to compare strings, and one for the FAT
 
 	add Z, 14
-	set [Z], 0 ;On ajoute le end-string
+	set [Z], 0 ; We add the null terminator
 
 	set B, 15
 	int INT_MALLOC
@@ -48,7 +43,7 @@
 
 	set Y, Z
 
-	;On ajoute le end-string
+	; We add the null terminator
 	add Z, 14
 	set [Z], 0
 
@@ -56,7 +51,7 @@
 
 	set PUSH, X
 		set C, B
-		jsr FFAT16_formatFileName ;On transforme le nom de fichier en nom de fichier F-FAT16.
+		jsr FFAT16_formatFileName ; We transform the filename to a FFAT16 compatible one.
 		set X, 1
 		jsr FFAT16_readSector
 		jsr FFAT16_waitFinish
@@ -70,15 +65,15 @@
 	ife J, 0
 		set PC, FFAT16_getFileByName_error2
 
-	; À ce stade:
-	; J = Nombre de fichiers
-	; X = string argument formaté
-	; Y = emplacement pour comparer les strings
-	; Z = secteur de la FAT
+	; At this point:
+	; J = Number of files
+	; X = formatted string argument
+	; Y = Place to compare strings
+	; Z = FAT sector
 
-	; Désormais, on va trouver le fichier correspondant en comparant les noms de fichier un à un.
+	; Now, we will compare FAT entries one by one to our filename to get the corresponding entry.
 	;
-	; Algorithme :
+	; Algorithm in pseudo C-code :
 	; ------------
 	; Z += 2;
 	; for(I = 0; I <= J; I++) {
@@ -88,12 +83,12 @@
 	; 		//Exit loop
 	; }
 	; if(I > J)
-	; 	//Fichier inexistant, on quitte avec EX = 0x0008
-	; //Le fichier recherché est le Ie fichier
+	; 	// File does not exist, we quit with EX = 0x0008
+	; // Seeked file is X-th file
 	set PUSH, Z
 	add Z, 2
 	set I, 0
-	add J, 1 ;On ne peut pas faire inférieur ou égal, donc on ajoute 1 pour feinter
+	add J, 1 ; We don't have <=, so we add 1 for a nice trick
 	:FFAT16_getFileByName_loop0
 		set B, Z
 		set A ,Y
@@ -106,7 +101,7 @@
 		set B, Z
 		set Z, POP
 		add I, 1
-		ifn B, 0 ;Si la comparaison est vraie
+		ifn B, 0 ; If comparison is true
 			set PC, FFAT16_getFileByName_break0
 
 		add Z, 16
@@ -114,12 +109,12 @@
 			set PC, FFAT16_getFileByName_loop0
 
 		:FFAT16_getFileByName_break0
-		sub J, 1 ;On remet J à sa valeur initiale (on a ajouté 1 plus haut)
+		sub J, 1 ; We reset J (we added one before)
 		ifg I, J
 			set PC, FFAT16_getFileByName_error1
 
 	:FFAT16_getFileByName_end
-	;On libère toute la mémoire
+	; We free all memory
 	set Z, POP
 	set B, Z
 	int INT_FREE
@@ -132,7 +127,7 @@
 
 	sub I, 1
 	mul I, 16
-	add I, Z ;On trouve l'entrée FAT (I * 16 + offset)
+	add I, Z ; We find the FAT entry (I * 16 + offset)
 
 	set Y, [I]
 	add I, 1

@@ -1,0 +1,92 @@
+; --------------
+;  FFAT16_deleteFile
+; --------------
+; Description:
+;     - Deletes the provided file from disk.
+; Arguments:
+;     - B: Pointer to file name.
+; Returns:
+;     - EX: 0 if no error, else error code
+
+:FFAT16_deleteFile
+	set EX, 0
+
+	ife 0, [FFAT16_valid]
+		set EX, 0x0001
+	ife EX, 0x0001
+		set PC, POP
+
+	jsr push_regs
+
+	set B, Y
+	jsr FFAT16_getFileByName ; What we are interested in is the Xth sector (Xth FAT entry)
+	ifn EX, 0
+		set PC, FFAT16_deleteFile_break0
+
+	set PUSH, X
+		set X, 1
+		jsr FFAT16_readSector
+		jsr FFAT16_waitFinish
+	set X, POP
+	;F AT saved in *Z
+	set C, X
+	sub X, 1
+	mul X, 16
+	add X, Z ; X now holds the addresse of the wanted FAT entry
+	jsr FFAT16_getFilesNumber ; Y holds the number of files
+
+	; At that point :
+	; C = Cth FAT entry
+	; X = FAT entry address
+	; Y = Number of files
+	; Z = FAT Address (for the malloc free)
+	ifn C, Y ; If we deleted the last file, we don't want to move the last FAT entry to its new position
+		jsr FFAT16_deleteFile_moveLastFATEntry
+	jsr FFAT16_deleteFile_eraseLastFATEntry ; We delete the last entry, because in any case it's one too many (either it's been copied or we want to delete it)
+
+	set EX, 0
+	set X, 1
+	set Y, Z
+	jsr FFAT16_writeSector
+	ifn EX, 0
+		set PC, FFAT16_deleteFile_error0
+	jsr FFAT16_waitFinish
+
+	set B, Z
+	int INT_FREE
+
+	:FFAT16_deleteFile_break0
+	jsr pop_regs
+
+	set PC, POP
+
+:FFAT16_deleteFile_error0
+	set B, Z
+	int INT_FREE
+	set PC, FFAT16_deleteFile_break0
+
+:FFAT16_deleteFile_moveLastFATEntry
+	set PUSH, X
+	jsr FFAT16_findFirstFreeFATEntry
+	sub X, 16 ; We find the first free FAT entry and we substract 16 to it : It's the last entry.
+	; We move it to its new place
+	set B, X
+	set A, POP
+	set C, 14
+	jsr memcpy
+
+	set PC, POP
+
+:FFAT16_deleteFile_eraseLastFATEntry
+	set PUSH, X
+	jsr FFAT16_findFirstFreeFATEntry
+	sub X, 16 ; We find the first free FAT entry and we substract 16 to it : It's the last entry.
+	set I, 0
+	:FFAT16_deleteFile_loop0 ; We erase the FAT content
+		sti [X], 0
+		add X, 1
+		ifn I, 16
+			set PC, FFAT16_deleteFile_loop0
+	set X, POP
+
+	set PC, POP

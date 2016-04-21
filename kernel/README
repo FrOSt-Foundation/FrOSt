@@ -1,6 +1,0 @@
-            Dossier kernel
-
-Ce dossier regroupe les fonctionnalités du kernel :
-    - Gestion des interruptions
-    - Allocation et gestion de la mémoire
-    - Répartition des ressources CPU entre les processus
