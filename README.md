@@ -53,5 +53,5 @@ You just have to `git clone` the repo somewhere and assemble FrOSt/FrOSt.dasm.
 
 ## Useful links
 
-* [Latest hardware specifications](https://github.com/paultech/TC-Specs)
+* [Latest hardware specifications](https://github.com/techcompliant/TC-Specs)
 * [Old DCPU specifications](https://web.archive.org/web/20130817110245/http://dcpu.com)
