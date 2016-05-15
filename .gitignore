@@ -2,4 +2,5 @@ test/
 export/
 *.10cdisk
 *.bin
+!rom.bin
 *.hex

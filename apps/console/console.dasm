@@ -1,6 +1,4 @@
 :console
-	jsr lem1802_displayFrOStLogo
-
 	int INT_CLEARSCREEN
 
 	set B, 0x2000
