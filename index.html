@@ -4,9 +4,9 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
     <title>Frost by FrOSt-Foundation</title>
   </head>
@@ -16,7 +16,7 @@
     <header>
       <div class="container">
         <h1>Frost</h1>
-        <h2>Dépôt officiel de FrOSt - OS communautaire Français pour 0x10c</h2>
+        <h2>Official FrOSt repository - Community OS for techcompliant</h2>
 
         <section id="downloads">
           <a href="https://github.com/FrOSt-Foundation/FrOSt/zipball/master" class="btn">Download as .zip</a>
@@ -28,96 +28,86 @@
 
     <div class="container">
       <section id="main_content">
-        <h1>FrOSt</h1>
+        <h1>
+<a id="frost" class="anchor" href="#frost" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FrOSt</h1>
 
-<p>FrOSt is a free operating system under the free license GNU GPL, made
-by a tiny group of french people.  We worked hard on it, and are proud
-to release it.</p>
+<p>FrOSt is a free operating system under the free license GNU GPL, made by a tiny group of french people.  We worked hard on it, and are proud to release it.</p>
 
-<p>We would be very pleased to know how you use or modify it, and we
-would be very grateful to you if you informed your users what your
-operating system is based on. :) You can also thank us for our job by
-sending us bugreports, fixes, enhancements, t-shirts, money, beer &amp;
-pizza on our <a href="http://frost-0x10c.tk/Forum/index.php">forum</a>.</p>
+<p>We would be very pleased to know how you use or modify it, and we would be very grateful to you if you informed your users what your operating system is based on. :) You can also thank us for our job by sending us bugreports, fixes, enhancements, t-shirts, money, beer &amp; pizza on our <a href="http://frost-0x10c.tk/Forum/index.php">forum</a>.</p>
 
-<h2>Qu'est-ce que FrOSt ?</h2>
+<h2>
+<a id="what-is-frost" class="anchor" href="#what-is-frost" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is FrOSt?</h2>
 
-<p>FrOSt est un projet communautaire français ayant pour but de créer un
-OS libre français pour le jeu 0x10c de Notch</p>
+<p>FrOSt is a community French project which goal is to create a free and Open-Source OS for <del>0x10^c</del> <a href="https://reddit.com/r/techcompliant">techcompliant</a>.</p>
 
-<h2>Comment lancer FrOSt ?</h2>
+<h2>
+<a id="how-to-run-frost" class="anchor" href="#how-to-run-frost" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to run FrOSt?</h2>
 
-<p>Il faut compiler le fichier FrOSt/FrOSt.dasm, de préférence avec
-DevCPU.</p>
+<h3>
+<a id="easy-way" class="anchor" href="#easy-way" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Easy way</h3>
 
-<h2>Comment puis-je développer un logiciel pour cet OS ?</h2>
+<p>Run buildAndRun.sh (linux) or buildAndRun.bat (windows) in tools/</p>
 
-<p>Le wiki du projet contient toutes les informations utiles à ce sujet</p>
+<h3>
+<a id="hard-way" class="anchor" href="#hard-way" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Hard way</h3>
 
-<h2>Comment contribuer</h2>
+<p>You have to assemble the FrOSt/FrOSt.dasm file. You can find a toolchain for that effect <a href="https://github.com/azertyfun/DCPU-Toolchain">here</a>.</p>
 
-<h3>IDE</h3>
+<h2>
+<a id="how-can-i-develop-a-program-for-that-os" class="anchor" href="#how-can-i-develop-a-program-for-that-os" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How can I develop a program for that OS?</h2>
 
-<p>Nous utilisons git comme gestionnaire de version (voir plus bas pour
-un tuto).</p>
+<p>The wiki contains all the information you need.</p>
 
-<p>Nous utilisons actuellement
-<a href="http://0x10c.fr/index.php?threads/nouvel-%C3%A9mulateur-ide-devcpu.989/#post-34568">DevCPU</a>. Marche
-à suivre pour ajouter le projet :</p>
+<h2>
+<a id="how-to-contribute" class="anchor" href="#how-to-contribute" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to contribute</h2>
+
+<h3>
+<a id="development-environment" class="anchor" href="#development-environment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development environment</h3>
+
+<p>We use git as a CVS (obviously).</p>
+
+<p>We used to use DevCPU, and it should still work, but for now we use <a href="https://github.com/azertyfun/DCPU-Toolchain">DCPU-Toolchain</a>.
+You just have to <code>git clone</code> the repo somewhere and assemble FrOSt/FrOSt.dasm.</p>
+
+<h3>
+<a id="syntax-guidelines" class="anchor" href="#syntax-guidelines" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Syntax guidelines</h3>
+
+<h4>
+<a id="general-rules" class="anchor" href="#general-rules" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>General rules</h4>
 
 <ul>
-<li>Cloner le projet sur votre ordi</li>
-<li>Importer le projet (clic droit &gt; import &gt; existing project into
-workspace, puis sélectionner le dossier FrOSt)</li>
-</ul><h3>Normes de codage</h3>
-
-<h4>Règles générales</h4>
-
-<ul>
-<li>git gère les LF/CRLF, pas de soucis à se faire de ce côté là.</li>
+<li>git handles EOL character(s) (LF/CRLF), so no problem with that.</li>
 <li>
-<strong>Documentez</strong> votre code ! Il sera plus facile à maintenir et
-comprendre par la suite.</li>
-<li>Faites des commits simples et clairs : une modification par
-commit. Par exemple, 'Diverses modifications des drivers' peut
-surement être découpé en plusieurs commits</li>
-<li>N'hésitez pas à utiliser les branches pour toute modification
-utilisant plus d'un commit (cf règle précédente). Cela permet aux
-autres développeurs de mieux comprendre votre travail.
-<a href="http://www.croes.org/gerald/blog/git-modele-de-branche-efficace/649/">Pour mieux comprendre la gestion des branches.</a>
-</li>
-<li>N'hésitez pas à relire et commenter les commits des autres. Le code
-résultant n'en sera que meilleur.</li>
-</ul><h4>Normes</h4>
+<strong>Document</strong> your code ! It will be easier to maintain and understand later.</li>
+<li>Write simple and clear commit messages : One change per commit. For instance, 'Misc driver changes' can surely be split in multiple commits.</li>
+<li>Don't be afraid to use <code>git branch</code> for any change of more than one commit (cf. precedent rule).</li>
+<li>Don't be afraid to read and check other people's commits. The code will only be better!</li>
+</ul>
+
+<h4>
+<a id="norms" class="anchor" href="#norms" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Norms</h4>
 
 <ul>
-<li>Toutes les normes, <strong>à respecter impérativement pour toute nouvelle fonctionnalité codée</strong>,
-se trouvent sur le <a href="https://github.com/FrOSt-Foundation/FrOSt/wiki/Conventions-de-codage">wiki</a>.</li>
-</ul><h3>Branches disponibles :</h3>
+<li>All rules <strong>must be respected</strong> an can be found on the <a href="https://github.com/FrOSt-Foundation/FrOSt/wiki/Coding-rules">wiki</a>.</li>
+</ul>
+
+<h3>
+<a id="available-branches-" class="anchor" href="#available-branches-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Available branches :</h3>
 
 <ul>
-<li>master : c'est la branche principale, elle n'est modifiée que pour
-des releases du projet.</li>
-<li>indev : c'est une branche de développement, qui ne devrait être
-utilisée que par ceux qui connaissent.  /!\ Peut ne pas fonctionner,
-et sera de toute façon plus ou moins bugguée.</li>
-<li>D'autres branches temporaires peuvent apparaitre</li>
-</ul><h2>Liens utiles</h2>
+<li>
+<code>master</code> : It's the main branch and is only modified for project releases.</li>
+<li>
+<code>indev</code> : It's the development branch and must be modified only by people who know it.  /!\ May not work, and will be more or less buggy anyways.</li>
+<li>Other temporary branches may appear (cf. general rules).</li>
+</ul>
 
-<p><a href="http://dcpu.com/">Dernières spécifications du DCPU-16 et du hardware</a></p>
-
-<p><a href="http://git-scm.com/book/fr">Tuto git</a></p>
-
-<h2>Credits :</h2>
+<h2>
+<a id="useful-links" class="anchor" href="#useful-links" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Useful links</h2>
 
 <ul>
-<li>Alocer</li>
-<li>ElectricBanana</li>
-<li>Faërie</li>
-<li>Franck97</li>
-<li>natnat</li>
-<li>Yamakaky</li>
-<li>Earth75</li>
+<li><a href="https://github.com/techcompliant/TC-Specs">Latest hardware specifications</a></li>
+<li><a href="https://web.archive.org/web/20130817110245/http://dcpu.com">Old DCPU specifications</a></li>
 </ul>
       </section>
     </div>
