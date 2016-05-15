@@ -12,6 +12,12 @@ FrOSt is a community French project which goal is to create a free and Open-Sour
 
 ## How to run FrOSt?
 
+### Easy way
+
+Run buildAndRun.sh (linux) or buildAndRun.bat (windows) in tools/
+
+### Hard way
+
 You have to assemble the FrOSt/FrOSt.dasm file. You can find a toolchain for that effect [here](https://github.com/azertyfun/DCPU-Toolchain).
 
 
