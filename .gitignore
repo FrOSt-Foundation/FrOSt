@@ -5,3 +5,4 @@ export/
 !rom.bin
 *.hex
 .~lock*
+*.boot
