@@ -53,7 +53,7 @@
 	set PC, POP
 
 ; --------------
-;  lem1802_init
+;  lem1802_setColor
 ; --------------
 ; Description:
 ;     - Sets the color of the characters to write.
