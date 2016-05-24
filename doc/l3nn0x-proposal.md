@@ -20,12 +20,10 @@ Binary header
 | 1             | 1      | Header version |
 | 2             | 1      | Size of relocation table (n) |
 | 3             | 1      | Size of binary (b) |
-| 4             | 1      | Size of additional data (d) |
-| 5             | 1      | Size of table dependencies ID (i) (can be 0) |
-| 6             | i      | Table dependencies |
-| 6 + i         | n      | Relocation table |
-| 6 + i + n     | d      | Additional data |
-| 6 + i + n + d | b      | Binary data |
+| 4             | 1      | Size of table dependencies ID (i) (can be 0) |
+| 5             | i      | Table dependencies |
+| 5 + i         | n      | Relocation table |
+| 5 + i + d     | b      | Binary data |
 
 Thread
 ======
