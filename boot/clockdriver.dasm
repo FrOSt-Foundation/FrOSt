@@ -1,16 +1,20 @@
 ; clock basic driver
 
+#define CLOCK_SET_SPEED 0
+#define CLOCK_GET_TICKS 1
+#define CLOCK_SET_INT 2
+
 :clockSpeed .dat 0
 
 ; entry - in A the HW ID
 :clockInit
   set push, A
   set push, B
-  set A, 2 ; enables interrupts with CLOCK_MESSAGE
-  set B, CLOCK_MESSAGE
-  hwi peek
-  set A, 0 ; disable clock ticking
+  set A, CLOCK_SET_SPEED
   set B, 0
+  hwi peek
+  set A, CLOCK_SET_INT
+  set B, CLOCK_MESSAGE
   hwi peek
   set B, pop
   set A, pop
@@ -21,7 +25,7 @@
   set [clockSpeed], B
   set push, B
   set push, A
-  set A, 0
+  set A, CLOCK_SET_SPEED
   hwi peek
   set A, pop
   set B, pop
