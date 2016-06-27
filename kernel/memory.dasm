@@ -29,10 +29,6 @@
         ifn EX, 1
             ifn I, 0xFFFF
                 set PC, .loop
-    .error
-        set I, pop
-        set A, pop
-        set PC, pop
     .freeBlock
         ifg [I + 1], A
             set PC, .newBlock
@@ -51,6 +47,7 @@
         set Z, I
         set [Z], 0
         add Z, 2
+    .error
         set I, pop
         set A, pop
         set PC, pop
