@@ -1,0 +1,37 @@
+; -----------------------
+;  speaker_setFrequencyCh1
+; -----------------------
+; Description:
+;     - Sets frequency on channel 1.
+; Arguments:
+;     - B: Frequency.
+; Returns:
+;     -
+
+:speaker_setFrequencyCh1
+	set PUSH, A
+
+	set A, 0
+	hwi [id_speaker]
+
+	set A, POP
+    set PC, POP
+
+; -----------------------
+;  speaker_setFrequencyCh2
+; -----------------------
+; Description:
+;     - Sets frequency on channel 2.
+; Arguments:
+;     - B: Frequency.
+; Returns:
+;     -
+
+:speaker_setFrequencyCh2
+	set PUSH, A
+
+	set A, 1
+	hwi [id_speaker]
+
+	set A, POP
+    set PC, POP

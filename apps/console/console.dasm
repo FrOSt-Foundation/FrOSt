@@ -9,6 +9,9 @@
 	set J, 1
 	int INT_PRINTF ;printf
 
+	ife [nb_speakers], 1
+		jsr console_startupSound
+
 	set A, txt_commands
 	sub A, ptr_commands
 	add A, 1
@@ -47,3 +50,27 @@
 	set J, 1
 	int INT_PRINTF ; printf
 	set PC, end
+
+:console_startupSound
+	set I, console_startupsound_notes
+	set J, console_startupsound_durations
+	set A, 0
+
+	:console_startupSound_loop0
+		set B, [I]
+		set C, [J]
+		add I, 1
+		add J, 1
+		int INT_SOUND
+
+		mul C, 20
+		set B, -1
+		:console_startupSound_loop1
+			add B, 1
+			ifn B, C
+				set PC, console_startupSound_loop1
+
+		ife J, console_startupsound_end
+			set PC, POP
+
+		set PC, console_startupSound_loop0

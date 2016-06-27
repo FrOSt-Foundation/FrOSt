@@ -24,4 +24,4 @@
 
 :nCommands dat 0
 :n_ptr dat 0
-:int_ptr dat ih_mem,ih_print,ih_screen,ih_launch,ih_ask_k,ih_stop,ih_clock,ih_keyboard,ih_floppy,ih_power
+:int_ptr dat ih_mem,ih_print,ih_screen,ih_launch,ih_ask_k,ih_stop,ih_clock,ih_keyboard,ih_floppy,ih_power,ih_sound

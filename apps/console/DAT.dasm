@@ -63,3 +63,8 @@ DAT "EDC:", 0
 :msg_ls DAT "File number:", 0
 :msg_errCode DAT "Error code:", 0
 :msg_format_warn DAT "You must remount drives (run mount) to apply changes.", 0
+
+:console_startupsound_notes     DAT 1245,  622, 932, 831, 1245, 932,   0
+;:console_startupsound_durations DAT 13439, 160, 480, 640, 320,  11519, 0xFFFF
+:console_startupsound_durations DAT 1000, 160, 480, 640, 320,  1000, 0
+:console_startupsound_end

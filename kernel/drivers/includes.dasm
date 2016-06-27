@@ -8,3 +8,4 @@
 .include Clock/includes.dasm
 ;.include SPED-3/includes.dasm
 .include EDC/includes.dasm
+.include Speaker/includes.dasm

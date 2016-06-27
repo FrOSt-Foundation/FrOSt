@@ -47,6 +47,10 @@
 			ife B, EDC_ID_B
 				set PC, hw_addEDC
 
+		ife A, SPEAKER_ID_A
+			ife B, SPEAKER_ID_B
+				set PC, hw_addSpeaker
+
 		set PC, PEEK ; The device is unknown, we ignore it.
 
 	:end_loop_periph
@@ -167,4 +171,12 @@
 	ife [nb_EDCs], 1
 		set [id_edc], J
 	set [edc_version], C
+	set PC, PEEK
+
+:hw_addSpeaker
+	ife [nb_speakers], SPEAKER_NB_MAX
+		set PC, PEEK
+	add [nb_speakers], 1
+	ife [nb_speakers], 1
+		set [id_speaker], J
 	set PC, PEEK

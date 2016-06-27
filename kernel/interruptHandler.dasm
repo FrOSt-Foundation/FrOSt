@@ -272,3 +272,11 @@
 		set A, POP
 
 		rfi 0
+
+:ih_sound
+	set A, POP
+	ife A, 0xA000
+		jsr speaker_setFrequencyCh1
+	ife A, 0xA001
+		jsr speaker_setFrequencyCh2
+	rfi 0

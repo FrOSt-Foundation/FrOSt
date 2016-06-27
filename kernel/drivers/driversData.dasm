@@ -65,6 +65,11 @@
 :edc_columns dat 0
 :edc_cells dat 0
 
+; * Speaker
+.define SPEAKER_NB_MAX 1
+:nb_speakers dat 0
+:id_speaker dat 0
+
 ; --------------
 ;  Hardware IDs
 ; --------------
@@ -97,3 +102,6 @@
 
 .define EDC_ID_A 0xE4FF
 .define EDC_ID_B 0x70E3
+
+.define SPEAKER_ID_A 0x0001
+.define SPEAKER_ID_B 0xC0F0
