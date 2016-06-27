@@ -1,0 +1,129 @@
+; process format see https://github.com/FrOSt-Foundation/FrOSt/blob/reorganization/doc/l3nn0x-proposal.md#thread
+
+#define PROCESS_WAIT_KB 1
+#define PROCESS_WAIT_HDD 2
+#define PROCESS_WAIT_SLEEP 3
+
+:processReadyToRun .dat 0, 0, 0, 0
+:processWaiting .dat 0, 0, 0, 0
+:processWaitingType .dat 0, 0, 0, 0
+
+:processNumber .dat 0
+
+:kernelProcess .dat 0, 0, 0, 0, 0, 0, 0, "Mother"
+
+; clock should tick 20 times per second - first guess
+
+; in A the address of the program, assumes everything is already setup
+; in B the name
+; returns PROCESS_ERROR in Z if there is an error, the new PID otherwise
+; sets the A of the new process to the parent's PID
+; switches to the new process
+:initProcess
+    add [processNumber], 1
+    set push, A
+    set push, [currentProcess]
+    set [currentProcess], 0 ; kernel PID
+    set A, 16 ; size of a thread struct
+    jsr kmalloc
+    ife Z, MALLOC_ERROR
+        jsr kpanic
+    set [currentProcess], pop
+    set [Z], [processNumber] ; the PID
+    set [Z + 1], [currentProcess]
+    set push, Z
+    set A, STACK_SIZE
+    jsr kmalloc
+    ife Z, MALLOC_ERROR
+        jsr kpanic
+    set A, pop
+    add Z, STACK_SIZE
+    set [A + 2], Z
+    set [A + 3], 0 ; TODO: use a kernel stack per processus?
+    set [A + 4], 0
+    set [A + 5], 1
+    set [A + 6], 1 ; TODO: set/use priority
+    set Z, A
+    add A, 7
+    set push, C
+    set C, 8
+    jsr strcpy
+    set C, pop
+    set A, processReadyToRun
+    sub A, 1
+    .loop
+        add A, 1
+        ifn [A], 0
+            set PC, loop
+    set [A], Z
+    set A, SP
+    set SP, [Z + 2]
+    set push, [A]
+    set push, [currentProcess]
+    set SP, A
+    set A, pop
+    set Z, [Z]
+    set PC, scheduler
+
+; stops a process, PID in A, return KILL_ERROR in Z if there is an error
+:killProcess
+    set push, B
+    set push, A
+    set A, processReadyToRun
+    sub A, 1
+    .loop
+        add A, 1
+        set B, [A]
+        ifn [B], peek
+            ifn A, processWaitingType
+                set PC, loop
+    ife A, processWaitingType
+        set PC, end
+    set push, A
+    set A, [B + 2] ; free stack
+    jsr kfree
+    set A, B ; free thread struct
+    jsr kfree
+    set A, pop
+    set [A], 0
+    ifn [currentProcess], peek
+        set PC, end
+    set [currentProcess], 0
+    set SP, kernelStack
+    set PC, scheduler
+    .end
+        set A, pop
+        set B, pop
+        set PC, pop
+
+; Changes the current process with the next one in the list
+:scheduler
+    ;saves current context
+    set push, B
+    set push, C
+    set push, I
+    set push, J
+    set push, X
+    set push, Y
+    set push, Z
+    set push, Ex
+    ; TODO: choses the next process
+    set B, [currentProcess]
+    set A, [processReadyToRun]
+    ; switch A (new) and B (old)
+    ifn B, 0
+        set [B + 2], SP
+    set SP, [A + 2]
+    set [currentProcess], A
+    ; updating time
+    set [A + 5], 20 ; TODO: correctly calculate this value at process init (put it in priority?)
+    ; restoring context
+    set Ex, pop
+    set Z, pop
+    set Y, pop
+    set X, pop
+    set J, pop
+    set I, pop
+    set C, pop
+    set B, pop
+    rfi 0

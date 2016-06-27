@@ -1,0 +1,28 @@
+:tmpPC .dat 0
+
+:pushRegs
+    set [tmpPC], pop
+    set push, A
+    set push, B
+    set push, C
+    set push, I
+    set push, J
+    set push, X
+    set push, Y
+    set push, Z
+    set PC, pop
+
+:popRegs
+    set [tmpPC], pop
+    set Z, pop
+    set Y, pop
+    set X, pop
+    set J, pop
+    set I, pop
+    set C, pop
+    set B, pop
+    set A, pop
+
+; error function, prints if there is a screen and loops forever
+:kpanic
+    set PC, kpanic

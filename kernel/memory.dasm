@@ -1,0 +1,99 @@
+; ------------------------------------------------------------------------------------------
+;  A memory block is setup like this : | OWNER | SIZE | DATA (or FREE if owner is 0xFFFF) |
+; ------------------------------------------------------------------------------------------
+
+; ------------
+;  kmalloc (kernel malloc)
+; ------------
+; Arguments:
+;     - A: Size
+; Returns:
+;     - Z: Address or MALLOC_ERROR. You can check if an error happened with  ife Z, MALLOC_ERROR.
+
+:kmalloc
+    set Z, MALLOC_ERROR
+    set push, A
+    add A, 2
+    ifg A, [memoryFree]
+        set PC, kmalloc_error
+    ifl A, 3
+        set PC, kmalloc_error
+    sub [memoryFree], A
+    set push, I
+    set I, [memoryBegin]
+    :kmalloc_loop
+        ife [I], 0xFFFF
+            set PC, kmalloc_freeBlock
+    :kmalloc_continue
+        add I, [I + 1]
+        ifn EX, 1
+            ifn I, 0xFFFF
+                set PC, kmalloc_loop
+    :kmalloc_error
+        set I, pop
+        set A, pop
+        set PC, pop
+    :kmalloc_freeBlock
+        ifg [I + 1], A
+            set PC, kmalloc_newBlock
+        ife [I + 1], A
+            set PC, kmalloc_return
+        set PC, kmalloc_continue
+    :kmalloc_newBlock
+        set push, [I + 1]
+        set [I + 1], A
+        add I, A
+        set [I], [currentProcess]
+        sub peek, A
+        set [I + 1], pop
+        sub I, A
+    :kmalloc_return
+        set Z, I
+        set [Z], 0
+        add Z, 2
+        set I, pop
+        set A, pop
+        set PC, pop
+
+; ------------
+;  kfree
+; ------------
+; Arguments:
+;     - A: Address
+; Returns:
+;     -
+:kfree
+    set push, B
+    set push, A
+    set A, [memoryBegin]
+    set B, A
+    .loop
+        ifg B, peek
+            set PC, found
+        set A, B
+        add B, [B + 1]
+        set PC, loop
+    .found
+        set [A], 0xFFFF
+        add [memoryFree], [A + 1]
+        ifn [B], 0xFFFF
+            set PC, left
+        add [A + 1], [B + 1]
+    .left
+        set B, [memoryBegin]
+        set push, C
+        set C, B
+        .loop_left
+            add C, [C + 1]
+            ife A, C
+                set PC, left_end
+            add B, [B + 1]
+            set PC, loop_left
+        .left_end
+            ifn [B], 0xFFFF
+                set PC, end
+    .end
+        set C, pop
+        set A, pop
+        set B, pop
+        set PC, pop
