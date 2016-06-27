@@ -1,0 +1,56 @@
+;includes
+set PC, frostStart
+
+#include "../kernel/memory.dasm"
+#include "basicdriver.dasm"
+#include "clockdriver.dasm"
+
+; constants setup
+
+:memoryFree .dat 0xFFFF - memoryBegin
+:memoryBegin .dat frostEnd, memoryFree
+
+:currentProcess .dat 0
+:driverList .dat 0 ; table (key, value) with key == device type code and value == HW id
+
+#define MALLOC_ERROR 0xFFFF
+#define HW_ERROR 0xFFFF
+#define PROCESS_ERROR 0xFFFF
+
+:CLOCK_DEVICE_ID .dat 0x1c6c, 0x8b36
+#define CLOCK_MESSAGE 0x6000
+
+#define STACK_SIZE 30
+
+:frostStart
+; memory setup
+set A, STACK_SIZE
+jsr kmalloc
+ife Z, MALLOC_ERROR:
+    jsr kpanic
+add Z, STACK_SIZE
+set SP, Z ; setting up the kernel stack
+
+; basic drivers setup
+; TODO: complete list - needed drivers : clock
+jsr discoverDrivers
+set [driverList], Z
+set A, Z
+set B, [CLOCK_DEVICE_ID]
+set C, [CLOCK_DEVICE_ID + 1]
+jsr getHwIdFromDeviceType
+ife Z, HW_ERROR
+    jsr kpanic
+set A, Z
+jsr clockInit
+
+; modules init
+
+; general kernel setup
+set [kernelProcess + 2], SP
+
+; kernel process
+:mother
+    set PC, mother
+; end of kernel
+:frostEnd .dat 0xFFFF

@@ -1,0 +1,65 @@
+; Basic driver routines
+
+; table structure : size | (first half of device type | second half of device type | HW ID) * number of entries
+; return - Z address of table
+
+:discoverDrivers
+  jsr pushRegs
+  hwn I
+  set push, I
+  mul I, 3
+  add I, 1
+  jsr kmalloc
+  ife Z, MALLOC_ERROR
+    jsr kpanic
+  set [Z], pop
+  set push, Z
+  set J, -1
+  add Z, 1
+  set push, loop
+  .loop
+    add J, 1
+    ife I, J
+      set PC, end
+    hwq J
+    set [Z], B
+    set [Z + 1], A
+    set [Z + 2], J
+    add Z, 3
+    set PC, peek
+  .end
+    set A, pop
+    set Z, pop
+    jsr popRegs
+    set PC, pop
+
+; in A the table, in B the first half of device type, in C the second half return in Z, HW_ERROR if error
+:getHwIdFromDeviceType
+  set push, A
+  set push, B
+  set B, [A]
+  mul B, 3
+  add B, 1
+  add B, A
+  add A, 1
+  set push, loop
+  .loop
+    ifg A, B
+      set PC, error
+    ife [A], B
+      ife [A + 1], C
+        set PC, end
+    add A, 3
+    set PC, peek
+  .end
+    set Z, [A + 2]
+    set A, pop
+    set B, pop
+    set A, pop
+    set PC, pop
+  .error
+    set Z, HW_ERROR
+    set A, pop
+    set B, pop
+    set A, pop
+    set PC, pop

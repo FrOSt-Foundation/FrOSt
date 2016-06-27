@@ -1,0 +1,28 @@
+; clock basic driver
+
+:clockSpeed .dat 0
+
+; entry - in A the HW ID
+:clockInit
+  set push, A
+  set push, B
+  set A, 2 ; enables interrupts with CLOCK_MESSAGE
+  set B, CLOCK_MESSAGE
+  hwi peek
+  set A, 0 ; disable clock ticking
+  set B, 0
+  hwi peek
+  set B, pop
+  set A, pop
+  set PC, pop
+
+; entry - A HW ID, B speed
+:clocksetSpeed
+  set [clockSpeed], B
+  set push, B
+  set push, A
+  set A, 0
+  hwi peek
+  set A, pop
+  set B, pop
+  set PC, pop
