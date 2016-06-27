@@ -1,0 +1,17 @@
+; copy [B] -> [A] at most C words or 0, whichever is found first
+:strcpy
+    set push, I
+    set push, J
+    set push, C
+    set I, A
+    set J, B
+    add C, B
+    .loop
+        sti [I], [J]
+        ifn J, C
+            ifn [I], 0
+                set PC, loop
+    set C, pop
+    set J, pop
+    set I, pop
+    set PC, pop

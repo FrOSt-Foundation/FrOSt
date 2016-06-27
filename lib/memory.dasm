@@ -1,0 +1,45 @@
+;--------------------------------------
+;memcpy
+;--------------------------------------
+; copy B to A C words
+:memcpy
+    set push, I
+    set push, J
+    set push, C
+    set push, C
+    set I, A
+    set J, B
+    add C, B
+    ifl peek, 8
+        set PC, loop2
+    mod peek, 8
+    ifn peek, 0
+        set PC, loop3
+    .loop
+        sti [I], [J]
+        sti [I], [J]
+        sti [I], [J]
+        sti [I], [J]
+        sti [I], [J]
+        sti [I], [J]
+        sti [I], [J]
+        sti [I], [J]
+        ifn C, J
+            set PC, loop
+    .end
+        set C, pop
+        set C, pop
+        set J, pop
+        set I, pop
+        set PC, pop
+    .loop2
+        sti [I], [J]
+        ifn C, J
+            set PC, loop2
+        set PC, end
+    .loop3
+        sti [I], [J]
+        sub peek, 1
+        ifn peek, 0
+            set PC, loop3
+        set PC, loop
