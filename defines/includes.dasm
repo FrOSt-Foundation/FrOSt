@@ -1,2 +1,0 @@
-.include global-defines.dasm
-.include int-defines.dasm
