@@ -15,31 +15,31 @@
     set push, A
     add A, 2
     ifg A, [memoryFree]
-        set PC, kmalloc_error
+        set PC, .error
     ifl A, 3
-        set PC, kmalloc_error
+        set PC, .error
     sub [memoryFree], A
     set push, I
     set I, [memoryBegin]
-    :kmalloc_loop
+    .loop
         ife [I], 0xFFFF
-            set PC, kmalloc_freeBlock
-    :kmalloc_continue
+            set PC, .freeBlock
+    .continue
         add I, [I + 1]
         ifn EX, 1
             ifn I, 0xFFFF
-                set PC, kmalloc_loop
-    :kmalloc_error
+                set PC, .loop
+    .error
         set I, pop
         set A, pop
         set PC, pop
-    :kmalloc_freeBlock
+    .freeBlock
         ifg [I + 1], A
-            set PC, kmalloc_newBlock
+            set PC, .newBlock
         ife [I + 1], A
-            set PC, kmalloc_return
-        set PC, kmalloc_continue
-    :kmalloc_newBlock
+            set PC, .return
+        set PC, .continue
+    .newBlock
         set push, [I + 1]
         set [I + 1], A
         add I, A
@@ -47,7 +47,7 @@
         sub peek, A
         set [I + 1], pop
         sub I, A
-    :kmalloc_return
+    .return
         set Z, I
         set [Z], 0
         add Z, 2
